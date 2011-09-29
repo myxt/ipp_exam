@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<software>
+    <metadata>
+        <name>Examen</name>
+        <version>1.0</version>
+        <copyright>Copyright (C) 2011 Leiden Tech/Myxt</copyright>
+        <license>Licensed under the MIT license: http://www.opensource.org/licenses/mit-license.php</license>
+        <info_url>http://projects.ez.no/examen</info_url>
+    </metadata>
+</software>
