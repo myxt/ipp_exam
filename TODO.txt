@@ -1,0 +1,19 @@
+Datatype:
+edit:
+condition - not saved yet
+random - not saved yet
+Validation - not done yet
+
+diff - not done yet
+
+delete - not well tested yet
+
+Exam view:
+Simple view -  done
+Multi-page - not done yet
+
+result:
+Social Media
+Mail
+Retest
+print/download pdf/image certificate

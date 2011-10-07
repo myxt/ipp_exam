@@ -1,14 +1,14 @@
 <br>WE ARE IN THE TEXT EDIT GUI<br>
 <div class="listbutton">
-	{$element.type}: 
+	<label>{$element.type|upcase} {$element.id}</label>
 	<input class="button" value="Remove" name="CustomActionButton[remove][{$element.id}]" type="submit">
 	Random: <input type="checkbox" id="random" name="Random" />
-	<input type="image" src="/design/admin2/images/button-move_down.gif" alt="Down" name="MoveDown_{$element_type}_{$element.id}" title="" />&nbsp;
-	<input type="image" src="/design/admin2/images/button-move_up.gif" alt="Up" name="MoveUp_{$element_type}_{$element.id}" title="" />
+	<input type="image" src="/design/admin2/images/button-move_down.gif" alt="Down" name="MoveDown_{$element.id}" title="" />&nbsp;
+	<input type="image" src="/design/admin2/images/button-move_up.gif" alt="Up" name="MoveUp_{$element.id}" title="" />
 	<input size="2" maxlength="4" type="text" name="element_priority_{$element.id}" value="{$element.priority}" />
 </div>
 
-{default	element_base=exam_question
+{default	element_base=exam
 		editorRow=2}
 <div class="oe-window">
 	<textarea class="box" id="{$element_base}_data_text_{$element.id}" name="{$element_base}_data_text_{$element.id}" cols="70" rows="{$editorRow}">{$element.content}</textarea>

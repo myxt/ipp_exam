@@ -1,5 +1,6 @@
 <br>WE ARE IN THE GROUP EDIT GUI<br>
 <div class="listbutton">
+	<label>{$element.type|upcase} {$element.id}</label>
 	<input class="button" value="Remove" name="CustomActionButton[remove][{$element.id}]" type="submit">
 	Random:<input type="checkbox" id="random" name="random_{$element.id}" />
 	<input type="image" src="/design/admin2/images/button-move_down.gif" alt="Down" name="MoveDown_{$element.id}" title="" />&nbsp;
@@ -34,7 +35,12 @@
 
 {foreach $element.children as $child}
 	<div class="element" style="border:1px dashed green;">
+	{if eq($element.type,"question")} {*need elements for condition choices*}
+		{exam_edit_gui element=$child structure=$structure}
+	{else}
 		{exam_edit_gui element=$child}
+	{/if}
+		
 	</div>
 {/foreach}
 <br clear="all" />

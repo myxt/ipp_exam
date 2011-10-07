@@ -12,7 +12,6 @@ class exam extends eZPersistentObject
 {
 	function exam( $row = array())
 	{
-
 		$this->eZPersistentObject( $row );
 		$this->ClassIdentifier = false;
 		if ( isset( $row['contentclass_identifier'] ) )
@@ -40,8 +39,9 @@ class exam extends eZPersistentObject
 			$this->CurrentLanguage = $topPriorityLanguage->attribute( 'locale' );
 			}
 		}
-		$this->options = $this->getOptions();
-		$this->structure = $this->getStructure();
+		$this->contentObject = $this->getObject(); //This won't work with drafts - not sure it should be here
+		$this->structure = $this->structure();
+		//$this->elements = $this->getElements();
 	}
 
 	static function definition()
@@ -68,21 +68,17 @@ class exam extends eZPersistentObject
 										'datatype' => 'integer',
 										'default' => '0',
 										'required' => true ),
-						'xml_options' => array( 'name' => 'xmlOptions',
-										'datatype' => 'string',
-										'default' => '',
-										'required' => true ),
 						'enabled' => array( 'name' => 'enabled',
 										'datatype' => 'integer',
 										'default' => '0',
 										'required' => true ),
-						'high_score' => array( 'name' => 'version',
+						'high_score' => array( 'name' => 'high_score',
 										'datatype' => 'integer',
 										'default' => '0',
 										'required' => true )
 					),
 					'keys' => array( 'id' ),
-					'function_attributes' => array(  'structure' => 'structure', 'options' => 'options' ),
+					'function_attributes' => array(  'structure' => 'structure', 'questions' => 'questions', 'elements' => 'getElements', 'contentObject' => 'getObject' ),
 					'increment_key' => 'id',
 					'class_name' => 'exam',
 					'sort' => array( 'id' => 'asc' ),
@@ -91,7 +87,7 @@ class exam extends eZPersistentObject
 	}
 
 	static function fetch( $id, $asObject = true )
-	{
+	{ //This is actually fetch by contentobject_id
 		$examObject = eZPersistentObject::fetchObject(
 										exam::definition(),
 										null,
@@ -100,26 +96,95 @@ class exam extends eZPersistentObject
 		return $examObject;
 	}
 
-	function fetchExam( $id )
+	function fetchExamById( $id )
 	{
-
-		$exam = $this->fetch( $id );
-		if ( !$exam OR !$exam->enabled )
-			$exam = false;
-		return array( 'result' => $exam );
+		$examObject = eZPersistentObject::fetchObject(
+										exam::definition(),
+										null,
+										array( 'id' => $id ),
+										$asObject );
+		if ($istplfetch) return array( 'result' => $examObject );
+		else return $examObject;
 	}
-
-	public function structure()
+	function fetchExams( $id )
 	{
-		$contentObjectID = $this->contentObjectID;
-		return $this->getStructure();
+		$examObjects = eZPersistentObject::fetchObjectList( exam::definition(),
+								null,
+								array(),
+								null,
+								true );
+		return $examObjects;
 	}
-	function getStructure( $languageCode = 'eng-GB' )
+	public function structure() 
+	{ //This returns the current version structure.  Can't be used with edit etc.  This maintains the heirarchy.
+
+eZFire::debug(__FUNCTION__,"WE ARE HERE");
+eZFire::debug($this->contentObject,"CONTENT OBJECT");
+		if (is_object($this->contentObject))
+		{
+		eZFire::debug($this->contentObject->attribute( 'id' ),"id");
+		eZFire::debug($this->contentObject->attribute( 'current_version' ),"structure version");
+		eZFire::debug($this->contentObject->CurrentLanguage,"struture language");
+
+		//return false;
+				return $this->getStructure($this->contentObject->attribute( 'id' ),$this->contentObject->attribute( 'current_version' ),$this->contentObject->CurrentLanguage);
+		} else {
+			return false;
+		}
+	}
+	function getStructure( $id = 0, $version = 1, $languageCode = 'eng-GB', $istplfetch = false )
+	{ //Only top level items.
+eZFire::debug(__FUNCTION__,"WE ARE HERE");
+eZFire::debug($this->contentObject,"CONTENT OBJECT");
+eZFire::debug($id,"id");
+eZFire::debug($version,"structure version");
+eZFire::debug($languageCode,"struture language");
+		$rows = eZPersistentObject::fetchObjectList( examElement::definition(),
+								null,
+								array( 'contentobject_id' => $id,
+										'parent' => 0,
+										'version' => $version ,
+										'language_code' => $languageCode ),
+								array( 'priority' => 'asc' ),
+								null,
+								true );
+eZFire::debug(count($rows),"ROW COUNT");
+		if ($istplfetch) return array( 'result' => $rows );
+		else return $rows;
+	}
+	static function elements()
+	{ //all elements
+		$this->getElements( $this->ContentObjectID, $this->ContentObject->version, $this->ContentObject->languageCode );
+	}
+	static function getElements( $id = 0, $version = 1, $languageCode = 'eng-GB', $istplfetch = false )
+	{ //all elements
+		$rows = eZPersistentObject::fetchObjectList( examElement::definition(),
+										null,
+										array( 'contentobject_id' => $id,
+												'version' => $version,
+												'language_code' => $languageCode ),
+										array( 'priority' => 'asc' ),
+										null,
+										true );
+		if ($istplfetch) return array( 'result' => $rows );
+		else return $rows;
+	}
+	function getObject()
+	{
+//eZFire::debug($this->contentObjectID,"WE BE HEEAH");
+		return eZContentObject::fetch( $this->contentObjectID );
+	}
+	public function questions()
+	{
+		//$contentObjectID = $this->contentObjectID;
+		return $this->getQuestions();
+	}
+	function getQuestions( $languageCode = 'eng-GB' )
 	{ //Only top level items.
 		$rows = eZPersistentObject::fetchObjectList( examElement::definition(),
 								null,
 								array( 'contentobject_id' => $this->contentObjectID,
-										'parent' => 0,
+										'type' => "question",
 										'language_code' => $languageCode ),
 								array( 'priority' => 'asc' ),
 								null,
@@ -127,63 +192,23 @@ class exam extends eZPersistentObject
 		return $rows;
 	}
 
-	public function options()
+	function increment($attribute) {
+		$old = $this->attribute( $attribute );
+		$new = $old++;
+		$this->setAttribute( $attribute, $new );
+		$this->store();
+		return $new;
+	}
+	function highScore( $score = 0 )
 	{
-		return $this->getOptions();
+		$old = $this->attribute( 'high_score' );
+		if ( $score > $old ) {
+			$this->setAttribute( $attribute, $score );
+			$this->store();
+			return $score;
+		}
+		return $old;
 	}
-    function getOptions()
-    {
-        if ( $this->xmlOptions != '' )
-        {
-            $dom = new DOMDocument( '1.0', 'utf-8' );
-            $dom->loadXML( $this->xmlOptions );
-            $optionArray = $dom->getElementsByTagName( "option" );
-            if ( $optionArray )
-            {
-                foreach ( $optionArray as $option )
-                {
-                    $label = $option->getElementsByTagName( "label" )->item( 0 )->textContent;
-                    $value = $option->getElementsByTagName( "value" )->item( 0 )->textContent;
-				$options[$label] =  $value;
-                }
-			 return $options;
-            }
-        }
-
-	}
-
-    public function toXML()
-    {
-        $dom = new DOMDocument( '1.0', 'utf-8' );
-        $dom->formatOutput = true;
-        $success = $dom->loadXML('<exam />');
-
-        $pageNode = $dom->documentElement;
-
-        foreach ( $this->attributes as $attrName => $attrValue )
-        {
-            switch ( $attrName )
-            {
-
-                default:
-                    $node = $dom->createElement( $attrName );
-                    $nodeValue = $dom->createTextNode( $attrValue );
-                    $node->appendChild( $nodeValue );
-                    $pageNode->appendChild( $node );
-                    break;
-            }
-        }
-
-        return $dom->saveXML();
-    }
-
-
-    public function attributes()
-    {
-        return array_keys( $this->attributes );
-    }
-
-
 
 	public function __clone()
 	{ //used by copy
@@ -192,6 +217,32 @@ class exam extends eZPersistentObject
 
 	function validateEditActions( $validation, $params )
 	{ //called by validateObjectAttributeHTTPInput
+	}
+	function removeExam()
+	{ //called by deleteStoredObjectAttribute
+		$db = eZDB::instance();
+		$db->begin();
+		$query = "DELETE FROM `exam_statistics` WHERE `contentobject_id` = ".$this->contentObjectID;
+		$db->query( $query );
+		$query = "DELETE FROM `exam_structure` WHERE `contentobject_id` = ".$this->contentObjectID;
+		$db->query( $query );
+		$query = "DELETE FROM `exam_answer` WHERE `contentobject_id` = ".$this->contentObjectID;
+		$db->query( $query );
+		$query = "DELETE FROM `exam_results` WHERE `contentobject_id` = ".$this->contentObjectID;
+		$db->query( $query );
+		$db->commit();
+	}
+	function removeVersion($id,$version,$language_code )
+	{
+		$examElements = $this->getElements($originalContentObjectAttribute->attribute( 'contentobject_id' ),$originalContentObjectAttribute->attribute( 'version' ),$originalContentObjectAttribute->attribute( 'language_code' ));
+		foreach($examElements as $elementObject) {
+			$elementObject->removeExam();
+			if ($elementObject->type == 'question' ) {
+				foreach( $elementObject->getAnswers as $answer ) {
+					$answer->removeExam();
+				}
+			}
+		}
 	}
 }
 

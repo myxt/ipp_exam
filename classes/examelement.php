@@ -38,12 +38,14 @@ class examElement extends eZPersistentObject
 		}
 		$id = $row['id'];
 		$priority = $row['priority'];
+eZFire::debug($priority,"PRIORITY");
 		$type = $row['type'];
+eZFire::debug($type,"TYPE");
 		$parent = $row['parent'];
-		$this->options = $this->getOptions();
 		$this->content = $this->getContent();
 		$this->children = $this->getChildren();
 		$this->answers = $this->getAnswers();
+		$this->statistics = $this->getStats();
     }
 
 	static function definition()
@@ -88,7 +90,7 @@ class examElement extends eZPersistentObject
 										'required' => false )
 					),
 					'keys' => array( 'id' ),
-					'function_attributes' => array(  'template_name' => 'templateName', 'content' => 'content', 'options' => 'options', 'children' => 'children', 'answers' => 'getAnswers' ),
+					'function_attributes' => array(  'template_name' => 'templateName', 'content' => 'content', 'options' => 'options', 'children' => 'children', 'answers' => 'getAnswers', 'statistics' => 'getStats' ),
 					'increment_key' => 'id',
 					'class_name' => 'examElement',
 					'sort' => array( 'id' => 'asc' ),
@@ -119,6 +121,7 @@ class examElement extends eZPersistentObject
 	}
 	function getChildren()
 	{
+		if ($this->type != "group" ) return;
 		$rows = eZPersistentObject::fetchObjectList( examElement::definition(),
 											null,
 											array( 'parent' => $this->ID),
@@ -129,34 +132,112 @@ class examElement extends eZPersistentObject
 	}
 	function getAnswers()
 	{
-		if ($this->type == "question" )
-		{
-		$rows = eZPersistentObject::fetchObjectList( examQuestion::definition(),
+eZFire::debug(__FUNCTION__,"WHY AREN'T WE HERE");
+		if ($this->type != "question" ) return;
+		$rows = eZPersistentObject::fetchObjectList( examAnswer::definition(),
 											null,
 											array( 'question_id' => $this->ID),
 											array( 'priority' => 'asc' ),
 											null,
 											true );
 		return $rows;
-		} else 
-			return false;
 	}
 
-	static function getElements( $id, $version = 1, $languageCode = 'eng-GB' )
+
+	public function statistics()
 	{
-		$rows = eZPersistentObject::fetchObjectList( examElement::definition(),
-										null,
-										array( 'contentobject_id' => $id,
-												'version' => $version,
-												'language_code' => $languageCode ),
-										array( 'priority' => 'asc' ),
-										null,
-										true );
-		return $rows;
+		return $this->getStats;
 	}
 
+	function getStats()
+	{
+/*
+eZFire::debug(__FUNCTION__,"WE ARE HERE");
+eZFire::debug($this->type,"ELEMENT TYPE");
+eZFire::debug($this->ID,"QUESTION ID");
+*/
+		if( $this->type != "question" ) return false;
+		$db = eZDB::instance();
+		$db->begin();
+		$query = "SELECT COUNT(*) AS total FROM `exam_results` WHERE `question_id` = ".$this->ID;
+		$queryResult = $db->arrayQuery( $query, array( 'limit' => 1, 'column' => 'total' ) );
+		$result['total'] = $queryResult[0];
+		$queryResult = "SELECT COUNT(*) AS first_pass FROM `exam_results` WHERE `question_id` = ".$this->ID." AND `correct` = 1 AND `followup` = 0";
+		$queryResult = $db->arrayQuery( $query,array( 'limit' => 1, 'column' => 'first_pass' ) );
+		$result['first_pass'] = $queryResult[0];
+		$query = "SELECT COUNT(*) AS second_pass FROM `exam_results` WHERE `question_id` = ".$this->ID." AND `correct` = 1 AND `followup` = 1";
+		$queryResult = $db->arrayQuery( $query,array( 'limit' => 1, 'column' => 'second_pass' ) );
+		$result['second_pass'] = $queryResult[0];
+		$query = "SELECT answer,COUNT(`answer`) as count FROM `exam_results` WHERE `question_id` = ".$this->ID." GROUP BY `answer`;";
+		$queryResult = $db->arrayQuery( $query );
+		foreach( $queryResult as $answer) {
+			$result['answer_count'][$answer['answer']] = $answer['count'];
+		}
+//eZFire::debug($result,"RETURNING");
+		return $result;
+	}
+	function priorityUp()
+	{ //
+		$oldPriority = $this->priority;
+	}
+	function priorityDown()
+	{
+		$oldPriority = $this->priority;
+	}
+	function &templateName()
+	{
+		$type = $this->type;
+		return $type;
+	}
+	function add( $contentobject_id, $priority = 0, $type = "group", $parent = 0, $version, $language_code )
+	{
+		$newElement = new examElement();
+		$newElement->setAttribute( 'contentobject_id', $contentobject_id );
+		$newElement->setAttribute( 'priority', $priority );
+		$newElement->setAttribute( 'type', $type );
+		$newElement->setAttribute( 'parent', $parent );
+		$newElement->setAttribute( 'version', $version );
+		$newElement->setAttribute( 'language_code', $language_code );
+		$newElement->store();
+		return $newElement;
+	}
+	function removeElement()
+	{
+		$db = eZDB::instance();
+		$db->begin();
+		/*check for children if group, answers if question and permission*/
+		switch ($element->type) {
+			case "question":
+				$children = count( $element->getAnswers() );
+				if ($children != 0 ) {
+					$query = "DELETE FROM `exam_answer` WHERE `question_id` = ".$this->ID;
+					$db->query( $query );
+				}
+				break;
+			case "group":
+				$children = count( $element->getChildren() );
+				if ($children != 0 ) {
+					$query = "DELETE FROM `exam_structure` WHERE `parent` = ".$this->ID;
+					$db->query( $query );
+				}
+				break;
+			default: // "text"|"pagebreak"
+		}
+		$query = "DELETE FROM `exam_structure` WHERE `id` = ".$this->ID;
+		$db->query( $query );
+		$db->commit();
+	}
+	function removeElementByID( $id )
+	{
+		$element = examElement::fetch( $id );
+		$element->removeElement();
+	}
+	public function options()
+	{
+		return $this->getOptions();
+	}
     function getOptions()
-    {
+    { //At this point the only option is random... but we'll do it like this in the event there is some expansion
         if ( $this->xmlOptions != '' )
         {
             $dom = new DOMDocument( '1.0', 'utf-8' );
@@ -173,51 +254,32 @@ class examElement extends eZPersistentObject
 			 return $options;
             }
         }
+
 	}
-    function &templateName()
+
+    public function toXML()
     {
-		$type = $this->type;
-		return $type;
-	}
-	function add( $contentobject_id, $priority = 0, $type = "group", $parent = 0, $version, $language_code )
-	{
-		$newElement = new examElement();
-		$newElement->setAttribute( 'contentobject_id', $contentobject_id );
-		$newElement->setAttribute( 'priority', $priority );
-		$newElement->setAttribute( 'type', $type );
-		$newElement->setAttribute( 'parent', $parent );
-		$newElement->setAttribute( 'version', $version );
-		$newElement->setAttribute( 'language_code', $language_code );
-		$newElement->store();
-	}
-	function remove( $id )
-	{
-		
-		$element = examElement::fetch( $id );
-		$db = eZDB::instance();
-		$db->begin();
-		/*check for children if group, answers if question and permission*/
-		switch ($element->type) {
-			case "question":
-				$children = count( $element->getAnswers() );
-				if ($children != 0 ) {
-					$query = "DELETE FROM `exam_question` WHERE `question_id` = ".$id;
-					$db->query( $query );
-				}
-				break;
-			case "group":
-				$children = count( $element->getChildren() );
-				if ($children != 0 ) {
-					$query = "DELETE FROM `exam_structure` WHERE `parent` = ".$id;
-					$db->query( $query );
-				}
-				break;
-			default: // "text"|"pagebreak"
-		}
-		$query = "DELETE FROM `exam_structure` WHERE `id` = ".$id;
-		$db->query( $query );
-		$db->commit();
-	}
+        $dom = new DOMDocument( '1.0', 'utf-8' );
+        $dom->formatOutput = true;
+
+        $pageNode = $dom->documentElement;
+
+        foreach ( $this->attributes as $attrName => $attrValue )
+        {
+            switch ( $attrName )
+            {
+
+                default:
+                    $node = $dom->createElement( $attrName );
+                    $nodeValue = $dom->createTextNode( $attrValue );
+                    $node->appendChild( $nodeValue );
+                    $pageNode->appendChild( $node );
+                    break;
+            }
+        }
+
+        return $dom->saveXML();
+    }
 }
 
 ?>

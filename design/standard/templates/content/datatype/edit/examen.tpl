@@ -5,6 +5,13 @@ IN THE CONTENT EDIT EXAMEN TPL<br>
 <input class="button" id="newBreak" name="CustomActionButton[newBreak]" value="New Pagebreak" type="Submit">
 <input class="button" id="updatePriorities" name="CustomActionButton[updatePriorities]" value="Update Priorities" type="Submit">
 
-{foreach $attribute.content.structure as $element}
-	{exam_edit_gui element=$element}
+{def $elements=fetch('examen', 'elements', hash( 'id', $attribute.contentobject_id, 'version', $attribute.version, 'language_code', $attribute.language_code))
+	$structure=fetch('examen', 'structure', hash( 'id', $attribute.contentobject_id, 'version', $attribute.version, 'language_code', $attribute.language_code))
+}
+{foreach $structure as $element}
+	{if or(eq($element.type,"question"),eq($element.type,"group"))} {*need elements for condition choices*}
+		{exam_edit_gui element=$element elements=$elements}
+	{else}
+		{exam_edit_gui element=$element}
+	{/if}
 {/foreach}

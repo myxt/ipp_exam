@@ -1,21 +1,22 @@
 IN THE CONTENT DATATYPE VIEW EXAM TPL
+{* THIS IS DISPLAYED ON THE BACKEND IN THE VIEW TAB *}
+{$attribute|ezfire("attribute")}
 
 {def $exam=fetch( 'examen', 'examen', hash( 'id', $node.object.id ) )}
-
+{$node|ezfire("exam attributes")}
+{$exam|ezfire("exam")}
+{$node.object.id|exam("node object id")}
 {foreach $exam.options as $options}
 
 {/foreach}
 
-{foreach $exam.structure as $index => $element}
+{foreach $attribute.content.structure as $element}
 	{switch match=$element.type}
-		{case="group"}{/case}{*for view we don't care edit we do*}
-		{case="pagebreak"}{break}{/case}{*not sure what we'll do here*}
-		{case="text"}{$element['content']}{/case}
-		{case="question"}
-			{$element['content']}
-			{foreach $element.content.answers as $answer}
-				{$element['content']}
-			{/foreach}
+		{case match="text"}
+			{exam_view_gui element=$element}
+		{/case}
+		{case match="question"}
+			{exam_view_gui element=$element}
 		{/case}
 	{/switch}
 {/foreach}

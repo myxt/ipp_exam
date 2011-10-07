@@ -2,14 +2,14 @@
 //
 //
 
-/*! \file examquestion.php
+/*! \file examanswer.php
 */
 
-class examQuestion extends eZPersistentObject
+class examAnswer extends eZPersistentObject
 {
-    function examQuestion( $row = array() )
+    function examAnswer( $row = array() )
     {
-        $this->eZPersistentObject( $row );
+		$this->eZPersistentObject( $row );
 		$this->ClassIdentifier = false;
 		if ( isset( $row['contentclass_identifier'] ) )
 			$this->ClassIdentifier = $row['contentclass_identifier'];
@@ -46,25 +46,29 @@ class examQuestion extends eZPersistentObject
 									'datatype' => 'integer',
 									'default' => 0,
 									'required' => true ),
+						'contentobject_id' => array( 'name' => 'contentObjectID',
+										'datatype' => 'integer',
+										'default' => 0,
+										'required' => true ),
 						'question_id' => array( 'name' => 'questionID',
 										'datatype' => 'integer',
-										'default' => '0',
+										'default' => 0,
 										'required' => true ),
 						'priority' => array( 'name' => 'priority',
 										'datatype' => 'integer',
-										'default' => '0',
+										'default' => 0,
 										'required' => true ),
-						'type' => array( 'name' => 'type',
-										'datatype' => 'enum',
+						'option_id' => array( 'name' => 'option',
+										'datatype' => 'string',
 										'default' => '',
-										'required' => true ),
-						'options' => array( 'name' => 'xmlOptions',
+										'required' => false ),
+						'option_value' => array( 'name' => 'option_value',
 										'datatype' => 'string',
 										'default' => '',
 										'required' => false ),
 						'correct' => array( 'name' => 'correct',
 										'datatype' => 'integer',
-										'default' => '',
+										'default' => 0,
 										'required' => false ),
 						'content' => array( 'name' => 'content',
 										'datatype' => 'string',
@@ -72,7 +76,7 @@ class examQuestion extends eZPersistentObject
 										'required' => false ),
 						'version' => array( 'name' => 'version',
 										'datatype' => 'integer',
-										'default' => '0',
+										'default' => 0,
 										'required' => true ),
 						'language_code' => array( 'name' => 'languageCode',
 										'datatype' => 'string',
@@ -80,22 +84,22 @@ class examQuestion extends eZPersistentObject
 										'required' => false )
 					),
 					'keys' => array( 'id' ),
-					'function_attributes' => array( 'options' => 'options' ),
+					'function_attributes' => array( ),
 					'increment_key' => 'id',
-					'class_name' => 'examQuestion',
+					'class_name' => 'examAnswer',
 					'sort' => array( 'id' => 'asc' ),
-					'name' => 'exam_question' );
+					'name' => 'exam_answer' );
 		return $definition;
 	}
 
     static function fetch( $id , $asObject = true )
     {
 
-        $examQuestion = eZPersistentObject::fetchObject( examQuestion::definition(),
+        $examAnswer = eZPersistentObject::fetchObject( examAnswer::definition(),
                                                                  null,
                                                                  array( 'id' => $id ),
                                                                  $asObject );
-        return $examQuestion;
+        return $examAnswer;
     }
 	function content( $languageCode = "eng-GB" )
 	{
@@ -103,7 +107,7 @@ class examQuestion extends eZPersistentObject
 	}
 	function getContent($languageCode = "eng-GB" )
 	{
-		$rows = eZPersistentObject::fetchObjectList( examQuestion::definition(),
+		$rows = eZPersistentObject::fetchObjectList( examAnswer::definition(),
 											null,
 											array( 'id' => $this->ID),
 											array( 'priority' => 'asc' ),
@@ -112,46 +116,35 @@ class examQuestion extends eZPersistentObject
 		return $rows;
 	}
 
-    function getOptions()
-    {
-        if ( $this->xmlOptions != '' )
-        {
-            $dom = new DOMDocument( '1.0', 'utf-8' );
-            $dom->loadXML( $this->xmlOptions );
-            $optionArray = $dom->getElementsByTagName( "option" );
-            if ( $optionArray )
-            {
-                foreach ( $optionArray as $option )
-                {
-                    $label = $option->getElementsByTagName( "label" )->item( 0 )->textContent;
-                    $value = $option->getElementsByTagName( "value" )->item( 0 )->textContent;
-				$options[$label] =  $value;
-                }
-			 return $options;
-            }
-        }
-	}
-
-
-	function add( $question_id, $priority = 0, $type = "answer", $version, $language_code = "eng-GB" )
+	function add( $contentobject_id, $question_id, $priority = 0, $version, $language_code = "eng-GB" )
 	{
-		$newAnswer = new examQuestion();
+		$newAnswer = new examAnswer();
+		$newAnswer->setAttribute( 'contentobejct_id', $contentobject_id );
 		$newAnswer->setAttribute( 'question_id', $question_id );
 		$newAnswer->setAttribute( 'priority', $priority );
-		$newAnswer->setAttribute( 'type', $type );
 		$newAnswer->setAttribute( 'version', $version );
-		//$newAnwser->setAttribute( 'language_code', $language_code );
+		$newAnswer->setAttribute( 'language_code', $language_code );
 		$newAnswer->store();
 	}
-	function remove( $id )
+	function removeAnswer()
 	{
 		$db = eZDB::instance();
 		$db->begin();
-		$query = "DELETE FROM `exam_question` WHERE `id` = ".$id;
+		$query = "DELETE FROM `exam_answer` WHERE `id` = ".$this->ID;
 		$db->query( $query );
 		$db->commit();
 	}
-
+	public function removeAnswerByID( $id )
+	{
+		$answer = examAnswer::fetch( $id );
+		$answer->removeAnswer();
+	}
+	function priorityUp()
+	{
+	}
+	function priorityDown()
+	{
+	}
 }
 
 ?>

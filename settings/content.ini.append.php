@@ -4,4 +4,7 @@
 ExtensionDirectories[]=examen
 AvailableDataTypes[]=examen
 
+[ActionSettings]
+ExtensionDirectories[]=examen
+
 */ ?>

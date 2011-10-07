@@ -37,12 +37,12 @@ if ( !function_exists( 'examForwardInit' ) )
                                                  'attribute_access' => array( array( 'template_name' ) ),
                                                  'use_views' => false ),
 
-            'exam_result_gui' => array( 'template_root' => 'examen/result',
+            'exam_result_gui' => array( 'template_root' => 'examen/results',
                                                    'input_name' => 'element',
                                                    'output_name' => 'element',
                                                    'namespace' => 'ExamElement',
                                                    'attribute_access' => array( array( 'template_name' ) ),
-                                                   'use_views' => 'view' ) );
+                                                   'use_views' => false ) );
 
         $forwarder = new eZObjectForwarder( $forward_rules );
         return $forwarder;

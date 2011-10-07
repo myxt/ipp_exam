@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Sep 29, 2011 at 01:56 PM
+-- Generation Time: Oct 07, 2011 at 09:30 AM
 -- Server version: 5.1.58
 -- PHP Version: 5.2.6-1+lenny13
 
@@ -23,22 +23,23 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Table structure for table `exam_question`
+-- Table structure for table `exam_answer`
 --
 
-DROP TABLE IF EXISTS `exam_question`;
-CREATE TABLE IF NOT EXISTS `exam_question` (
+DROP TABLE IF EXISTS `exam_answer`;
+CREATE TABLE IF NOT EXISTS `exam_answer` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
+  `contentobject_id` int(11) NOT NULL,
   `question_id` int(11) NOT NULL,
   `priority` int(11) NOT NULL,
-  `type` enum('question','answer') NOT NULL,
-  `options` longtext,
+  `option_id` varchar(256) NOT NULL,
+  `option_value` varchar(256) NOT NULL,
   `correct` tinyint(1) DEFAULT NULL,
   `content` longtext,
   `version` int(11) DEFAULT NULL,
   `language_code` varchar(6) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=17 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=14 ;
 
 -- --------------------------------------------------------
 
@@ -49,10 +50,11 @@ CREATE TABLE IF NOT EXISTS `exam_question` (
 DROP TABLE IF EXISTS `exam_results`;
 CREATE TABLE IF NOT EXISTS `exam_results` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `contentobject_id` int(32) NOT NULL,
-  `hash` varchar(11) NOT NULL,
+  `contentobject_id` int(11) NOT NULL,
+  `hash` varchar(32) NOT NULL,
+  `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `question_id` int(11) NOT NULL,
-  `answer` varchar(256) NOT NULL,
+  `answer` int(11) NOT NULL,
   `correct` tinyint(1) NOT NULL,
   `followup` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`)
@@ -71,11 +73,10 @@ CREATE TABLE IF NOT EXISTS `exam_statistics` (
   `count` int(11) NOT NULL,
   `pass_first` int(11) DEFAULT NULL,
   `pass_second` int(11) DEFAULT NULL,
-  `xml_options` longtext NOT NULL,
   `enabled` tinyint(1) NOT NULL,
   `high_score` int(3) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=7 ;
 
 -- --------------------------------------------------------
 
@@ -95,7 +96,7 @@ CREATE TABLE IF NOT EXISTS `exam_structure` (
   `version` int(11) NOT NULL,
   `language_code` varchar(6) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=18 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=13 ;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
