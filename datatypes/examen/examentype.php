@@ -31,19 +31,12 @@ class ExamenType extends eZDataType
     }
     function initializeObjectAttribute( $objectAttribute, $currentVersion, $originalContentObjectAttribute )
     {
-eZFire::debug($currentVersion,__FUNCTION__);
     }
     /*!
      Sets the default value.
     */
     function postInitializeObjectAttribute( $contentObjectAttribute, $currentVersion, $originalContentObjectAttribute )
     {
-/*
-eZFire::debug(__FUNCTION__);
-eZFire::debug($contentObjectAttribute->attribute( 'version' ),"object attribute version");
-eZFire::debug($currentVersion,"CURRENT VERSION");
-eZFire::debug($originalContentObjectAttribute->attribute( 'version' ),"OriginalContentObjectAttribute version");
-*/
 		if ( !$currentVersion ) {
 			$exam = new exam;
 			$exam->setAttribute( 'contentobject_id', $contentObjectAttribute->attribute( 'contentobject_id' ) );
@@ -51,10 +44,7 @@ eZFire::debug($originalContentObjectAttribute->attribute( 'version' ),"OriginalC
 			$exam->setAttribute( 'language_code', $contentObjectAttribute->attribute( "language_code" ) );
 			$exam->store();
 		} else { //if it's a new version gotta clone it
-//eZFire::debug("IN THE ELSE");
-eZFire::debug("THIS ISN'T WORKING");
 			//if ( $contentObjectAttribute->attribute( 'version' ) != $currentVersion )  {
-//eZFire::debug("IN THE IF");
 				$examElements = exam::getElements($originalContentObjectAttribute->attribute( 'contentobject_id' ),$originalContentObjectAttribute->attribute( 'version' ),$originalContentObjectAttribute->attribute( 'language_code' ));
 				foreach($examElements as $elementObject) {
 					$newElement = examElement::add( $contentObjectAttribute->attribute( 'contentobject_id' ), $elementObject->attribute( 'priority' ) , $elementObject->attribute( 'type' ), $elementObject->attribute( 'parent' ), $contentObjectAttribute->attribute( 'version' ),$contentObjectAttribute->attribute( 'language_code' ) );
@@ -63,7 +53,6 @@ eZFire::debug("THIS ISN'T WORKING");
 
 					if ($elementObject->type == 'question' ) {
 						foreach( $elementObject->answers as $answer ) {
-//eZFire::debug("WE SHOULD BE HERE");
 							examAnswer::add( $contentObjectAttribute->attribute( 'id' ),$answer->attribute( 'question_id' ), $answer->attribute( 'priority' ) , $contentObjectAttribute->attribute( 'version' ),$contentObjectAttribute->attribute( 'language_code' ) );
 						}
 					}
@@ -74,12 +63,6 @@ eZFire::debug("THIS ISN'T WORKING");
 
     function validateObjectAttributeHTTPInput( $http, $base, $contentObjectAttribute )
     {
-/*
-eZFire::debug($attribute,__FUNCTION__);
-eZFire::debug($http,"http");
-eZFire::debug($base,"base");
-eZFire::debug($contentObjectAttribute,"contentObjectAttribute");
-*/
         $classAttribute = $contentObjectAttribute->contentClassAttribute();
 
 
@@ -107,25 +90,6 @@ eZFire::debug($contentObjectAttribute,"contentObjectAttribute");
     */
     function fetchObjectAttributeHTTPInput( $http, $base, $contentObjectAttribute )
     {
-eZFire::debug($contentObjectAttribute->ID,__FUNCTION__);
-/*
-eZFire::debug($http,"http");
-eZFire::debug($base,"base");
-eZFire::debug($contentObjectAttribute,"contentObjectAttribute");
-*/
-//eZFire::debug($contentObjectAttribute->attribute( "contentobject_id" ) ,"contentObjectAttribute id");
-//eZFire::debug($contentObjectAttribute->attribute( "version" ) ,"version");
-//eZFire::debug($contentObjectAttribute->attribute( "language_code" ) ,"language");
-eZFire::debug($_POST,"POST");
-/*
-answer_priority_
-condition
-element_priority_
-exam_answer_data_text_
-exam_group_data_text_
-exam_question_data_text_
-exam_text_data_text_
-*/
 /*
 Get the list of element ids from the exam and put it in an array
 for each element check if there is a corresponding postVariable
@@ -137,12 +101,9 @@ if so, update the table. for the appropriate element.  We'll need the element id
 		foreach($examElements as $priorityObject) {
 			$priorityArray[$priorityObject->ID] = array( $priorityObject->attribute( 'priority'), $priorityObject );
 		}
-eZFire::debug($priorityArray,"PriorityArray");
 		foreach($examElements as $elementObject) {
 			$element_id = $elementObject->ID;
 
-eZFire::debug($element_id,"ELEMENT ID");
-eZFire::debug($elementObject->type,"TYPE");
 			if ( $http->hasPostVariable( "MoveDown_".$element_id ) ) {
 
 				//$elementObject->setAttribute('priority',$http->postVariable( "element_priority_".$element_id ));
@@ -171,19 +132,12 @@ eZFire::debug($elementObject->type,"TYPE");
 				}
 			}
 			if ( $http->hasPostVariable( "exam_data_text_".$element_id ) ) {
-eZFire::debug( $http->hasPostVariable( "exam_data_text_".$element_id ),"CONTENT");
 				$elementObject->setAttribute('content',$http->postVariable( "exam_data_text_".$element_id ));
 				$elementObject->store();
 			}
 			if ($elementObject->type == "question" ) {
-eZFire::debug("ITS A QUESTION");
 				$answer_priority_array[$element_id] = 0;
 				foreach($elementObject->answers as $answerObject) {
-eZFire::debug($element_id,"ELEMENT ID");
-					$answer_id = $answerObject->ID;
-eZFire::debug($answer_id,"ANSWER ID");
-
-//eZFire::debug($elementObject->answers,"GET ANSWERS");
 					if ( $http->hasPostVariable( "answer_correct_".$answer_id ) ) {
 						if ( $http->variable( "answer_correct_".$answer_id ) == "on" ) {
 							$answerObject->setAttribute('correct', 1 );

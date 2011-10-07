@@ -38,9 +38,7 @@ class examElement extends eZPersistentObject
 		}
 		$id = $row['id'];
 		$priority = $row['priority'];
-eZFire::debug($priority,"PRIORITY");
 		$type = $row['type'];
-eZFire::debug($type,"TYPE");
 		$parent = $row['parent'];
 		$this->content = $this->getContent();
 		$this->children = $this->getChildren();
@@ -132,7 +130,6 @@ eZFire::debug($type,"TYPE");
 	}
 	function getAnswers()
 	{
-eZFire::debug(__FUNCTION__,"WHY AREN'T WE HERE");
 		if ($this->type != "question" ) return;
 		$rows = eZPersistentObject::fetchObjectList( examAnswer::definition(),
 											null,
@@ -151,11 +148,6 @@ eZFire::debug(__FUNCTION__,"WHY AREN'T WE HERE");
 
 	function getStats()
 	{
-/*
-eZFire::debug(__FUNCTION__,"WE ARE HERE");
-eZFire::debug($this->type,"ELEMENT TYPE");
-eZFire::debug($this->ID,"QUESTION ID");
-*/
 		if( $this->type != "question" ) return false;
 		$db = eZDB::instance();
 		$db->begin();
@@ -173,7 +165,6 @@ eZFire::debug($this->ID,"QUESTION ID");
 		foreach( $queryResult as $answer) {
 			$result['answer_count'][$answer['answer']] = $answer['count'];
 		}
-//eZFire::debug($result,"RETURNING");
 		return $result;
 	}
 	function priorityUp()

@@ -118,15 +118,8 @@ class exam extends eZPersistentObject
 	public function structure() 
 	{ //This returns the current version structure.  Can't be used with edit etc.  This maintains the heirarchy.
 
-eZFire::debug(__FUNCTION__,"WE ARE HERE");
-eZFire::debug($this->contentObject,"CONTENT OBJECT");
 		if (is_object($this->contentObject))
 		{
-		eZFire::debug($this->contentObject->attribute( 'id' ),"id");
-		eZFire::debug($this->contentObject->attribute( 'current_version' ),"structure version");
-		eZFire::debug($this->contentObject->CurrentLanguage,"struture language");
-
-		//return false;
 				return $this->getStructure($this->contentObject->attribute( 'id' ),$this->contentObject->attribute( 'current_version' ),$this->contentObject->CurrentLanguage);
 		} else {
 			return false;
@@ -134,11 +127,6 @@ eZFire::debug($this->contentObject,"CONTENT OBJECT");
 	}
 	function getStructure( $id = 0, $version = 1, $languageCode = 'eng-GB', $istplfetch = false )
 	{ //Only top level items.
-eZFire::debug(__FUNCTION__,"WE ARE HERE");
-eZFire::debug($this->contentObject,"CONTENT OBJECT");
-eZFire::debug($id,"id");
-eZFire::debug($version,"structure version");
-eZFire::debug($languageCode,"struture language");
 		$rows = eZPersistentObject::fetchObjectList( examElement::definition(),
 								null,
 								array( 'contentobject_id' => $id,
@@ -148,7 +136,6 @@ eZFire::debug($languageCode,"struture language");
 								array( 'priority' => 'asc' ),
 								null,
 								true );
-eZFire::debug(count($rows),"ROW COUNT");
 		if ($istplfetch) return array( 'result' => $rows );
 		else return $rows;
 	}
@@ -171,7 +158,6 @@ eZFire::debug(count($rows),"ROW COUNT");
 	}
 	function getObject()
 	{
-//eZFire::debug($this->contentObjectID,"WE BE HEEAH");
 		return eZContentObject::fetch( $this->contentObjectID );
 	}
 	public function questions()

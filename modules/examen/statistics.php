@@ -2,7 +2,6 @@
 /* For the backend statistics module */
 /* if we have no parameter, do the overview.  If there is a parameter and it is an exam id - show the full view of the exam.exam_id */
 
-eZFire::debug("IN STATISTICS.PHP");
 $Module = $Params['Module'];
 
 $settingsINI = eZINI::instance( 'examen.ini' );

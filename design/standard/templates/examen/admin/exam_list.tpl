@@ -14,7 +14,6 @@ EXAM LIST ADMIN VIEW<br>
 </thead>
 {foreach $exams as $exam}
 	{set $contentObject=fetch( 'content', 'object', hash( 'object_id', $exam.contentobject_id ))}
-{$contentObject|ezfire("CONTENTOBJECT")}
 	<tr>
 		<td><a href={concat("/examen/statistics/",$exam.contentobject_id)|ezurl}>{{$exam.id}</a></td>
 		<td><a href={concat("/content/view/full/",$exam.contentobject_id)|ezurl}>{$exam.contentobject_id}</a></td>

@@ -1,5 +1,4 @@
 <?php
-eZFire::debug("IN EXAM.PHP");
 $Module = $Params['Module'];
 $settingsINI = eZINI::instance( 'examen.ini' );
 $secretKey = $settingsINI->variable('examSettings','secretKey');
@@ -21,15 +20,6 @@ $contentObject = eZContentObject::fetch( $examID );
 /*if either of these is not an object something went bad wrong*/
 if (is_object($exam) AND is_object($contentObject)) {
 	$dataMap = $contentObject->DataMap();
-/*These are the object options that determine results output
-	eZFire::debug($dataMap["mode"]->DataText,"mode");
-	eZFire::debug($dataMap["retest"]->DataInt,"retest");
-	eZFire::debug($dataMap["show_correct"]->DataInt,"show correct");
-	eZFire::debug($dataMap["certificate"]->DataInt,"certificate");
-	eZFire::debug($dataMap["save_results"]->DataInt,"save results");
-	eZFire::debug($dataMap["show_statistics"]->DataInt,"show statistics");
-	eZFire::debug($dataMap["pass_threshold"]->DataInt,"pass threshold");
-*/
 	$saveResults = $dataMap["save_results"];
 
 	$http->setSessionVariable( 'exam_id', $examID ); //uh-oh this works different now.

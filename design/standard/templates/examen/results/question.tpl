@@ -2,8 +2,7 @@
 {def $result=array()}
 <div id="element question {$element.id}">
 	<div class="text question">
-{$element|ezfire}
-		CONTENT {$element.content} CONTENT<br>
+		{$element.content}<br>
 	</div>
 	{foreach $element.answers as $answer}
 		{set $result=fetch( 'examen', 'answer', hash( 'hash', $hash, 'question_id', $answer.id )} 
