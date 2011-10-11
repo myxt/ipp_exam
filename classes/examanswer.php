@@ -116,15 +116,20 @@ class examAnswer extends eZPersistentObject
 		return $rows;
 	}
 
-	function add( $contentobject_id, $question_id, $priority = 0, $version, $language_code = "eng-GB" )
+	function add( $contentobject_id, $question_id, $priority = 0, $option_id, $option_value, $content, $version, $language_code = "eng-GB" )
 	{
+//eZFire::debug($contentobject_id,"OBJECT ID IN ANSWER ADD");
 		$newAnswer = new examAnswer();
-		$newAnswer->setAttribute( 'contentobejct_id', $contentobject_id );
+		$newAnswer->setAttribute( 'contentobject_id', $contentobject_id );
 		$newAnswer->setAttribute( 'question_id', $question_id );
 		$newAnswer->setAttribute( 'priority', $priority );
+		$newAnswer->setAttribute( 'option_id', $option_id );
+		$newAnswer->setAttribute( 'option_value', $option_value );
+		$newAnswer->setAttribute( 'content', $content );
 		$newAnswer->setAttribute( 'version', $version );
 		$newAnswer->setAttribute( 'language_code', $language_code );
 		$newAnswer->store();
+//eZFire::debug($newAnswer->ContentObjectID,"WTF");
 	}
 	function removeAnswer()
 	{
@@ -138,12 +143,6 @@ class examAnswer extends eZPersistentObject
 	{
 		$answer = examAnswer::fetch( $id );
 		$answer->removeAnswer();
-	}
-	function priorityUp()
-	{
-	}
-	function priorityDown()
-	{
 	}
 }
 

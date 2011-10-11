@@ -1,8 +1,11 @@
 IN THE CONTENT DATATYPE VIEW EXAM TPL
 {* THIS IS DISPLAYED ON THE BACKEND IN THE VIEW TAB *}
+{*$attribute|ezfire("attribute")*}
 
 {def $exam=fetch( 'examen', 'examen', hash( 'id', $node.object.id ) )}
-{$node.object.id|exam("node object id")}
+{*$node|ezfire("exam attributes")*}
+{*$exam|ezfire("exam")*}
+{*$node.object.id|exam("node object id")*}
 {foreach $exam.options as $options}
 
 {/foreach}

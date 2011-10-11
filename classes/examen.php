@@ -118,15 +118,23 @@ class exam extends eZPersistentObject
 	public function structure() 
 	{ //This returns the current version structure.  Can't be used with edit etc.  This maintains the heirarchy.
 
+//eZFire::debug(__FUNCTION__,"WE ARE HERE");
+//eZFire::debug($this->contentObject,"CONTENT OBJECT");
 		if (is_object($this->contentObject))
 		{
-				return $this->getStructure($this->contentObject->attribute( 'id' ),$this->contentObject->attribute( 'current_version' ),$this->contentObject->CurrentLanguage);
+			return $this->getStructure($this->contentObject->attribute( 'id' ),$this->contentObject->attribute( 'current_version' ),$this->contentObject->CurrentLanguage);
 		} else {
 			return false;
 		}
 	}
 	function getStructure( $id = 0, $version = 1, $languageCode = 'eng-GB', $istplfetch = false )
 	{ //Only top level items.
+//eZFire::debug(__FUNCTION__,"WE ARE HERE");
+//eZFire::debug($this->contentObject,"CONTENT OBJECT");
+//eZFire::debug($id,"id");
+//eZFire::debug($version,"structure version");
+//eZFire::debug($languageCode,"struture language");
+
 		$rows = eZPersistentObject::fetchObjectList( examElement::definition(),
 								null,
 								array( 'contentobject_id' => $id,
@@ -136,6 +144,7 @@ class exam extends eZPersistentObject
 								array( 'priority' => 'asc' ),
 								null,
 								true );
+//eZFire::debug(count($rows),"ROW COUNT");
 		if ($istplfetch) return array( 'result' => $rows );
 		else return $rows;
 	}
@@ -146,18 +155,35 @@ class exam extends eZPersistentObject
 	static function getElements( $id = 0, $version = 1, $languageCode = 'eng-GB', $istplfetch = false )
 	{ //all elements
 		$rows = eZPersistentObject::fetchObjectList( examElement::definition(),
-										null,
-										array( 'contentobject_id' => $id,
-												'version' => $version,
-												'language_code' => $languageCode ),
-										array( 'priority' => 'asc' ),
-										null,
-										true );
+											null,
+											array( 'contentobject_id' => $id,
+													'version' => $version,
+													'language_code' => $languageCode ),
+											array( 'priority' => 'asc' ),
+											null,
+											true );
 		if ($istplfetch) return array( 'result' => $rows );
 		else return $rows;
 	}
+	static function getIDs( $id = 0, $version = 1, $languageCode = 'eng-GB' )
+	{
+		$idArray = array();
+		$rows = eZPersistentObject::fetchObjectList( examElement::definition(),
+											array('id'),
+											array( 'contentobject_id' => $id,
+													'version' => $version,
+													'language_code' => $languageCode ),
+											array( 'priority' => 'asc' ),
+											null,
+											false );
+		foreach($rows as $row){
+			$idArray[] = $row['id'];
+		}
+		return $idArray;
+	}
 	function getObject()
 	{
+//eZFire::debug($this->contentObjectID,"WE BE HEEAH");
 		return eZContentObject::fetch( $this->contentObjectID );
 	}
 	public function questions()
@@ -166,7 +192,7 @@ class exam extends eZPersistentObject
 		return $this->getQuestions();
 	}
 	function getQuestions( $languageCode = 'eng-GB' )
-	{ //Only top level items.
+	{
 		$rows = eZPersistentObject::fetchObjectList( examElement::definition(),
 								null,
 								array( 'contentobject_id' => $this->contentObjectID,
@@ -220,12 +246,12 @@ class exam extends eZPersistentObject
 	}
 	function removeVersion($id,$version,$language_code )
 	{
-		$examElements = $this->getElements($originalContentObjectAttribute->attribute( 'contentobject_id' ),$originalContentObjectAttribute->attribute( 'version' ),$originalContentObjectAttribute->attribute( 'language_code' ));
+		$examElements = $this->getElements($id, $version, $language_code);
 		foreach($examElements as $elementObject) {
-			$elementObject->removeExam();
+			$elementObject->removeElement();
 			if ($elementObject->type == 'question' ) {
 				foreach( $elementObject->getAnswers as $answer ) {
-					$answer->removeExam();
+					$answer->removeAnswer();
 				}
 			}
 		}

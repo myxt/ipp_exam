@@ -2,9 +2,8 @@
 <div class="listbutton">
 	<label>{$element.type|upcase} {$element.id}</label>
 	<input class="button" value="Remove" name="CustomActionButton[remove][{$element.id}]" type="submit">
-	Random: <input type="checkbox" id="random" name="Random" />
-	<input type="image" src="/design/admin2/images/button-move_down.gif" alt="Down" name="MoveDown_{$element.id}" title="" />&nbsp;
-	<input type="image" src="/design/admin2/images/button-move_up.gif" alt="Up" name="MoveUp_{$element.id}" title="" />
+	<input type="image" src="/design/admin2/images/button-move_down.gif" alt="Down" name="MoveDown_{$element.id}" title="{'Use these buttons to move elements up or down'|i18n('design/exam')}" />&nbsp;
+	<input type="image" src="/design/admin2/images/button-move_up.gif" alt="Up" name="MoveUp_{$element.id}" {'Use these buttons to move elements up or down'|i18n('design/exam')}" />
 	<input size="2" maxlength="4" type="text" name="element_priority_{$element.id}" value="{$element.priority}" />
 </div>
 

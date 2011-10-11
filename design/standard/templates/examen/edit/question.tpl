@@ -5,9 +5,9 @@
 
 		<div class="listbutton">
 			<input class="button" value="Remove" name="CustomActionButton[remove][{$element.id}]" type="submit">
-			Random: <input type="checkbox" id="random" name="Random" />
-			<input type="image" src="/design/admin2/images/button-move_down.gif" alt="Down" value="doh" name="MoveDown_{$element.id}" title="" />&nbsp;
-			<input type="image" src="/design/admin2/images/button-move_up.gif" alt="Up" value="dum" name="MoveUp_{$element.id}" title="" />
+			Random: <input type="checkbox" id="random" name="random_{$element.id}"{if $element.options['random']} checked{/if}  />
+			<input type="image" src="/design/admin2/images/button-move_down.gif" alt="Down" name="MoveDown_{$element.id}" title="{'Use these buttons to move elements up or down'|i18n('design/exam')}" />&nbsp;
+			<input type="image" src="/design/admin2/images/button-move_up.gif" alt="Up" name="MoveUp_{$element.id}" {'Use these buttons to move elements up or down'|i18n('design/exam')}" />
 			<input size="2" maxlength="4" type="text" name="element_priority_{$element.id}" value="{$element.priority}" />
 		</div>
 
@@ -60,9 +60,9 @@
 							{/if}
 						{/if}
 					{/foreach}
-					</select>
-				<input type="image" src="/design/admin2/images/button-move_down.gif" alt="Down" name="MoveDown_answer_{$answer.id}" title="" />&nbsp;
-				<input type="image" src="/design/admin2/images/button-move_up.gif" alt="Up" name="MoveUp_answer_{$answer.id}" title="" />
+				</select>
+				<input type="image" src="/design/admin2/images/button-move_down.gif" alt="Down" name="AnswerMoveDown_{$answer.id}" title="{'Use these buttons to move elements up or down'|i18n('design/exam')}" />&nbsp;
+				<input type="image" src="/design/admin2/images/button-move_up.gif" alt="Up" name="AnswerMoveUp_{$answer.id}" {'Use these buttons to move elements up or down'|i18n('design/exam')}" />
 				<input size="2" maxlength="4" type="text" name="answer_priority_{$answer.id}" value="{$answer.priority}" />
 			</div>
 
