@@ -55,7 +55,7 @@ class ExamenType extends eZDataType
 
 			//if ( $contentObjectAttribute->attribute( 'version' ) != $currentVersion )  {
 
-				$examElements = exam::getElements($originalContentObjectAttribute->attribute( 'contentobject_id' ),$originalContentObjectAttribute->attribute( 'version' ),$originalContentObjectAttribute->attribute( 'language_code' ));
+				$examElements = exam::getstructure($originalContentObjectAttribute->attribute( 'contentobject_id' ),$originalContentObjectAttribute->attribute( 'version' ),$originalContentObjectAttribute->attribute( 'language_code' ));
 
 				foreach($examElements as $elementObject) {
 					$newElement = examElement::add(	$contentObjectAttribute->attribute( 'contentobject_id' ),
@@ -76,6 +76,30 @@ class ExamenType extends eZDataType
 											$answer->attribute( 'content' ),
 											$contentObjectAttribute->attribute( 'version' ),
 											$contentObjectAttribute->attribute( 'language_code' ) );
+						}
+					}
+					if ($elementObject->type == 'group' ) {
+						foreach( $elementObject->children as $child) {
+							$newElement = examElement::add(	$contentObjectAttribute->attribute( 'contentobject_id' ),
+														$child->attribute( 'priority' ) ,
+														$child->attribute( 'type' ),
+														$elementObject->ID,
+														$child->attribute( 'content' ),
+														$child->attribute( 'version' ),
+														$child->attribute( 'language_code' ) );
+							if ($child->type == 'question' ) {
+//How do we know what the new option value is going to be - craaaaap.
+								foreach( $child->answers as $answer ) {
+									examAnswer::add(	$contentObjectAttribute->attribute( 'contentobject_id' ),
+													$newElement->attribute( 'id' ),
+													$answer->attribute( 'priority' ),
+													$answer->attribute( 'option_id' ),
+													$answer->attribute( 'option_value' ),
+													$answer->attribute( 'content' ),
+													$contentObjectAttribute->attribute( 'version' ),
+													$contentObjectAttribute->attribute( 'language_code' ) );
+								}
+							}
 						}
 					}
 				}
@@ -154,7 +178,6 @@ if so, update the table. for the appropriate element.  We'll need the element id
 
 			if ( $http->hasPostVariable( "element_priority_".$element_id ) ) {
 				$elementObject->setAttribute('priority',$http->postVariable( "element_priority_".$element_id ));
-				$elementObject->store();
 				if ($http->postVariable( "element_priority_".$element_id ) > $biggest_priority ) {
 					$biggest_priority=$http->postVariable( "element_priority_".$element_id );
 				}
@@ -163,65 +186,56 @@ if so, update the table. for the appropriate element.  We'll need the element id
 			if ($elementObject->type == "group" ) {
 				if ( $http->hasPostVariable( "exam_group_data_text_".$element_id ) ) {
 					$elementObject->setAttribute('content',$http->postVariable( "exam_group_data_text_".$element_id ));
-					$elementObject->store();
 				}
 				if ( $http->hasPostVariable( "random_".$element_id ) ) {
 					if ( $http->variable( "random_".$element_id ) == "on" ) {
-						$elementObject->updateOption( array( "random" => 1 ) );
+						$elementObject->updateOption( array( "random" => "1" ) );
 					} else {
-						$elementObject->updateOption( array( "random" => 0 ) );
+						$elementObject->updateOption( array( "random" => "0" ) );
 					}
 				}
 			}
 			if ( $http->hasPostVariable( "exam_data_text_".$element_id ) ) {
 //eZFire::debug( $http->hasPostVariable( "exam_data_text_".$element_id ),"CONTENT");
 				$elementObject->setAttribute('content',$http->postVariable( "exam_data_text_".$element_id ));
-				$elementObject->store();
 			}
 			if ($elementObject->type == "question" ) {
-//eZFire::debug("ITS A QUESTION");
 				$answer_priority_array[$element_id] = 0;
 				if ( $http->hasPostVariable( "random_".$element_id ) ) {
 					if ( $http->variable( "random_".$element_id ) == "on" ) {
-						$elementObject->updateOption( array( "random" => 1 ) );
+						$elementObject->updateOption( array( "random" => "1" ) );
 					} else {
-						$elementObject->updateOption( array( "random" => 0 ) );
+						$elementObject->updateOption( array( "random" => "0" ) );
 					}
 				}
 				foreach($elementObject->answers as $answerObject) {
-//eZFire::debug($element_id,"ELEMENT ID");
 					$answer_id = $answerObject->ID;
-//eZFire::debug($answer_id,"ANSWER ID");
-
-//eZFire::debug($elementObject->answers,"GET ANSWERS");
 					if ( $http->hasPostVariable( "answer_correct_".$answer_id ) ) {
 						if ( $http->variable( "answer_correct_".$answer_id ) == "on" ) {
-							$answerObject->setAttribute('correct', 1 );
+							$answerObject->setAttribute('correct', 1);
 						} else {
-							$answerObject->setAttribute('correct', 0 );
+							$answerObject->setAttribute('correct', 0);
 						}
-						$answerObject->store();
 					}
 					if ( $http->hasPostVariable( "answer_priority_".$answer_id ) ) {
 						$answerObject->setAttribute('priority',$http->postVariable( "answer_priority_".$answer_id ));
-						$answerObject->store();
 					}
 					if ( $http->hasPostVariable( "answer_data_text_".$answer_id ) ) {
 						$answerObject->setAttribute('content',$http->postVariable( "answer_data_text_".$answer_id ));
-						$answerObject->store();
 					}
 					if ( $http->hasPostVariable( "answer_condition_".$answer_id ) ) {
 						$answerObject->setAttribute('option_id',$http->postVariable( "answer_condition_".$answer_id ));
-						$answerObject->store();
 					}					
 					if ( $http->hasPostVariable( "answer_value_".$answer_id ) ) {
 						$answerObject->setAttribute('option_value',$http->postVariable( "answer_value_".$answer_id ));
-						$answerObject->store();
 					}
-					if ($answerObject->attribute( 'priority' ) > $answer_priority_array[$element_id])
+					if ($answerObject->attribute( 'priority' ) > $answer_priority_array[$element_id]) {
 						$answer_priority_array[$element_id]=$answerObject->attribute( 'priority' );
+					}
+					$answerObject->store();
 				}
 			}
+			$elementObject->store();
 		}
 		/* Custom actions */
 		if ($http->hasPostVariable( "CustomActionButton" ) ){

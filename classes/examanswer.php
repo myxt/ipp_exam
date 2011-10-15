@@ -58,12 +58,12 @@ class examAnswer extends eZPersistentObject
 										'datatype' => 'integer',
 										'default' => 0,
 										'required' => true ),
-						'option_id' => array( 'name' => 'option',
-										'datatype' => 'string',
+						'option_id' => array( 'name' => 'option_id',
+										'datatype' => 'integer',
 										'default' => '',
 										'required' => false ),
 						'option_value' => array( 'name' => 'option_value',
-										'datatype' => 'string',
+										'datatype' => 'integer',
 										'default' => '',
 										'required' => false ),
 						'correct' => array( 'name' => 'correct',
@@ -84,7 +84,7 @@ class examAnswer extends eZPersistentObject
 										'required' => false )
 					),
 					'keys' => array( 'id' ),
-					'function_attributes' => array( ),
+					'function_attributes' => array('template_name' => 'templateName' ),
 					'increment_key' => 'id',
 					'class_name' => 'examAnswer',
 					'sort' => array( 'id' => 'asc' ),
@@ -110,6 +110,22 @@ class examAnswer extends eZPersistentObject
 		$rows = eZPersistentObject::fetchObjectList( examAnswer::definition(),
 											null,
 											array( 'id' => $this->ID),
+											array( 'priority' => 'asc' ),
+											null,
+											true );
+		return $rows;
+	}
+
+	function getConditions($id = 0, $version = 1, $languageCode = 'eng-GB')
+	{
+		$rows = eZPersistentObject::fetchObjectList( examAnswer::definition(),
+											array('question_id', 'id', 'option_id','option_value'),
+											array( 'contentobject_id' => $id,
+													'version' => $version,
+													'language_code' => $languageCode,
+													'option_id' => array( "!=", "0" ),
+													'option_value' => array( "!=", "" )
+												),
 											array( 'priority' => 'asc' ),
 											null,
 											true );
@@ -143,6 +159,11 @@ class examAnswer extends eZPersistentObject
 	{
 		$answer = examAnswer::fetch( $id );
 		$answer->removeAnswer();
+	}
+	function &templateName()
+	{
+		$element = examElement::fetch( $this->questionID );
+		return $element->type;
 	}
 }
 

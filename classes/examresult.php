@@ -69,10 +69,14 @@ class examResult extends eZPersistentObject
 						'followup' => array( 'name' => 'followup',
 										'datatype' => 'integer',
 										'default' => '0',
-										'required' => true )
+										'required' => true ),
+						'conditional' => array( 'name' => 'conditional',
+										'datatype' => 'integer',
+										'default' => null,
+										'required' => false )
 					),
 					'keys' => array( 'id' ),
-					'function_attributes' => array( 'content' => 'content' ),
+					'function_attributes' => array( 'content' => 'content', 'template_name' => 'templateName', ),
 					'increment_key' => 'id',
 					'class_name' => 'examResult',
 					'sort' => array( 'id' => 'asc' ),
@@ -88,15 +92,20 @@ class examResult extends eZPersistentObject
 														$asObject );
 		return $examResult;
 	}
-	static function fetchByHash( $hash, $question_id, $asObject = true )
+	static function fetchByHash( $hash, $exam_id, $asObject = true )
 	{
 		$examResult = eZPersistentObject::fetchObjectList( examResult::definition(),
 														null,
-														array( 'hash' => $hash , 'question_id' => $question_id ),
-														array( 'id' => 'asc' ),
+														array( 'hash' => $hash , 'contentobject_id' => $exam_id ),
+														array( 'followup' => 'asc' ),
 														$asObject
 											);
 		return $examResult;
+	}
+	function &templateName()
+	{
+		$element = examElement::fetch( $this->questionID );
+		return $element->type;
 	}
 }
 

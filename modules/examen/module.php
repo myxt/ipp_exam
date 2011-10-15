@@ -6,7 +6,7 @@ $ViewList = array();
 
 $ViewList['action'] = array('functions' => array( 'read' ), 'script' => 'action.php' );
 
-$ViewList['result'] = array('functions' => array( 'read' ), 'script' => 'result.php', 'params' => array( 'hash' ) );
+$ViewList['result'] = array('functions' => array( 'read' ), 'script' => 'result.php', 'params' => array( 'exam_id', 'hash' ) );
 
 $ViewList['download'] = array('functions' => array( 'read' ), 'script' => 'download.php', 'params' => array( 'hash' ) );
 

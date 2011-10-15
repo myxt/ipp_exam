@@ -205,8 +205,8 @@ class exam extends eZPersistentObject
 	}
 
 	function increment($attribute) {
-		$old = $this->attribute( $attribute );
-		$new = $old++;
+		$old = $this->attribute( $attribute ) ? $this->attribute( $attribute ) : 0;
+		$new = $old + 1;
 		$this->setAttribute( $attribute, $new );
 		$this->store();
 		return $new;
@@ -215,7 +215,7 @@ class exam extends eZPersistentObject
 	{
 		$old = $this->attribute( 'high_score' );
 		if ( $score > $old ) {
-			$this->setAttribute( $attribute, $score );
+			$this->setAttribute( 'high_score', $score );
 			$this->store();
 			return $score;
 		}

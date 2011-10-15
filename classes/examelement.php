@@ -46,6 +46,8 @@ class examElement extends eZPersistentObject
 		$this->children = $this->getChildren();
 		$this->answers = $this->getAnswers();
 		$this->statistics = $this->getStats();
+		$this->options = $this->getOptions();
+
     }
 
 	static function definition()
@@ -72,7 +74,7 @@ class examElement extends eZPersistentObject
 										'datatype' => 'integer',
 										'default' => '0',
 										'required' => false ),
-						'options' => array( 'name' => 'xmlOptions',
+						'xmloptions' => array( 'name' => 'xmlOptions',
 										'datatype' => 'string',
 										'default' => '',
 										'required' => false ),
@@ -90,7 +92,7 @@ class examElement extends eZPersistentObject
 										'required' => false )
 					),
 					'keys' => array( 'id' ),
-					'function_attributes' => array(  'template_name' => 'templateName', 'content' => 'content', 'children' => 'children', 'answers' => 'getAnswers', 'statistics' => 'getStats' ),
+					'function_attributes' => array(  'template_name' => 'templateName', 'content' => 'content', 'children' => 'children', 'answers' => 'getAnswers', 'options' => 'getOptions', 'statistics' => 'getStats' ),
 					'increment_key' => 'id',
 					'class_name' => 'examElement',
 					'sort' => array( 'id' => 'asc' ),
@@ -255,6 +257,7 @@ class examElement extends eZPersistentObject
     { //At this point the only option is random... but we'll do it like this in the event there is some expansion
         if ( $this->xmlOptions != '' )
         {
+            $options = array();
             $dom = new DOMDocument( '1.0', 'utf-8' );
             $dom->loadXML( $this->xmlOptions );
             $optionArray = $dom->getElementsByTagName( "option" );
@@ -262,8 +265,10 @@ class examElement extends eZPersistentObject
             {
                 foreach ( $optionArray as $option )
                 {
-                    $label = $option->getElementsByTagName( "label" )->item( 0 )->textContent;
-                    $value = $option->getElementsByTagName( "value" )->item( 0 )->textContent;
+				$label = $option->getAttribute( "label" );
+				$value = $option->getAttribute( "value" );
+//eZFire::debug($option,"OPTINO");
+//eZFire::debug($label,"LABLE");
 				$options[$label] =  $value;
                 }
 			 return $options;
@@ -273,54 +278,57 @@ class examElement extends eZPersistentObject
 	}
 	public function updateOption( $updateArray )
 	{
+	/* This updates the option xml. 
+	 * <?xml version="1.0" encoding="utf-8"?>
+	 * <options><option label="random" value="1"/></options>
+	 */
 //eZFire::debug(__FUNCTION__,"WE ARE HERE");
 //eZFire::debug($updateArray,"UPDATE ARRAY");
 		//get existing
 		$existingOptions = $this->getOptions();
 		$dom = new DOMDocument( '1.0', 'utf-8' );
-		$dom->loadXML( $this->xmlOptions );
-		$optionArray = $dom->getElementsByTagName( "option" );
-/*THIS IS NOT A REAL ARRAY SO THE ARRAY DIFF WONT WORK BELOW*/
-		//$optionArray = array();
-//eZFire::debug($optionArray,"OPTION ARRAY");
+		$root = $dom->createElement("options");
+//eZFire::debug($existingOptions,"OPTION ARRAY");
 		//take care of existing
-		if ( $optionArray )
+		if ( $existingOptions )
 		{
 //eZFire::debug("WE HAVE AN OPTION ARRAY");
-			foreach ( $optionArray as $key => $value )
-			{
-				$node = $dom->createElement("option");
-				$newnode = $dom->appendChild($node);
-				if ($updateArray[$key]) {
-					$value = $updateArray[$key];
+			foreach ( $existingOptions as $key => $value )
+			{	
+//eZFire::debug($key." ".$value,"EXISTING OPTION LOADING");
+//eZFire::debug($key." ".$value,"EXISTING OPTION LOADING");
+				if ( $key != "" ) { //should never happen outside of test circumstances
+					$root = $dom->appendChild($root);
+					$node = $dom->createElement("option");
+					$newnode = $root->appendChild($node);
+					if ( array_key_exists($key, $updateArray) ) {
+//eZFire::debug($updateArray[$key],"SHOULD BE SETTING NEW VALUE");
+						$value = $updateArray[$key];
+					}
+					$newnode->setAttribute( "label", $key  );
+					$newnode->setAttribute( "value", $value );
 				}
-				$newnode->setAttribute( "label", $key  );
-				$newnode->setAttribute( "value", $value );
 			}
-		} 
+		}
 		//load new
 
-		$newAttributeArray = array_diff_key($updateArray,$optionArray);
-//eZFire::debug($newAttributeArray."NEW ATTRIBUTE ARRAY");
+		$newAttributeArray = array_diff_key($updateArray,$existingOptions);
+//eZFire::debug($newAttributeArray,"NEW ATTRIBUTE ARRAY");
 		if ( $newAttributeArray )
 		{
+			$root = $dom->appendChild($root);
 			foreach ( $newAttributeArray as $key => $value )
 			{
 				$node = $dom->createElement("option");
-				$newnode = $dom->appendChild($node);
-				if ($updateArray[$key]) {
-					$value = $updateArray[$key];
-				}
+				$newnode = $root->appendChild($node);
 				$newnode->setAttribute( "label", $key  );
 				$newnode->setAttribute( "value", $value );
 			}
 		} 
 		$xmlString = $dom->saveXML();
 //eZFire::debug($xmlString,"XMLSTRING");
-//eZFire::debug(get_class($this),"THIS");
-/*$XmlString = '<?xml version="1.0" encoding="utf-8"?><option label="random" value="1"/>';*/
 
-		$this->setAttribute( 'options', $xmlString );
+		$this->setAttribute( 'xmloptions', $xmlString );
 		$this->store();
 		return $xmlString;
     }
