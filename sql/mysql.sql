@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Oct 11, 2011 at 09:14 AM
+-- Generation Time: Oct 17, 2011 at 10:07 AM
 -- Server version: 5.1.58
 -- PHP Version: 5.2.6-1+lenny13
 
@@ -32,14 +32,14 @@ CREATE TABLE IF NOT EXISTS `exam_answer` (
   `contentobject_id` int(11) NOT NULL,
   `question_id` int(11) NOT NULL,
   `priority` int(11) NOT NULL,
-  `option_id` varchar(256) NOT NULL,
-  `option_value` varchar(256) NOT NULL,
+  `option_id` int(3) NOT NULL,
+  `option_value` int(11) NOT NULL,
   `correct` tinyint(1) DEFAULT NULL,
   `content` longtext,
   `version` int(11) DEFAULT NULL,
   `language_code` varchar(6) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=11 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -57,8 +57,9 @@ CREATE TABLE IF NOT EXISTS `exam_results` (
   `answer` int(11) NOT NULL,
   `correct` tinyint(1) NOT NULL,
   `followup` tinyint(1) NOT NULL,
+  `conditional` int(11) DEFAULT NULL COMMENT 'This is the id of a text element to display after this answer based on a condition',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -76,7 +77,7 @@ CREATE TABLE IF NOT EXISTS `exam_statistics` (
   `enabled` tinyint(1) NOT NULL,
   `high_score` int(3) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=8 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -91,12 +92,12 @@ CREATE TABLE IF NOT EXISTS `exam_structure` (
   `priority` int(11) NOT NULL,
   `type` varchar(32) NOT NULL,
   `parent` int(11) NOT NULL,
-  `options` longtext NOT NULL,
+  `xmloptions` longtext NOT NULL,
   `content` longtext NOT NULL,
   `version` int(11) NOT NULL,
   `language_code` varchar(6) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=23 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
