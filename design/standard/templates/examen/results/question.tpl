@@ -1,13 +1,13 @@
 <br>WE ARE IN THE QUESTION RESULT GUI<br>
-{*def $result=array()*}
+{*$element|ezfire("ELEMENT IN QUESTION TEMPLATE")*}
+{*$result|ezfire("RESULT IN QUESTION TEMPLATE")*}
 <div id="element question {$element.id}">
 	<div class="text question">
 		{$element.content}<br>
 	</div>
 	{foreach $element.answers as $answer}
-		{*set $result=fetch( 'examen', 'answer', hash( 'hash', $hash, 'question_id', $answer.id )*} 
-		<div class="answer{if eq($element.correct,true())} correct{/if}">
-		{if eq($answer.correct,true())} correct{elseif }WRONG{/if} {$answer.content}
+		<div class="answer{if eq($result.correct,true())} correct{/if}">
+		{if eq($result.answer,$answer.id)}YOU CHOSE THIS{else}{/if}{$answer.content}
 		</div>
 	{/foreach}
 </div>

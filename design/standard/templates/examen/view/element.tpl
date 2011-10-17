@@ -1,6 +1,4 @@
 <div class="content-view-full">
-{$elements|count} COUNT<br />
-{$elements|count|ezfire("element count in element template")}
 <form name="exam element" method="post" action={'examen/exam/'|ezurl}>
 <input type="hidden" name="exam_id" value="{$exam_id}">
 {foreach $elements as $element}

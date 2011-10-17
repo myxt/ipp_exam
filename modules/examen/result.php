@@ -54,13 +54,13 @@ if ( count($errors) == 0 ) {
 //eZFire::debug( $hash, "HASH" );
 //eZFire::debug( $examID, "EXAM ID" );
 
-	$elements = examResult::fetchByHash( $hash, $examID );
+	$results = examResult::fetchByHash( $hash, $examID );
 //eZFire::debug( count($elements) , "ELEMENT COUNT" );
-	if ($elements)
-		$savedvalue = $elements[0]->attribute( 'followup' );
+	if ($results)
+		$savedvalue = $results[0]->attribute( 'followup' );
 //eZFire::debug( $savedvalue ,"SAVED VALUE"); 
 
-	foreach( $elements as $result ) {
+	foreach( $results as $result ) {
 //eZFire::debug( $result, "RESULT" );
 		if ( $result->attribute( 'followup') != $savedvalue ) {
 //eZFire::debug( "BAILING OUT BECAUSE IT'S THE FIRST PASS OF A FOLLOWUP"); 
@@ -68,23 +68,20 @@ if ( count($errors) == 0 ) {
 			break; //so that we only display the followup if it is one.
 		}
 //eZFire::debug($result->questionID,"QUESTION ID");
-		$resultArray[] = array( $result, examAnswer::fetch($result->questionID));
+		$resultArray[] = array( $result,  examElement::fetch( $result->questionID ));
 		if ( $result->attribute( 'correct' ) ) $correctCount++;
 		$resultIndex++;
 	}
-/*The only thing that should be cached are the results.  This is always dynamic and can't be cached...
+/*We could cache by examid/hash
 /*list($handler, $data) = eZTemplateCacheBlock::retrieve( array( 'examdata',$http->sessionID() , $examId ), null, 0 );
 if ( !$data instanceof eZClusterFileFailure )
 {
 	$Result['content']=$data;
 } else {
 */
-//eZFire::debug($correctCount,"CORRECT COUNT");
-//eZFire::debug($resultIndex,"RESULT COUNT");
-//eZFire::debug($resultArray,"RESULT COUNT");
 
 //eZFire::debug($dataMap["pass_threshold"]->DataInt,"Threshold");
-	if ($dataMap["pass_threshold"]->DataInt) { //otherwise it's a survey
+	if ($dataMap["pass_threshold"]->DataInt) { //otherwise it's a survey and we don't care
 		if ($correctCount != 0) {//no division by zero here - dammit.
 			$score = 100 - ceil( ( $resultIndex - $correctCount ) / $resultIndex * 100 );
 //eZFire::debug($dataMap["pass_threshold"]->DataInt,"Threshold");
@@ -107,7 +104,9 @@ if ( !$data instanceof eZClusterFileFailure )
 	if ($dataMap["show_correct"]->DataInt) {
 //eZFire::debug($dataMap["show_correct"]->DataInt,"SHOW CORRECT");
 		$tpl->setVariable("showCorrect", true);
-		$tpl->setVariable("elements", $resultArray);
+		$tpl->setVariable("elements", $elements);
+		$tpl->setVariable("resultArray", $resultArray);
+		$tpl->setVariable("results", $results);
 //eZFire::debug($resultArray,"ELEMENTS");
 	}
 	if ($dataMap["show_statistics"]) {

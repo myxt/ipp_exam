@@ -1,5 +1,7 @@
 WE ARE IN EXAMEN DEFAULT RESULT<br/>
-
+{*$elements|ezfire("ELEMENTS IN TEMPLATE")*}
+{*$results|ezfire("RESULTS IN TEMPLATE")*}
+{*$resultArray|ezfire("RESULTS ARRAY")*}
 {if ne(count($errors),0)}{*We should never get errors on these pages*}
 <div class="error">
 	{foreach $errors as $error}
@@ -34,10 +36,10 @@ WE ARE IN EXAMEN DEFAULT RESULT<br/>
 		{/if}
 		{if $showCorrect}
 		SHOW CORRECT ANSWERS SET<br/>
-			{foreach $elements as $element}
+			{foreach $resultArray as $result}
 {*$element[1]|ezfire("ELEMENT ID IN TEMPLATE")*}
 		QUESTION<br/>
-				{exam_result_gui result=$element[1]}
+				{exam_result_gui element=$result[1] result=$result[0]}
 			{/foreach}
 		{/if}
 		{if $certificate}
