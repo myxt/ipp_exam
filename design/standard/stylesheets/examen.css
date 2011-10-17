@@ -1,0 +1,125 @@
+/* VIEW  when you are taking the exam*/
+
+#exam-view
+{
+	border: 1px solid #CACACA;
+	background-color: #F8F8F8;
+	padding: 0.7em;
+	margin: 0em;
+}
+#exam-view div.buttons
+{
+	padding: 0.7em;
+	margin: 0em;
+}
+#exam-view div.question
+{
+	border: 1px solid #CACACA;
+	background-color: #FFF;
+	padding: 0.7em;
+	margin: 0em;
+}
+#exam-view div.question div.answer
+{
+	width:95%;
+	border: 1px solid #CACACA;
+	background-color: #F8F8F8;
+	padding: 0.7em;
+	margin: 0em;
+}
+#exam-view div.question div.answer textarea
+{
+	height:1.5em;
+	margin: 0em;
+}
+#exam-view div.text
+{
+	border: 1px solid #CACACA;
+	background-color: #FFF;
+	padding: 0.7em;
+	margin: 0em;
+}
+
+#exam-view div.pagebreak
+{
+	border: 1px solid #CACACA;
+	background-color: #FFF;
+	padding: 0.7em;
+	margin: 0em;
+}
+#exam-view div.group
+{
+	border: 3px solid #CACACA;
+	background-color: #FFF;
+	padding: 0.7em;
+	margin: 0em;
+}
+#exam-view div.group div.children
+{
+	width:95%;
+}
+div.listbutton {
+	display: block;
+	float: right;
+}
+
+/* RESULT */
+
+
+#exam-result
+{
+	border: 1px solid #CACACA;
+	background-color: #F8F8F8;
+	padding: 0.7em;
+	margin: 0em;
+}
+#exam-result div.passed,
+#exam-result div.failed 
+{
+
+}
+#exam-result div.passed div.headline
+{
+	
+	font-size: 26px;
+}
+#exam-result div.failed div.headline
+{
+	
+	font-size: 26px;
+	color: red;
+}
+#exam-result div.question
+{
+	border: 1px solid red;
+	border: 1px solid #CACACA;
+	padding: 0.7em;
+	margin: 0em;
+}
+#exam-result div.text
+{
+	border: 1px solid #CACACA;
+	background-color: #FFF;
+}
+#exam-result div.answer 
+{
+	height:32;
+}
+
+#exam-result div.answer div.icon
+{
+	width:32px;
+	float:left;
+}
+
+#exam-result div.answer div.icon.correct
+{
+	background:url(../images/correct.png) no-repeat;
+	background-size: 18px 16px;
+}
+#exam-result div.answer div.icon.incorrect
+{
+	background:url(../images/incorrect.png) no-repeat;
+	background-size: 18px 18px;
+}
+/* Survey */

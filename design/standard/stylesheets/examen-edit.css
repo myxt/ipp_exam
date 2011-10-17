@@ -1,0 +1,129 @@
+/* EDIT */
+
+#exam-edit
+{
+	border: 1px solid #CACACA;
+	background-color: #F8F8F8;
+	padding: 0.7em;
+	margin: 0em;
+}
+#exam-edit div.buttons
+{
+	padding: 0.7em;
+	margin: 0em;
+}
+#exam-edit div.question
+{
+	border: 1px solid #CACACA;
+	background-color: #FFF;
+	padding: 0.7em;
+	margin: 0em;
+}
+#exam-edit div.question div.answer
+{
+	width:95%;
+	border: 1px solid #CACACA;
+	background-color: #F8F8F8;
+	padding: 0.7em;
+	margin: 0em;
+}
+#exam-edit div.question div.answer textarea
+{
+	height:1.5em;
+	margin: 0em;
+}
+#exam-edit div.text
+{
+	border: 1px solid #CACACA;
+	background-color: #FFF;
+	padding: 0.7em;
+	margin: 0em;
+}
+
+#exam-edit div.pagebreak
+{
+	border: 1px solid #CACACA;
+	background-color: #FFF;
+	padding: 0.7em;
+	margin: 0em;
+}
+#exam-edit div.group
+{
+	border: 3px solid #CACACA;
+	background-color: #FFF;
+	padding: 0.7em;
+	margin: 0em;
+}
+#exam-edit div.group div.children
+{
+	width:95%;
+}
+div.listbutton {
+	display: block;
+	float: right;
+}
+/* Admin exam */
+#exam-admin{
+
+}
+
+#exam-admin div.exam{
+	
+}
+#exam-admin div.exam table{
+	width:640px;
+}
+#exam-admin div.exam table thead th{
+	border: 1px solid #CACACA;
+}
+#exam-admin div.exam table thead th.id{
+	width: 80px;
+}
+#exam-admin div.exam table thead th.total,
+#exam-admin div.exam table thead th.first,
+#exam-admin div.exam table thead th.second{
+	width: 80px;
+}
+#exam-admin div.exam table tbody tr td.correct
+{
+	background:url(../images/correct.png) no-repeat;
+	background-size: 32px 32px;
+}
+
+#exam-admin div.exam table tbody tr{
+	
+}
+#exam-admin div.exam table tbody tr td{
+	border: 1px solid #CACACA;
+}
+
+/* overview admin */
+#exam-admin div.overview{
+
+}
+#exam-admin div.overview table{
+	width:640px;
+}
+#exam-admin div.overview table thead th{
+	border: 1px solid #CACACA;
+	background-color: #F8F8F8;
+}
+#exam-admin div.overview table thead th.title{
+
+}
+#exam-admin div.overview table thead th.id {
+	width: 20px;
+}
+#exam-admin div.overview table thead th.first,
+#exam-admin div.overview table thead th.second,
+#exam-admin div.overview table thead th.number,
+#exam-admin div.overview table thead th.score{
+	width: 60px;
+}
+
+#exam-admin div.overview table tbody tr{
+
+}
+#exam-admin div.overview table tbody tr td{
+	border: 1px solid #CACACA;
+}
