@@ -3,7 +3,7 @@
 	<label>{"group"|i18n('design/exam')|upcase} {$element.id}</label>
 	<input class="button" value="Remove" name="CustomActionButton[remove][{$element.id}]" type="submit">
 	<input type="hidden" value="0" name="random_{$element.id}" /> {*Have to prime it otherwise never unchecked*}
-	Random: <input type="checkbox" id="random" name="random_{$element.id}"{if eq($element.options.random,1)} checked{/if}  />
+	{'Random'|i18n('design/exam')}: <input type="checkbox" id="random" name="random_{$element.id}"{if eq($element.options.random,1)} checked{/if}  />
 	<div class="listbutton">
 		<input type="image" src="/design/admin2/images/button-move_down.gif" alt="Down" name="MoveDown_{$element.id}" title="{'Use these buttons to move elements up or down'|i18n('design/exam')}" />&nbsp;
 		<input type="image" src="/design/admin2/images/button-move_up.gif" alt="Up" name="MoveUp_{$element.id}" title="{'Use these buttons to move elements up or down'|i18n('design/exam')}" />
@@ -37,8 +37,8 @@
 		{/foreach}
 	</div>
 	<br clear="all" />
-	<input class="button" id="newQuestion" name="CustomActionButton[newQuestion][{$element.id}]" value="New Question" type="Submit">
-	<input class="button" id="newText" name="CustomActionButton[newText][{$element.id}]" value="New Text" type="Submit">
-	<input class="button" id="newBreak" name="CustomActionButton[newBreak][{$element.id}]" value="New Pagebreak" type="Submit">
-	<input class="button" id="updatePriorities" name="CustomActionButton[updatePriorities][{$element.id}]" value="Update Priorities" type="Submit">
+	<input class="button" id="newQuestion" name="CustomActionButton[newQuestion][{$element.id}]" value="{'New Question'|i18n('design/exam')}" type="Submit">
+	<input class="button" id="newText" name="CustomActionButton[newText][{$element.id}]" value="{'New Text'|i18n('design/exam')}" type="Submit">
+	<input class="button" id="newBreak" name="CustomActionButton[newBreak][{$element.id}]" value="{'New Pagebreak'|i18n('design/exam')}" type="Submit">
+	<input class="button" id="updatePriorities" name="CustomActionButton[updatePriorities][{$element.id}]" value="{'Update Priorities'|i18n('design/exam')}" type="Submit">
 </div>

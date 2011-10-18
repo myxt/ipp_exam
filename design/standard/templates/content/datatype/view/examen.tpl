@@ -1,5 +1,4 @@
-IN THE CONTENT DATATYPE VIEW EXAM TPL
-{* THIS IS DISPLAYED ON THE BACKEND IN THE VIEW TAB *}
+{* THIS IS DISPLAYED ON THE BACKEND IN THE VIEW TAB AND IF YOU ADD A TRANSLATION*}
 
 {def $exam=fetch( 'examen', 'examen', hash( 'id', $node.object.id ) )}
 {foreach $exam.options as $options}

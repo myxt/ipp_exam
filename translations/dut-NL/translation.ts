@@ -145,7 +145,7 @@
     <message>
         <source>You were one of [examCount] to take this exam.  Of which [passFirst] passed.</source>
         <comment>score</comment>
-        <translation>Je was een van de [examCount] om dit examen te nemen. (Sp) (sp) Waarvan [passFirst] zijn geslaagd.</translation>
+        <translation>Je was een van de [examCount] om dit examen te nemen. Waarvan [passFirst] zijn geslaagd.</translation>
     </message>
     <message>
         <source>on the first try and [passSecond] passed on the second try.</source>
@@ -180,7 +180,7 @@
     </message>
     <message>
         <source>Cookies must be enabled to participate.</source>
-        <translation>Cookies moeten aanstaan ​​om deel te nemen.</translation>
+        <translation>Cookies moeten aanstaan om deel te nemen.</translation>
     </message>
     <message>
         <source>No exam id found.</source>
@@ -204,11 +204,47 @@
     </message>
     <message>
         <source>Wrong object type.  Check your exam id.</source>
-        <translation>Verkeerd object type. (Sp) (sp) Controleer uw examen id.</translation>
+        <translation>Verkeerd object type. Controleer uw examen id.</translation>
     </message>
     <message>
         <source>You&apos;ve tried to many times for today.  Try again on another day.</source>
-        <translation>Je hebt te veel keer vandaag geprobeerd. (Sp) (sp) Probeer het opnieuw op een andere dag.</translation>
+        <translation>Je hebt te veel keer vandaag geprobeerd. Probeer het opnieuw op een andere dag.</translation>
+    </message>
+    <message>
+        <source>Random</source>
+        <translation>Random</translation>
+    </message>
+    <message>
+        <source>New Question</source>
+        <translation>Nieuw Vraag</translation>
+    </message>
+    <message>
+        <source>New Text</source>
+        <translation>Nieuw Text</translation>
+    </message>
+    <message>
+        <source>New Pagebreak</source>
+        <translation>Nieuw pagina</translation>
+    </message>
+    <message>
+        <source>Update Priorities</source>
+        <translation>Actualiseer prioriteiten</translation>
+    </message>
+    <message>
+        <source>Remove</source>
+        <translation>Verwijder</translation>
+    </message>
+    <message>
+        <source>Correct</source>
+        <translation>Correct</translation>
+    </message>
+    <message>
+        <source>Condition</source>
+        <translation>Voorwaarde</translation>
+    </message>
+    <message>
+        <source>Add Answer</source>
+        <translation>Nieuw antwoord</translation>
     </message>
 </context>
 </TS>
