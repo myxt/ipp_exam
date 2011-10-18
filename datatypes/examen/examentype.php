@@ -32,6 +32,20 @@ class ExamenType extends eZDataType
     function initializeObjectAttribute( $objectAttribute, $currentVersion, $originalContentObjectAttribute )
     {
 //eZFire::debug(__FUNCTION__,"WE ARE HERE");
+/* This will be needed if we set the xmltext of the content object for diffing
+        if ( $currentVersion != false )
+        {
+            $xmlText = eZXMLTextType::rawXMLText( $originalContentObjectAttribute );
+            $contentObjectAttribute->setAttribute( "data_text", $xmlText );
+        }
+        else
+        {
+            $parser = new eZXMLInputParser();
+            $doc = $parser->createRootNode();
+            $xmlText = eZXMLTextType::domString( $doc );
+            $contentObjectAttribute->setAttribute( "data_text", $xmlText );
+        }
+*/
     }
     /*!
      Sets the default value.
@@ -185,7 +199,10 @@ if so, update the table. for the appropriate element.  We'll need the element id
 
 			if ($elementObject->type == "group" ) {
 				if ( $http->hasPostVariable( "exam_group_data_text_".$element_id ) ) {
-					$elementObject->setAttribute('content',$http->postVariable( "exam_group_data_text_".$element_id ));
+//$xmlObject = new eZXMLText( $http->postVariable( "exam_group_data_text_".$element_id ), null );
+//eZFire::debug($xmlObject,"XML OBEJCT");
+//$elementObject->setAttribute('content',$xmlObject);
+					$elementObject->setAttribute('content',$http->postVariable( "exam_group_data_text_".$element_id ) );
 				}
 				if ( $http->hasPostVariable( "random_".$element_id ) ) {
 					if ( $http->variable( "random_".$element_id ) == "on" ) {
@@ -197,7 +214,9 @@ if so, update the table. for the appropriate element.  We'll need the element id
 			}
 			if ( $http->hasPostVariable( "exam_data_text_".$element_id ) ) {
 //eZFire::debug( $http->hasPostVariable( "exam_data_text_".$element_id ),"CONTENT");
-				$elementObject->setAttribute('content',$http->postVariable( "exam_data_text_".$element_id ));
+//$xmlObject = new eZXMLText( $http->postVariable( "exam_data_text_".$element_id ), null );
+//$elementObject->setAttribute('content', $xmlObject);
+				$elementObject->setAttribute('content',$http->postVariable( "exam_data_text_".$element_id ) );
 			}
 			if ($elementObject->type == "question" ) {
 				$answer_priority_array[$element_id] = 0;
@@ -463,23 +482,47 @@ if so, update the table. for the appropriate element.  We'll need the element id
 
     function serializeContentClassAttribute( $classAttribute, $attributeNode, $attributeParametersNode )
     {
-/*
+//eZFire::debug(__FUNCTION__,"WE ARE HERE");
         $defaultValue = $classAttribute->attribute( 'data_text1' );
         $dom = $attributeParametersNode->ownerDocument;
         $defaultValueNode = $dom->createElement( 'default-value' );
         $defaultValueNode->appendChild( $dom->createTextNode( $defaultValue ) );
         $attributeParametersNode->appendChild( $defaultValueNode );
-*/
     }
 
-    function unserializeContentClassAttribute( $classAttribute, $attributeNode, $attributeParametersNode )
+
+    function unserializeContentObjectAttribute( $package, $objectAttribute, $attributeNode )
     {
-/*
-        $textColumns = $attributeParametersNode->getElementsByTagName( 'text-column-count' )->item( 0 )->textContent;
-        $classAttribute->setAttribute( self::COLS_FIELD, $textColumns );
-*/
+//eZFire::debug(__FUNCTION__,"WE ARE HERE");
+       $rootNode = $attributeNode->getElementsByTagName( 'examen' )->item( 0 );
+        $xmlString = $rootNode ? $rootNode->ownerDocument->saveXML( $rootNode ) : '';
+        $objectAttribute->setAttribute( 'data_text', $xmlString );
     }
+    function domString( $domDocument )
+    {
+        $ini = eZINI::instance();
+        $xmlCharset = $ini->variable( 'RegionalSettings', 'ContentXMLCharset' );
+        if ( $xmlCharset == 'enabled' )
+        {
+            $charset = eZTextCodec::internalCharset();
+        }
+        else if ( $xmlCharset == 'disabled' )
+            $charset = true;
+        else
+            $charset = $xmlCharset;
+        if ( $charset !== true )
+        {
+            $charset = eZCharsetInfo::realCharsetCode( $charset );
+        }
+        $domString = $domDocument->saveXML();
+        return $domString;
+    }
+    function xmlString()
+    {
+        $doc = new DOMDocument( '1.0', 'utf-8' );
 
+        return $this->domString( $doc );
+    }
     function diff( $old, $new, $options = false )
     {
         $diff = new eZDiff();
@@ -493,7 +536,7 @@ if so, update the table. for the appropriate element.  We'll need the element id
 	{
 //eZFire::debug(__FUNCTION__,"WE ARE HERE");
 	}
-function customObjectAttributeHTTPAction( $http, $action, $contentObjectAttribute, $parameters )
+	function customObjectAttributeHTTPAction( $http, $action, $contentObjectAttribute, $parameters )
 	{
 //eZFire::debug(__FUNCTION__,"WE ARE HERE");
 	}

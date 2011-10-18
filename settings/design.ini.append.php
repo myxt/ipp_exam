@@ -8,6 +8,7 @@ DesignExtensions[]=examen
 FrontendJavaScriptList[]=
 
 [StylesheetSettings]
-FrontendCSSFileList[]=
+FrontendCSSFileList[]=examen.css
+BackendCSSFileList[]=examen-edit.css
 
 */ ?>

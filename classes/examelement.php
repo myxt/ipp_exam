@@ -115,6 +115,10 @@ class examElement extends eZPersistentObject
 	}
 	function getContent( $languageCode = 'eng-GB' )
 	{
+//        $xmlObject = new eZXMLText( $this->content, null );
+//        $outputHandler = $xmlObject->attribute( 'output' );
+//eZFire::debug($xmlObject,"IS THIS REAL");
+        //return $outputHandler->attribute( 'output_text' );
 		return $this->content;
 	}
 	function children()
@@ -331,6 +335,10 @@ class examElement extends eZPersistentObject
 		$this->setAttribute( 'xmloptions', $xmlString );
 		$this->store();
 		return $xmlString;
+    }
+    function xmlData()
+    {
+        return $this->XMLData;
     }
 }
 

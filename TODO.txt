@@ -1,11 +1,9 @@
 Datatype:
 edit:
-disable editor - don't know how to do this yet.
+Should convert the textblock to a ezxmltext class. 
 Validation - not done yet
 
 diff - not done yet
-delete - not well tested yet
-move - not well tested yet
 copy - not well tested yet - conditions for copied elements are wrong. Chicken and egg.
 
 Exam view:
@@ -16,4 +14,6 @@ result:
 Social Media
 Mail
 Retest
-print/download pdf/image certificate
+Should do a lot more error checking for the download page.  Also maybe should be a class attribute pointing to an image file instead of what's in design.
+
+Userguide

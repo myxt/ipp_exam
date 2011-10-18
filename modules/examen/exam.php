@@ -13,21 +13,8 @@ $examArray = array();
 /*We have to get the objectID from the NodeID to get the language and version*/
 
 /*First time through, figure out what the question array is and load it in the session*/
-/* turn this off for testing
-if (!$http->hasSessionVariable( 'status' )) { //Have to write something to the cookie before we can check that we have one.
-	$http->setSessionVariable( 'status', "FRIST" );
-/Set the time stamp here too
 
-} elseif ( $http->sessionVariable( 'status' ) == "DONE" ) {  //Maybe should show the results again?  Dunno.
-	$errors[] = "threshold_exceeded";
-}
-*/
-if ( !eZSession::userHasSessionCookie() ) { //Have to check every time just in case someone turns cookies off in the middle - is that really what we are checking here?  I don't think so.
-//WHAT DO WE DO HERE... RETEST FLAG WON'T WORK AND COMPLICATED MODE WON'T WORK.. WE ALSO WON'T HAVE A UNIQUE ID TO STORE THE RESULTS.  WE SHOULD JUST ERROR OUT HERE, NO?  I'LL DO NOTHING FOR NOW
-//This isn't working right
-	//$errors[] = "i_can_haz_no_cookie";
-	//eZFire::debug("NO COOKIE?");
-}
+
 
 if ( $http->hasPostVariable( "exam_id" ) ) {
 	$examID = $http->variable( "exam_id" );
@@ -66,6 +53,22 @@ if (count($errors) == 0) { // only need these the first time through?
 		$errors[] = "object_not_exam";
 	}
 } //end if no errors
+
+//Need to to this after I have an examID
+if (!$http->hasSessionVariable( 'status['.$examID.']' )) { //Have to write something to the cookie
+	$http->setSessionVariable( 'status['.$examID.']', time() );
+} /* If someone hits the back button we just drop through to the results page again.
+ elseif ( $http->sessionVariable( 'status' ) == "DONE" ) {  //Maybe should show the results again?  Dunno.
+	$errors[] = "threshold_exceeded";
+}
+*/
+//IS this maybe too close? I keep getting false negatives.
+if ( !eZSession::userHasSessionCookie() ) { //Have to check every time just in case someone turns cookies off in the middle - is that really what we are checking here?  I don't think so.
+//WHAT DO WE DO HERE... RETEST FLAG WON'T WORK AND COMPLICATED MODE WON'T WORK.. WE ALSO WON'T HAVE A UNIQUE ID TO STORE THE RESULTS.  WE SHOULD JUST ERROR OUT HERE, NO?  I'LL DO NOTHING FOR NOW
+//This isn't working right
+	//$errors[] = "i_can_haz_no_cookie";
+//eZFire::debug("NO COOKIE?");
+}
 if ($http->hasSessionVariable( 'exam_array['.$examID.']' )) {
 	$examArray = $http->sessionVariable( 'exam_array['.$examID.']' );
 //eZFire::debug($examArray,"GETTING EXAM ARRAY FROM SESSION");
@@ -372,35 +375,41 @@ if (count($errors) == 0) {
 	*    RESULTS                    *
 	*                               *
 	********************************/
+//eZFire::debug($checkList,"THESE HAVE TO GO INTO A ELEMENTS - THEY HAVEN'T ACTUALLY BEEN LOADED?");
 //eZFire::debug($index,"INDEX");
 //eZFire::debug(count($examArray),"COUNT");
-	//Results
+//eZFire::debug(count($checkIndex),"COUNT");
+//If we drop through here without hitting the while loop we never set any elements.
+
+
 	if ( count($examArray) <=  $index + count($checkIndex) ) { //We're done - time for results
 	/* We should really only save the results to the database (if that option is set) and then redirect to a results page since
         the logic for viewing the results at a later date will have to be the same.  of course, if we aren't to save the results
         we'll have to use the session values instead of database values which will maybe get dicey.  I think I may have to save the
         examArray session variable to the database too. */
-		
-//eZFire::debug($examArray,"IN RESULTS");
-
+	//Since the result page is what we go to from here AS WELL AS getting archived results we have to do a redirect to view
+	//that means NO tpl variables can be passed and we'll have to refetch everything anyway
+		$status = $http->sessionVariable( 'status['.$examID.']' ) ;
 		$followup = false;
-		if ( $http->sessionVariable( 'status['.$examID.']' ) == "RETEST" ) {
+		if ( $status == "RETEST" ) {
 			$followup = true;
 		}
 		$survey = false;
 		$passed = false;
+		$correct = false;
 		$correctCount = 0;
 		$saveResults = $dataMap["save_results"]->DataInt;
 		$hash = $http->getSessionKey();
+
 //eZFire::debug($saveResults,"SAVE RESULTS");
 		if (!$dataMap["pass_threshold"]->DataInt) { //otherwise it's a survey so always save statistics
 			$survey = true;
 		}
 //eZFire::debug($saveResults,"SAVE RESULTS");
 //eZFire::debug($survey,"SURVEY");
-//eZFire::debug($http->sessionVariable( 'status['.$examID.']' ),"STATUS");
-		if ( $http->sessionVariable( 'status['.$examID.']' ) != "DONE" ) { //If this is set to DONE someone hit the back button
-			if ( $saveResults OR $survey ) {
+//eZFire::debug($status,"STATUS");
+		if ( $status != "DONE" ) { //If this is set to DONE someone hit the back button
+			if ( $saveResults == 1 OR $survey == true ) {
 //eZFire::debug( "SAVING RESULTS" );
 				//Save question results
 				//$session = $http->getSessionKey() ? $http->getSessionKey() : md5sum(date(now));
@@ -408,19 +417,27 @@ if (count($errors) == 0) {
 				//If it's a dated result we'll have to add the exam id just in case they did multiple exams under one session
 /* Since the list of answerable questions is dynamic, we have to go by what is is examArray and assume it is correct.  Which means that if there is ever multiple answers or no answer at all, the totals/score will be off */
 				foreach( $examArray as $examAnswer ) {
-//eZFire::debug($examAnswer[1],"IN DA LOOP");
-					$elementObject = examElement::fetch( $examAnswer[1] );
+					$elementObject = examElement::fetch( $examAnswer[0] );
 					if ( $elementObject->type == "question" ) {
 						$questionIndex++;
-if (!$survey) {
-						$answerObject = examAnswer::fetch( $examAnswer[1] );
-						$correct = $answerObject->correct;
-						if ( $correct == true ) {
-							$correctCount++;
+						if ($survey == false) {
+							$answerObject = examAnswer::fetch( $examAnswer[1] );
+							$correct = $answerObject->correct;
+							if ( $correct == true ) {
+								$correctCount++;
+							}
 						}
-}
 //We're going to have to save the resultArray session variable here too, otherwise there is no way to display it in the results
 //eZFire::debug("ARE WE HERE, WHY ARENT WE HERE");
+//eZFire::debug("SHOULD BE SAVING THE RESULT")
+						$newResult = new examResult();
+//eZFire::debug($examID, 'contentobject_id' );
+//eZFire::debug($hash, 'hash');
+//eZFire::debug($examAnswer[0],'question_id' );
+//eZFire::debug($examAnswer[1], 'answer' );
+//eZFire::debug($correct, 'correct');
+//eZFire::debug($followup, 'followup');
+//eZFire::debug($result_array,'result_array');
 						$newResult = new examResult();
 						$newResult->setAttribute( 'contentobject_id', $examID );
 						$newResult->setAttribute( 'hash', $hash );
@@ -432,7 +449,7 @@ if (!$survey) {
 						$newResult->store();
 					}
 				}
-			}//save results		
+			}//end save results		
 
 			if ($dataMap["pass_threshold"]->DataInt) { //otherwise it's a survey
 				if ($correctCount != 0) {//no division by zero here - dammit.
@@ -444,6 +461,7 @@ if (!$survey) {
 					}
 				}
 			}
+
 			if ( $saveResults ) {
 				$exam = exam::fetch( $examID );
 				$totalExam = $exam->increment( 'count' );
@@ -474,11 +492,11 @@ if (!$survey) {
 		} else { //Closing out a retest OR it's already done
 			$http->setSessionVariable( 'status['.$examID.']', "DONE" );
 		}
-//eZFire::debug($http->sessionVariable( 'status['.$examID.']' ),"SESSION VARIABLE");
-//eZFire::debug("REDIRECTING TO RESULT");
-//eZFire::debug($hash,"WHERE DID MY HASH GO");
-		$Module->redirectToView("result", array( $examID, $hash ) );
 
+		//Since the result page is what we go to from here AS WELL AS getting archived results we have to do a redirect to view
+		//that means NO tpl variables can be passed and we'll have to refetch everything anyway
+		$Module->redirectToView("result", array( $examID, $hash ) );
+$Result['content'] = $tpl->fetch( 'design:examen/results/default/result.tpl' );
 	//	$Module->redirectToView("result", array( $examID, $hash ), array( 0 => "x"), array( "dum" => "unorderParams", "doh" => "userParamenters" ), "anchor" );
 /*
     function redirectToView( $viewName = '', $parameters = array(),

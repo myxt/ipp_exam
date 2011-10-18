@@ -1,4 +1,4 @@
-EXAM LIST ADMIN VIEW<br>
+<div id="exam-admin">
 {if $exam}
 	{*got to make this nice with the 10 20 50 preferences etc.*}
 	{def $contentObject=array()}
@@ -11,56 +11,60 @@ EXAM LIST ADMIN VIEW<br>
 	{attribute_view_gui attribute=$contentObject.data_map.intro}
 	</div>
 	{*repeat line from overview*}
+<div class="overview">
 	<table>
 		<thead>
-			<th>id</th>
-			<th>content object id</th>
-			<th>number of testees</th>
-			<th>pass on first run</th>
-			<th>pass on second run</th>
-			<th>enabled</th>
-			<th>High score</th>
+			<th class="id">{'id'|i18n('design/exam')}</th>
+			<th class="title">{'title'|i18n('design/exam')}</th>
+			<th class="number">{'number of testees'|i18n('design/exam')}</th>
+			<th class="first">{'pass on first try'|i18n('design/exam')}</th>
+			<th class="second">{'pass on second try'|i18n('design/exam')}</th>
+			<th class="score">{'High score'|i18n('design/exam')}</th>
 		</thead>
 
 		<tr>
-			<td><a href={concat("/examen/statistics/",$exam.contentobject_id)|ezurl}>{$exam.id}</a></td>
-			<td><a href={concat("/content/view/full/",$exam.contentobject_id)|ezurl}>{$exam.contentobject_id}</a></td>
+			<td>{$exam.id}</td>
+			<td><a href={concat("/content/edit/",$exam.contentobject_id)|ezurl}><img src={"edit.gif"|ezimage} alt="{'Edit'|i18n('design/admin/settings')}" /></a> {$contentObject.name}</td>
 			<td>{$exam.count}</td>
 			<td>{$exam.pass_first}</td>
 			<td>{$exam.pass_second}</td>
-			<td>{$exam.enabled}</td>
 			<td>{$exam.high_score}</td>
 		</tr>
 	</table>
+</div>
+
 	<br/>
+<div class="exam">
 	<table>
 		<thead>
-			<th>id</th>
-			<th>text</th>
-			<th>total answered</th>
-			<th>correct on first run</th>
-			<th>correct on second run</th>
+			<th class="id">{'id'|i18n('design/exam')}</th>
+			<th class="text">{'text'|i18n('design/exam')}</th>
+			<th class="total">{'total answered'|i18n('design/exam')}</th>
+			<th class="first">{'correct on first try'|i18n('design/exam')}</th>
+			<th class="second">{'correct on second try'|i18n('design/exam')}</th>
 		</thead>
 
 		{foreach $exam.questions as $question}
 			<tr>
-				<td>QUESTION {$question.id}</td>
+				<td>{'question'|i18n('design/exam')|upcase} {$question.id}</td>
 				<td>{$question.content}</td>
-				<td>TOTAL {$question.statistics['total']}</td>
+				<td>{'total'|i18n('design/exam')|upcase} {$question.statistics['total']}</td>
 				<td>{$question.statistics['first_pass']}</td>
 				<td>{$question.statistics['second_pass']}</td>
 			</tr>
 			{foreach $question.answers as $answer}
 				<tr>
-					<td></td>
-					<td>ANSWER {$answer.id}</td>
+					<td>{'answer'|i18n('design/exam')|upcase} {$answer.id}</td>
 					<td>{$answer.content}</td>
 					<td></td>
-					<td>Times chosen: {$question.statistics['answer_count'][$answer.id]}</td>
+					<td{if $answer.correct} class="correct"{/if}></td>
+					<td>{'Times chosen'|i18n('design/exam')}: {$question.statistics['answer_count'][$answer.id]}</td>
 				</tr>
 			{/foreach}
 		{/foreach}
 	</table>
+</div>
 {else}
-	exam not found.
+	{'Exam not found.'|i18n('design/exam')}
 {/if}
+</div>

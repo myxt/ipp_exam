@@ -102,6 +102,16 @@ class examResult extends eZPersistentObject
 											);
 		return $examResult;
 	}
+	static function fetchSurvey( $exam_id, $asObject = true )
+	{
+		$examResult = eZPersistentObject::fetchObjectList( examResult::definition(),
+														null,
+														array( 'contentobject_id' => $exam_id ),
+														array( 'question_id' => 'asc', 'answer' => 'asc' ),
+														$asObject
+											);
+		return $examResult;
+	}
 	function &templateName()
 	{
 		$element = examElement::fetch( $this->questionID );

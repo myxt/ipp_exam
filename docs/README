@@ -1,0 +1,38 @@
+Possible use cases of examen:
+
+question survey - will not have a "correct" answer, will not have "score" threshold - have to save answers - different result page than exam.
+
+Multi-question survey - no correct answer - No threshold - Maybe should have multi-select.  Maybe should have horizontal inputs instead of only vertical as in a multiple-choice answer.
+
+Fun test - no stats, no saving of the answers - probably want each answer to have a weight and then have a result matrix for the score
+
+Simple test - no conditions, no pagebreaks, all on one page
+
+Complicated test - multiple pagebreaks, groups, conditions, or just more than X questions.  Have to test this, see how many questions can fit on a page comfortably without taking too much time.  This will also be a problem in the results if there are more than X questions and show correct answers is on.
+
+Considerations of future enhancements:
+Multi-select not supported (should it be?)  It would complicate things incredibly.
+Range answer with weighted question (would have to have a matrix for the score results)
+Timed test
+Validation is by cookie - clear the cookie and you haven't taken the exam - maybe there should be some kind of ability to validate on a license.
+Should a text field be added and stored in the result so that the certificate/verify could be personalized and/or email can be sent on successful (or failed?) exam.
+Maybe it should be an option to force one question per page.
+
+Things that should be validated in the edit form:
+There should be at least one question left after all conditions have been taken into account.
+If there is a score threshold every question better have a correct answer.
+If there is a pagebreak or a condition in the root or in a group, then the random option cannot be used for the class or for that group.  Unless pagebreak is the last element of root or the group.
+If a question element is a condition it has to be from the same group.
+A question that has no answer should be flagged (removed?).
+
+Consideration of enhancement:
+If there is some way of ensuring that a condition is always after that which calls it then the random could still work. 
+
+Conditions:
+if [not] picked	Remove			text, group, question 1 5
+if [not] picked	Add				text, group, question 2 6
+if [not] picked	Follow With		text, group, question 3 7
+if [not] picked	Display in Resuts	text				  4 8 
+
+Is There a way to have conflicting conditions?  Such as, removing something on a question that hasn't been added yet by another question?
+

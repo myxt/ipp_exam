@@ -1,3 +1,5 @@
+WE SHOULD NEVER GET HERE
+WHAT IS THIS?
 <div class="content-view-full">
     <div class="class-result">
 

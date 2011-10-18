@@ -32,8 +32,8 @@ if ( !function_exists( 'examForwardInit' ) )
                                                  'use_views' => false ),
 
             'exam_result_gui' => array( 'template_root' => 'examen/results',
-                                                   'input_name' => 'result',
-                                                   'output_name' => 'result',
+                                                   'input_name' => 'element',
+                                                   'output_name' => 'element',
                                                    'namespace' => 'examAnswer',
                                                    'attribute_keys' => array( 'attribute_identifier' => array( 'contentclass_attribute_identifier' ),
                                                                             'attribute' => array( 'contentclassattribute_id' ),
