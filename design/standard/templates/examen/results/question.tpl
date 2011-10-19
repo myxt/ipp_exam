@@ -9,12 +9,17 @@
 			<td width="30%">
 				{$answer.content}
 			</td>
+			<td width="10px">
+				{$percents[$answer.id]}%
+			</td>
 			<td class="survey-answer">
 				<div class="survey-bar" style="width:{$percents[$answer.id]}%; float:left;" >&nbsp;</div>
 			</td>
 		</tr>
 		{/foreach}
+			
 		</table>
+		{'Total'|i18n('design/exam')} {$totals[$element.id]}
 	</div>
 {else}
 	<div class="question">

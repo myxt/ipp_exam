@@ -1,7 +1,7 @@
 <div id="exam-result">
 	{if eq($survey,1)} {*if this is a survey then just show the results and get out*}
 		{foreach $elements as $element}
-			{exam_result_gui element=$element counts=$counts percents=$percents survey=true()}
+			{exam_result_gui element=$element counts=$counts percents=$percents totals=$totals survey=true()}
 		{/foreach}
 	{else}
 		{if $passed}

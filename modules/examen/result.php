@@ -90,22 +90,25 @@ if ( !$data instanceof eZClusterFileFailure )
 			}
 		}
 		$percArray = array();
+		$totalArray = array();
 		foreach($countArray as $question_id => $answerArray ) {
 //eZFire::debug($question_id,"QUESTION ID");
-;$elements[] =  examElement::fetch( $question_id );
+$elements[] =  examElement::fetch( $question_id );
+$totalArray[$question_id] = array_sum( $countArray[$question_id] );
 			foreach($answerArray as $index => $answer ) {
 
 //eZFire::debug($answer,"ANSWER");
 //eZFire::debug($index,"INDEX");
 //eZFire::debug(ceil( $answer / $total * 100 ),"PERCENTAGE");
+				
 				$percArray[$index] = round( $answer / $total * 100 );
 			}
 		}
-//eZFire::debug($total,"TOTAL");
+//eZFire::debug($totalArray,"TOTAL");
 //eZFire::debug($countArray,"COUNT ARRAY");
 //eZFire::debug($percArray,"PERCENT ARRAY");
 //eZFire::debug($elements,"ELEMENTS");
-
+		$tpl->setVariable("totals", $totalArray);
 		$tpl->setVariable("elements", $elements);
 		$tpl->setVariable("counts", $countArray);
 		$tpl->setVariable("percents", $percArray);
