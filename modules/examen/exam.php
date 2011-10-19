@@ -1,5 +1,6 @@
 <?php
 //eZFire::debug("IN EXAM.PHP");
+
 $Module = $Params['Module'];
 $settingsINI = eZINI::instance( 'examen.ini' );
 $secretKey = $settingsINI->variable('examSettings','secretKey');
@@ -102,7 +103,7 @@ if (count($errors) == 0) {
 	*                               *
 	********************************/
 
-
+//eZFire::debug(count($examArray), "COUNT EXAM ARRAY RIGHT BEFORE FIRST TIME THROUGH");
 	if (count($examArray) < 1) {
 //eZFire::debug("CALCULATING EXAM ARRAY");
 		/* First time through have to initialize the element list
@@ -144,24 +145,28 @@ if (count($errors) == 0) {
 //eZFire::debug($condition->option_value,"CONDITION VALUE ID");
 			switch ($condition->option_id) { //This could be a mod at this point but I have a funny feeling this will be extended
 				case 1:
-				case 3:
 				case 5:
+					$random=false;
+					break;
+				case 3:
 				case 7:
-					//Should have a whole lot of checking going on here
+					//Have to put these in the check array so that we can check on them
+					$answerConditionArray[$condition->option_value] = array( 'answer_id' => $condition->ID, 'option_id' =>  $condition->option_id, 'option_value' => $condition->option_value );
 					$random=false;
 					break;
 				case 2:
 				case 4:
 				case 6:
 				case 8:
-//eZFire::debug("IN THE CASE?");
+//eZFire::debug($condition->option_value,"IN THE CASE?");
 					$conditionRemoveArray[] = $condition->option_value;
 					break;
 			}
 			/*Gotta match on the question id to be able to do the NOT*/
-			$answerConditionArray[$condition->question_id] = array( 'answer_id' => $condition->id, 'option_id' =>  $condition->option_id, 'option_value' => $condition->option_value );
-//eZFire::debug($conditionRemoveArray,"CONDITION REMOVE ARRAY IN LOOP");
+//eZFire::debug($condition,"CONDITION");
+			$answerConditionArray[$condition->questionID] = array( 'answer_id' => $condition->ID, 'option_id' =>  $condition->option_id, 'option_value' => $condition->option_value );
 		}
+//eZFire::debug($answerConditionArray,"ANSWER CONDITON ARRAY");
 		$elementCount = count($examElements);
 
 		/*Check if anything overrides random*/
@@ -243,6 +248,7 @@ if (count($errors) == 0) {
 				break;
 			} //end switch
 		} //end foreach
+
 		$http->setSessionVariable( 'exam_array['.$examID.']' , $examArray );
 		$http->setSessionVariable( 'condition_array['.$examID.']',$answerConditionArray );
 	} else { 
@@ -281,6 +287,7 @@ if (count($errors) == 0) {
 		}
 		$examID_array[] = $checkArray[0];
 	}
+	$conditionAdd = false;
 	//Check for condition and add, remove etc. based on condition this can grow or shrink the examArray
 	foreach($checkList as $keyCheck){ //foreach condition
 		if ( array_key_exists($keyCheck, $conditionArray ) ) { //A condition with this element id exists
@@ -291,7 +298,7 @@ if (count($errors) == 0) {
 				$option_value = $conditionArray[$keyCheck]['option_value'];
 				switch ( $option_id ) {
 					case 1: //if picked remove
-						if ( $answerID = $answer_id ){
+						if ( $answerID == $answer_id ){
 							$examArrayKey = array_search( $option_value, $examID_array );
 							if ( $examArray[$examArrayKey][1] = "" ) { //Only remove unanswered
 								unset($examArray[$examArrayKey]);
@@ -301,14 +308,20 @@ if (count($errors) == 0) {
 					
 						break;
 					case 2: //if picked add
-						if ( $answerID = $answer_id ){
-							if(!in_array($keyCheck,$examID_array)){ //doesn't already exist;
+
+						if ( $answerID == $answer_id ){
+//eZFire::debug(!in_array($keyCheck,$examID_array),"in array");
+//eZFire::debug($keyCheck,"KEY CHECK");
+//eZFire::debug($examID_array,"examID_array");
+							//if(!in_array($keyCheck,$examID_array)){ //doesn't already exist;  this isn't checking what you think it's checking
+//eZFire::debug($option_value,"ADDING");
 								$examArray[] = array( $option_value, "" );
-							}
+								$conditionAdd = true;
+							//}
 						}
 						break;
 					case 3: //if picked follow with
-						if ( $answerID = $answer_id ){
+						if ( $answerID == $answer_id ){
 							if(in_array($keyCheck,$examID_array)){ //We can only follow if it's there.
 								$examArrayKey = array_search( $option_value, $examID_array );
 								if ( $examArray[$examArrayKey][1] = "" ) { //only do it if it hasn't been answered
@@ -322,8 +335,12 @@ if (count($errors) == 0) {
 						}
 						break;
 					case 4: //if picked display text in results
-						if ( $answerID = $answer_id ){
+//eZFire::debug("IN CASE FOUR");
+//eZFire::debug($answerID,"ANSWER ID");
+//eZFire::debug($answer_id,"answer_id");
+						if ( $answerID == $answer_id ){
 							$resultArray[$keyCheck] = $option_value;
+
 							$http->setSessionVariable( 'result_array['.$examID.']' , $resultArray );
 						}
 						break;
@@ -340,6 +357,7 @@ if (count($errors) == 0) {
 						if ( $answerID != $answer_id ){
 							if(!in_array($keyCheck,$examID_array)){ //doesn't already exist;
 								$examArray[] = array( $option_value, "" );
+								$conditionAdd = true;
 							}
 						}
 						break;
@@ -359,8 +377,8 @@ if (count($errors) == 0) {
 						break;
 					case 8: //if not picked diplay text in results
 						if ( $answerID != $answer_id ){
-							$result_array[$keyCheck] = $option_value;
-							$http->setSessionVariable( 'resultArray['.$examID.']' , $resultArray );
+							$resultArray[$keyCheck] = $option_value;
+							$http->setSessionVariable( 'result_array['.$examID.']' , $resultArray );
 						}
 						break;
 				} //end swich
@@ -379,10 +397,12 @@ if (count($errors) == 0) {
 //eZFire::debug($index,"INDEX");
 //eZFire::debug(count($examArray),"COUNT");
 //eZFire::debug(count($checkIndex),"COUNT");
+//eZFire::debug($resultArray,"RESULT ARRAY");
 //If we drop through here without hitting the while loop we never set any elements.
 
 
-	if ( count($examArray) <=  $index + count($checkIndex) ) { //We're done - time for results
+	if ( count($examArray) <  $index + count($checkIndex) AND $conditionAdd == false ) {
+	//We're done - time for results
 	/* We should really only save the results to the database (if that option is set) and then redirect to a results page since
         the logic for viewing the results at a later date will have to be the same.  of course, if we aren't to save the results
         we'll have to use the session values instead of database values which will maybe get dicey.  I think I may have to save the
@@ -437,7 +457,7 @@ if (count($errors) == 0) {
 //eZFire::debug($examAnswer[1], 'answer' );
 //eZFire::debug($correct, 'correct');
 //eZFire::debug($followup, 'followup');
-//eZFire::debug($result_array,'result_array');
+//eZFire::debug($resultArray,'resultArray');
 						$newResult = new examResult();
 						$newResult->setAttribute( 'contentobject_id', $examID );
 						$newResult->setAttribute( 'hash', $hash );
@@ -445,7 +465,7 @@ if (count($errors) == 0) {
 						$newResult->setAttribute( 'answer', $examAnswer[1] );
 						$newResult->setAttribute( 'correct', $correct );
 						$newResult->setAttribute( 'followup', $followup );
-						$newResult->setAttribute( 'result_array', implode(",", $result_array ) );
+						$newResult->setAttribute( 'conditional', $resultArray[$examAnswer[0]] );
 						$newResult->store();
 					}
 				}
@@ -515,10 +535,14 @@ $Result['content'] = $tpl->fetch( 'design:examen/results/default/result.tpl' );
 //eZFire::debug($examArray,"EXAM ARRAY BEFORE WHILE LOOP");
 //eZFire::debug($index,"INDEX");
 		$type = "";
-		while($index < count($examArray) AND $type != "pagebreak" AND $recurseCheck < 10 ) {
+		while($index < count($examArray) AND $type != "pagebreak" AND $recurseCheck < 1 ) {
 //eZFire::debug($index,"INDEX");
 //Hmmm might want to put a recursive check here
 			$elementID = $examArray[$index][0];
+			if($recurseCheck != 0 AND in_array($elementID,$conditionArray) ) {
+//eZFire::debug("HITTING A CONDITON");
+				continue;
+			}
 			$element = examElement::fetch( $elementID );
 				switch($element->type) {
 					case "pagebreak":

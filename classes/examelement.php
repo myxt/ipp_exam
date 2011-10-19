@@ -100,14 +100,15 @@ class examElement extends eZPersistentObject
 		return $definition;
 	}
 
-	static function fetch( $id , $asObject = true )
+	static function fetch( $id , $asObject = true, $istplfetch = false )
 	{
 
 		$examElement = eZPersistentObject::fetchObject( examElement::definition(),
 														null,
 														array( 'id' => $id ),
-														$asObject );
-		return $examElement;
+														$asObject ); 
+		if ($istplfetch) return array( 'result' => $examElement );
+		else return $examElement;
 	}
 	function content( $languageCode = "eng-GB" )
 	{

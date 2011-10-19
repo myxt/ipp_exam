@@ -32,4 +32,10 @@
 			</div>
 		{/foreach}
 	</div>
+	{if $result.conditional}
+			{def $conditionalElement = fetch( 'examen', 'element', hash( 'id', $result.conditional ))}
+			{if eq($conditionalElement.type,"text")}
+				{exam_view_gui element=$conditionalElement}
+			{/if}
+	{/if}
 {/if}

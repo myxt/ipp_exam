@@ -66,4 +66,23 @@ $FunctionList['elements'] = array(	'name' => 'elements',
 														'required' => false )
 											)
 							);
+$FunctionList['element'] = array(	'name' => 'element',
+							'call_method' => array( 'include_file' => 'extension/examen/classes/examelement.php',
+												'class' => 'examElement',
+												'method' => 'fetch' ),
+							'operation_types'	=> array( 'read' ),
+							'parameter_type' => 'standard',
+							'parameters' => array (	array (	'name' => 'id',
+														'type' => 'integer',
+														'required' => true ),
+												array (	'name' => 'asObject',
+														'type' => 'boolean',
+														'default' => true,
+														'required' => false ),
+												array (	'name' => 'istplfetch',
+														'type' => 'boolean',
+														'default' => true,
+														'required' => false )
+											)
+							);
 ?>

@@ -1,4 +1,5 @@
-{def $pagebreak=false()}
+{def $pagebreak=false()
+	$condition=false()}
 <div class="content-view-full">
     <div class="class-exam">
 
@@ -13,10 +14,34 @@
 		{if eq($element.type,"group")}
 			{if ne(count($element.children),0)}
 				{foreach $element.children as $child}
-					{set $pagebreak=true()}
-					{break}
+					{if eq($child.type,"pagebreak")}
+						{foreach $child.answers as $answer}
+							{if ne($answer.option_value,0)}
+								{set $condition=true()}
+								{break}
+							{/if}
+						{/foreach}
+					{/if}
+					{if eq($child.type,"pagebreak")}
+						{set $pagebreak=true()}
+						{break}
+					{/if}
 				{/foreach}
 			{/if}
+			{if eq($pagebreak,true())}
+				{break}
+			{/if}
+			{if eq($condition,true())}
+				{break}
+			{/if}
+		{/if}
+		{if eq($element.type,"question")}
+			{foreach $element.answers as $answer}
+				{if ne($answer.option_value,0)}
+					{set $condition=true()}
+					{break}
+				{/if}
+			{/foreach}
 		{/if}
 		{if eq($element.type,"pagebreak")}
 			{set $pagebreak=true()}
@@ -24,13 +49,16 @@
 		{if eq($pagebreak,true())}
 			{break}
 		{/if}
+		{if eq($condition,true())}
+			{break}
+		{/if}
 	{/foreach}
+
 {*There are two modes at this point - simple and complicated - if an exam has no pagebreaks, has no conditions and is less than 10 questions then it should go to simple - otherwise it should go to complicated.  The default should be one element per page from that point on, but, if there are no follow conditions and there are page breaks maybe we can do multiple questions per page*}
 
-
-	{if or(eq($pagebreak,false()),lt($node.object.data_map.exam_attributes.content.structure|count,10))}
-		{*wait a sec - this can only work if there are no conditions either - this should be a fetch function*}
-		{*This is the simple mode, for short quizes/surveys that have not conditions and no pagebreaks - should go to exam to save and redirect to result*}
+	{*if there are no pagebreaks and no conditions and there are less than 10 questiosn then we can do it easy*}
+	{if and(eq($pagebreak,false()),eq($condition,false()),lt($node.object.data_map.exam_attributes.content.structure|count,10))}
+		{*This is the simple mode, for short quizes/surveys that have not conditions and no pagebreaks - should go to exam and drop straight to the results section*}
 			<form name="simple exam" method="post" action={'examen/exam/'|ezurl}>
 			<input type="hidden" name="exam_id" value="{$node.object.id}">
 			<input type="hidden" name="exam_version" value="{$node.contentobject_version}">

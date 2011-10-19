@@ -1,7 +1,5 @@
-<br>WE ARE IN THE TEXT VIEW GUI<br>
-{if $element.parent}MEMBER GROUP {$element.parent}<br>{/if}
-<div id="element text {$element.id}">
-	<div class="text-block">
+<div id="exam-view">
+	<div id="element text">
 		{$element.content}
 	</div>
 </div>
