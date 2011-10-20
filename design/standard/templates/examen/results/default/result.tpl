@@ -10,12 +10,15 @@
 			</div>
 		{else}
 			<div class="failed">
-				<div class="headline">{'You failed'|i18n('design/exam')|upcase}</div>{if $followup|not} {'Do you want to try again?'|i18n('design/exam')}
-		<form name="advanced exam" method="post" action={'examen/exam/'|ezurl}>
-			<input type="hidden" name="exam_id" value="{$examID}">
-			<input class="button" type="submit" name="SubmitButton" value="{'Restart Exam'|i18n( 'design/exam' )}" title="{'Restart Exam'|i18n( 'design/exam' )}" />
-		</form>
-{else} {'That was your second attempt.  Study harder and try again some other day.'|i18n('design/exam')}{/if}
+				<div class="headline">{'You failed'|i18n('design/exam')|upcase}</div>
+				{if $followup|not} {'Do you want to try again?'|i18n('design/exam')}
+					<form name="advanced exam" method="post" action={$node.path_identification_string|ezurl}>
+						<input type="hidden" name="exam_id" value="{$examID}">
+						<input class="button" type="submit" name="SubmitButton" value="{'Restart Exam'|i18n( 'design/exam' )}" title="{'Restart Exam'|i18n( 'design/exam' )}" />
+					</form>
+				{else}
+					{'That was your second attempt.  Study harder and try again some other day.'|i18n('design/exam')}
+				{/if}
 			</div>
 		{/if}
 		<br/>
@@ -29,9 +32,11 @@
 		</div>
 		{/if}
 		{if $showCorrect}
-			{foreach $resultArray as $result}
-				{exam_result_gui element=$result[1] result=$result[0]}
-			{/foreach}
+			{if or(eq($passed,1),eq($followup,1))}
+				{foreach $resultArray as $result}
+					{exam_result_gui element=$result[1] result=$result[0]}
+				{/foreach}
+			{/if}
 		{/if}
 		{if $passed}
 			{if $certificate}

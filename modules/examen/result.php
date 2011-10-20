@@ -17,12 +17,17 @@ $tpl = eZTemplate::factory();
 $Result = array();
 $errors = array();
 
-$examID = $Params['exam_id'];
+if ( $http->hasPostVariable( "exam_id" ) ) {
+	$examID = $http->variable( "exam_id" );
+} else {
+	$examID = $Params['exam_id'];
+}
 
 if (!ctype_digit($examID)) {  //no exam_id, we got nothing then
 	$errors[] = "no_exam_id";
 } else {
 	$contentObject = eZContentObject::fetch( $examID );
+//eZFire::debug($contentObject,"CONTENT OBJECT");
 	if (!is_object($contentObject)) {
 		/*if either of these is not an object something went bad wrong*/
 		$errors[] = "no_object";
@@ -36,7 +41,8 @@ $dataMap = $contentObject->DataMap();
 if ($dataMap["pass_threshold"]->DataInt) { //otherwise it's a survey and we don't care
 	$hash = $Params['hash'];
 	if (!$hash) {  //no exam_id, we got nothing then
-		$errors[] = "no_hash";
+		$hash = $http->getSessionKey();
+		//$errors[] = "no_hash";
 	}
 } else {
 	$survey=true;
@@ -64,19 +70,7 @@ if ( !$data instanceof eZClusterFileFailure )
 	//	eZFire::debug($dataMap["show_statistics"]->DataInt,"show statistics");
 	//	eZFire::debug($dataMap["pass_threshold"]->DataInt,"pass threshold");
 	*/
-
-	if ($dataMap["pass_threshold"]->DataInt) { //otherwise it's a survey and we don't care
-		if ($correctCount != 0) {//no division by zero here - dammit.
-			$score = 100 - ceil( ( $resultIndex - $correctCount ) / $resultIndex * 100 );
-//eZFire::debug($dataMap["pass_threshold"]->DataInt,"Threshold");
-			if ( $score >= $dataMap["pass_threshold"]->DataInt ) {
-				$passed = true;
-			} else {
-				$passed = false;
-			}
-		}
-	}
-	if ( $survey ) {
+	if ( $dataMap["pass_threshold"]->DataInt == 0 ) { //otherwise it's a survey and results will be different
 	// if it's a survey we're going to have to return an array of count( total => x, answer1 => x, answer2 => x );
 	// could maybe do the calculation here for the 
 		$results = examResult::fetchSurvey( $examID );
@@ -123,22 +117,30 @@ $totalArray[$question_id] = array_sum( $countArray[$question_id] );
 //eZFire::debug( $savedvalue ,"SAVED VALUE"); 
 
 		foreach( $results as $result ) {
-	//eZFire::debug( $result, "RESULT" );
+//eZFire::debug( $result, "RESULT" );
 			if ( $result->attribute( 'followup') != $savedvalue ) {
-	//eZFire::debug( "BAILING OUT BECAUSE IT'S THE FIRST PASS OF A FOLLOWUP"); 
+//eZFire::debug( "BAILING OUT BECAUSE IT'S THE FIRST PASS OF A FOLLOWUP"); 
 				$followup = true;
 				break; //so that we only display the followup if it is one.
 			}
-	//eZFire::debug($result->questionID,"QUESTION ID");
-	//ResultArray( "what you answered", elementObject );
+//eZFire::debug($result->questionID,"QUESTION ID");
+			//ResultArray = array( "what you answered", elementObject );
 			$resultArray[] = array( $result,  examElement::fetch( $result->questionID ));
 			if ( $result->attribute( 'correct' ) ) $correctCount++;
 			$resultIndex++;
 		}
 
-	
-	//eZFire::debug($passed,"PASSED");
-	//eZFire::debug($followup,"FOLLOWUP");
+		if ($correctCount != 0) {//no division by zero here - dammit.
+			$score = ceil( $correctCount / $resultIndex * 100 );
+			if ( $score >= $dataMap["pass_threshold"]->DataInt ) {
+				$passed = true;
+			} else {
+				$passed = false;
+			}
+		}
+
+//eZFire::debug($passed,"PASSED");
+//eZFire::debug($followup,"FOLLOWUP");
 		$tpl->setVariable("followup", $followup);
 		
 		$tpl->setVariable("passed", $passed);
@@ -174,7 +176,13 @@ $totalArray[$question_id] = array_sum( $countArray[$question_id] );
 	$tpl->setVariable("survey", $survey);
 	$tpl->setVariable("hash",$hash);
 	$tpl->setVariable("examID",$examID);
-
+//eZFire::debug($examID,"EXAMID");
+	$nodeID = eZContentObjectTreeNode::findMainNode( $examID );
+//eZFire::debug($nodeID,"NODE ID");
+	$node =  eZContentObjectTreeNode::fetchByContentObjectID( $examID );
+//eZFire::debug($node[0]->attribute('path_identification_string'),"NODE");
+	$tpl->setVariable("nodeID",$nodeID);
+	$tpl->setVariable("node",$node[0]);
 	$mode = $dataMap["mode"]->DataText ? $dataMap["mode"]->DataText : "default";
 	$mode = "default";
 	$Result['content'] = $tpl->fetch( 'design:examen/results/'.$mode.'/result.tpl' );

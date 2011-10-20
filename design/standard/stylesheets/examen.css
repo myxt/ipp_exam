@@ -136,3 +136,9 @@ div.listbutton {
 #exam-error div.error-message {
 	color: red;
 }
+div.class-exam div.exam-message {
+	border: 1px solid #CACACA;
+	padding: 0.7em;
+	margin: 0em;
+	background-color: #FFCCCC;
+}

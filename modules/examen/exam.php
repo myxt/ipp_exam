@@ -9,55 +9,62 @@ $tpl = eZTemplate::factory();
 $Result = array();
 $errors = array();
 $examArray = array();
-
-
-/*We have to get the objectID from the NodeID to get the language and version*/
+//eZFire::debug($Module,"MODULE");
 
 /*First time through, figure out what the question array is and load it in the session*/
-
-
 
 if ( $http->hasPostVariable( "exam_id" ) ) {
 	$examID = $http->variable( "exam_id" );
 } else {
 	$examID = $Params['exam_id'];
 }
-
-if (!ctype_digit($examID)) {  //no exam_id, we got nothing then
-	$errors[] = "no_exam_id";
-}
+//eZFire::debug($examID,"examID");
 if (count($errors) == 0) { // only need these the first time through?
-	if (!$http->hasSessionVariable( 'index['.$examID.']' )) {
-		if ( $http->hasPostVariable( "exam_version" ) ) {
-			$examVersion = $http->variable( "exam_version" );
-		} else {
-			$errors[] = "no_exam_version";
-		}
-		if ( $http->hasPostVariable( "exam_language" ) ) {
-			$examLanguage = $http->variable( "exam_language" );
-		} else {
-			$errors[] = "no_exam_language";
-		}
+	if (!ctype_digit($examID)) {  //no exam_id, we got nothing then
+		$errors[] = "no_exam_id";
 	}
-//Do we need this the second pass?  What if someone removes the version while someone is in the middle of a test. We need this for the first pass to get the value for random and for tthe results pass to get the value for SaveResults
 	$contentObject = eZContentObject::fetch( $examID );
-//eZFire::debug($contentObject->attribute( "class_identifier" )  ,"CLASS IDENTIFIER");
-//eZFire::debug($examID,"ID");
-//eZFire::debug($examVersion,"Version");
-//eZFire::debug($examLanguage,"Language");
-
 	if (!is_object($contentObject)) {
 		/*if either of these is not an object something went bad wrong*/
 		$errors[] = "no_object";
-	}
-	if ( $contentObject->attribute( "class_identifier" ) != "exam" ) {
+	} elseif ( $contentObject->attribute( "class_identifier" ) != "exam" ) {
 		$errors[] = "object_not_exam";
 	}
+}
+//eZFire::debug($contentObject->attribute( "class_identifier" )  ,"CLASS IDENTIFIER");
+if (count($errors) == 0) { // only need these the first time through?
+	if (!$http->hasSessionVariable( 'index['.$examID.']' )) {
+		if ( count( $http->sessionVariable( 'index['.$examID.']' ) ) == 0) {
+			if ( $http->hasPostVariable( "exam_version" ) ) {
+				$examVersion = $http->variable( "exam_version" );
+			} else { //I don't think this is right... you should be getting this from the environment not the last version
+				$examVersion = $contentObject->CurrentVersion;
+//eZFire::debug("SETTING VERSION");
+				//$errors[] = "no_exam_version";
+			}
+			if ( $http->hasPostVariable( "exam_language" ) ) {
+//eZFire::debug("SETTING LANGUAGE");
+				$examLanguage = $http->variable( "exam_language" );
+			} else {
+				$examLanguage = $contentObject->CurrentLanguage;
+				//$errors[] = "no_exam_language";
+			}
+		}
+	}
+//Do we need this the second pass?  What if someone removes the version while someone is in the middle of a test. We need this for the first pass to get the value for random and for tthe results pass to get the value for SaveResults
+
+	//$node = eZContentObjectTreeNode::findMainNode( $examID );
+//eZFire::debug($node,"NODE");
+//eZFire::debug($contentObject->attribute( "class_identifier" )  ,"CLASS IDENTIFIER");
 } //end if no errors
+//eZFire::debug($examVersion,"Version");
+//eZFire::debug($examLanguage,"Language");
+//eZFire::debug($errors,"errors");
 
 //Need to to this after I have an examID
 if (!$http->hasSessionVariable( 'status['.$examID.']' )) { //Have to write something to the cookie
-	$http->setSessionVariable( 'status['.$examID.']', time() );
+	//$http->setSessionVariable( 'status['.$examID.']', time() );
+	$http->setSessionVariable( 'status['.$examID.']', "FIRST" );
 } /* If someone hits the back button we just drop through to the results page again.
  elseif ( $http->sessionVariable( 'status' ) == "DONE" ) {  //Maybe should show the results again?  Dunno.
 	$errors[] = "threshold_exceeded";
@@ -96,7 +103,11 @@ if (count($errors) == 0) {
 	/*start exam*/
 	$index = $http->hasSessionVariable( 'index['.$examID.']' ) ? $http->sessionVariable( 'index['.$examID.']' ) : 0;
 //eZFire::debug($index,"INDEX");
-	
+	$questionCount=0;
+	if ($http->hasPostVariable( 'mode' )) {
+		$mode = $http->postVariable( 'mode' );
+	//eZFire::debug($examArray,"GETTING EXAM ARRAY FROM SESSION");
+	}
 	/********************************
 	*                               *
 	*    FIRST TIME THROUGH         *
@@ -205,13 +216,16 @@ if (count($errors) == 0) {
 			}
 			switch($element->type) {
 				case "pagebreak":
-					if (!$random) { //if it's random we can toss because we can't use it anyway
+					//if (!$random) { //if it's random we can toss because we can't use it anyway
 						$examArray[]=array($element->ID , "" );
-					}
+					//}
 					break;
 				case "text":
+					$examArray[]=array($element->ID , "" );	
+					break;
 				case "question":
 					$examArray[]=array($element->ID , "" );	
+					$questionCount++;
 					break;
 				case "group": //Now we have to recursively do the whole thing again, doh
 					if ( $element->option->random == 1 ) {
@@ -237,8 +251,10 @@ if (count($errors) == 0) {
 								}
 								break;
 							case "text":
+									$groupArray[] = array($child->ID , "" );
 							case "question":
 									$groupArray[] = array($child->ID , "" );
+									$questionCount++;
 								break;
 							case "group": 
 								break;
@@ -395,13 +411,16 @@ if (count($errors) == 0) {
 	********************************/
 //eZFire::debug($checkList,"THESE HAVE TO GO INTO A ELEMENTS - THEY HAVEN'T ACTUALLY BEEN LOADED?");
 //eZFire::debug($index,"INDEX");
-//eZFire::debug(count($examArray),"COUNT");
-//eZFire::debug(count($checkIndex),"COUNT");
+//eZFire::debug($mode,"MODE");
+//eZFire::debug($questionCount,"QuestionCount");
+//eZFire::debug(count($examArray),"EXAM ARRAY COUNT");
+//eZFire::debug(count($checkList),"CHECK INDEX");
+
 //eZFire::debug($resultArray,"RESULT ARRAY");
-//If we drop through here without hitting the while loop we never set any elements.
 
+//if it's simple mode then we should be dropping through right now by matching on the $questionCount
 
-	if ( count($examArray) <  $index + count($checkIndex) AND $conditionAdd == false ) {
+	if ( ( $mode == 'simple' AND count($checkList) == $questionCount ) OR ( count($examArray) <  $index + count($checkIndex) AND $conditionAdd == false ) OR count($examArray) == 0 ) {
 	//We're done - time for results
 	/* We should really only save the results to the database (if that option is set) and then redirect to a results page since
         the logic for viewing the results at a later date will have to be the same.  of course, if we aren't to save the results
@@ -443,6 +462,7 @@ if (count($errors) == 0) {
 						if ($survey == false) {
 							$answerObject = examAnswer::fetch( $examAnswer[1] );
 							$correct = $answerObject->correct;
+//eZFire::debug($correct,"CORRECT");
 							if ( $correct == true ) {
 								$correctCount++;
 							}
@@ -473,7 +493,9 @@ if (count($errors) == 0) {
 
 			if ($dataMap["pass_threshold"]->DataInt) { //otherwise it's a survey
 				if ($correctCount != 0) {//no division by zero here - dammit.
-					$score = 100 - ceil( ( $resultIndex - $correctCount ) / $resultIndex * 100 );
+					//$score = 100 - ceil( ( $resultIndex - $correctCount ) / $resultIndex * 100 );
+					$score = ceil( $correctCount / $resultIndex * 100 );
+//eZFire::debug($score,"SCORE");
 					if ( $score >= $dataMap["pass_threshold"]->DataInt ) {
 						$passed = true;
 					} else {
@@ -486,7 +508,7 @@ if (count($errors) == 0) {
 				$exam = exam::fetch( $examID );
 				$totalExam = $exam->increment( 'count' );
 //eZFire::debug($totalExam,"EXAM COUNT SHOULD HAVE INCREMENTED");
-				if (!$survey) { //If it's a survey, then this won't mean anything
+				if (!$survey AND $passed) { //If it's a survey, then this won't mean anything
 					if ($followup) {
 							$secondPass = $exam->increment( 'pass_second' );
 //eZFire::debug($secondPass,"SECOND PASS SHOULD HAVE INCREMENTED");
@@ -494,8 +516,8 @@ if (count($errors) == 0) {
 							$firstPass = $exam->increment( 'pass_first' );
 //eZFire::debug($totalExam,"FIRST PASS SHOULD HAVE INCREMENTED");
 					}
-					$highScore = $exam->highScore( $score );
 				}	
+				$highScore = $exam->highScore( $score );
 			} else {//if save results
 //WE NEED  $score IN A SESSION VARIABLE IF WE DONT SAVE RESULTS maybe $survey is useful too
 				$http->setSessionVariable( 'score['.$examID.']', $score );
@@ -512,11 +534,16 @@ if (count($errors) == 0) {
 		} else { //Closing out a retest OR it's already done
 			$http->setSessionVariable( 'status['.$examID.']', "DONE" );
 		}
-
+//Reinitialize values for retest
+$http->setSessionVariable( 'index['.$examID.']' , 0 ); //Running count of where we are
+$http->setSessionVariable( 'exam_array['.$examID.']', array() ); //array of elements
+$http->setSessionVariable( 'condition_array['.$examID.']', array() ); //array of conditions to match on
+$http->setSessionVariable( 'result_array['.$examID.']', array() ); //id of text elements to add to the result page on condition
+//$http->setSessionVariable( 'score['.$examID.']', 0 ); //id of text elements to add to the result page on condition
 		//Since the result page is what we go to from here AS WELL AS getting archived results we have to do a redirect to view
 		//that means NO tpl variables can be passed and we'll have to refetch everything anyway
 		$Module->redirectToView("result", array( $examID, $hash ) );
-$Result['content'] = $tpl->fetch( 'design:examen/results/default/result.tpl' );
+//$Result['content'] = $tpl->fetch( 'design:examen/results/default/result.tpl' );
 	//	$Module->redirectToView("result", array( $examID, $hash ), array( 0 => "x"), array( "dum" => "unorderParams", "doh" => "userParamenters" ), "anchor" );
 /*
     function redirectToView( $viewName = '', $parameters = array(),
@@ -535,7 +562,7 @@ $Result['content'] = $tpl->fetch( 'design:examen/results/default/result.tpl' );
 //eZFire::debug($examArray,"EXAM ARRAY BEFORE WHILE LOOP");
 //eZFire::debug($index,"INDEX");
 		$type = "";
-		while($index < count($examArray) AND $type != "pagebreak" AND $recurseCheck < 1 ) {
+		while($index < count($examArray) AND $type != "pagebreak" AND $recurseCheck < 10 ) {
 //eZFire::debug($index,"INDEX");
 //Hmmm might want to put a recursive check here
 			$elementID = $examArray[$index][0];
@@ -546,11 +573,8 @@ $Result['content'] = $tpl->fetch( 'design:examen/results/default/result.tpl' );
 			$element = examElement::fetch( $elementID );
 				switch($element->type) {
 					case "pagebreak":
-						if (!$elements) {
-							$index++;
-						} else {
-							$type = $element->type;
-						}
+						$index++;
+						$type="pagebreak";
 						break;
 					case "text":
 					case "question":
