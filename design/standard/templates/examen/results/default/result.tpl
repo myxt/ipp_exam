@@ -23,7 +23,7 @@
 		{/if}
 		<br/>
 
-		{'Your score was [score]% correct'|i18n('design/exam','score',hash('[score]',$score))}.<br/>
+		{'Your score was [score]% correct'|i18n('design/exam','score',hash('[score]',cond($score,$score,0)))}.<br/>
 
 		{if $showStatistics}
 		<div class="statistics-text">

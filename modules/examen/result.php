@@ -61,18 +61,17 @@ if ( !$data instanceof eZClusterFileFailure )
 
 	/*These are the object options that determine results output
 	//	These happen in exam...
-	//	eZFire::debug($dataMap["mode"]->DataText,"mode");
-	//	eZFire::debug($dataMap["retest"]->DataInt,"retest");
-	//	eZFire::debug($dataMap["save_results"]->DataInt,"save results");
+	//	$dataMap["mode"]->DataText
+	//	$dataMap["retest"]->DataInt
+	//	$dataMap["save_results"]->DataInt
 	//	These happen here...
-	//	eZFire::debug($dataMap["show_correct"]->DataInt,"show correct");
-	//	eZFire::debug($dataMap["certificate"]->DataInt,"certificate");
-	//	eZFire::debug($dataMap["show_statistics"]->DataInt,"show statistics");
-	//	eZFire::debug($dataMap["pass_threshold"]->DataInt,"pass threshold");
+	//	$dataMap["show_correct"]->DataInt
+	//	$dataMap["certificate"]->DataInt,
+	//	$dataMap["show_statistics"]->DataInt
+	//	$dataMap["pass_threshold"]->DataInt
 	*/
-	if ( $dataMap["pass_threshold"]->DataInt == 0 ) { //otherwise it's a survey and results will be different
+	if ( $dataMap["pass_threshold"]->DataInt == 0 ) { //it's a survey and results will be different
 	// if it's a survey we're going to have to return an array of count( total => x, answer1 => x, answer2 => x );
-	// could maybe do the calculation here for the 
 		$results = examResult::fetchSurvey( $examID );
 		//A survey could still have multiple questions.
 		$total=count($results);
@@ -87,10 +86,9 @@ if ( !$data instanceof eZClusterFileFailure )
 		$totalArray = array();
 		foreach($countArray as $question_id => $answerArray ) {
 //eZFire::debug($question_id,"QUESTION ID");
-$elements[] =  examElement::fetch( $question_id );
-$totalArray[$question_id] = array_sum( $countArray[$question_id] );
+			$elements[] =  examElement::fetch( $question_id );
+			$totalArray[$question_id] = array_sum( $countArray[$question_id] );
 			foreach($answerArray as $index => $answer ) {
-
 //eZFire::debug($answer,"ANSWER");
 //eZFire::debug($index,"INDEX");
 //eZFire::debug(ceil( $answer / $total * 100 ),"PERCENTAGE");
@@ -121,7 +119,7 @@ $totalArray[$question_id] = array_sum( $countArray[$question_id] );
 			if ( $result->attribute( 'followup') != $savedvalue ) {
 //eZFire::debug( "BAILING OUT BECAUSE IT'S THE FIRST PASS OF A FOLLOWUP"); 
 				$followup = true;
-				break; //so that we only display the followup if it is one.
+				continue; //so that we only display the followup if it is one.
 			}
 //eZFire::debug($result->questionID,"QUESTION ID");
 			//ResultArray = array( "what you answered", elementObject );

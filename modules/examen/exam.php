@@ -9,9 +9,12 @@ $tpl = eZTemplate::factory();
 $Result = array();
 $errors = array();
 $examArray = array();
-//eZFire::debug($Module,"MODULE");
 
-/*First time through, figure out what the question array is and load it in the session*/
+/**************************************
+*                                     *
+* INITIALIZE VARIABLES                *
+*                                     *
+**************************************/
 
 if ( $http->hasPostVariable( "exam_id" ) ) {
 	$examID = $http->variable( "exam_id" );
@@ -31,19 +34,30 @@ if (count($errors) == 0) { // only need these the first time through?
 		$errors[] = "object_not_exam";
 	}
 }
-//eZFire::debug($contentObject->attribute( "class_identifier" )  ,"CLASS IDENTIFIER");
-if (count($errors) == 0) { // only need these the first time through?
-	if (!$http->hasSessionVariable( 'index['.$examID.']' )) {
-		if ( count( $http->sessionVariable( 'index['.$examID.']' ) ) == 0) {
+//The language and version may not be set?  They must be set to get anything in the examArray.  This should always come from the node view so that the language and version are correct for the siteaccess.
+if (count($errors) == 0) { 
+	if (!$http->hasSessionVariable( 'index['.$examID.']' )) { // only need these the first time through or retest
 			if ( $http->hasPostVariable( "exam_version" ) ) {
 				$examVersion = $http->variable( "exam_version" );
-			} else { //I don't think this is right... you should be getting this from the environment not the last version
+			} else {
 				$examVersion = $contentObject->CurrentVersion;
-//eZFire::debug("SETTING VERSION");
 				//$errors[] = "no_exam_version";
 			}
 			if ( $http->hasPostVariable( "exam_language" ) ) {
-//eZFire::debug("SETTING LANGUAGE");
+				$examLanguage = $http->variable( "exam_language" );
+			} else {
+				$examLanguage = $contentObject->CurrentLanguage;
+				//$errors[] = "no_exam_language";
+			}
+	} else {
+		if (  $http->sessionVariable( 'index['.$examID.']' ) == 0) { //This is retest
+			if ( $http->hasPostVariable( "exam_version" ) ) {
+				$examVersion = $http->variable( "exam_version" );
+			} else {
+				$examVersion = $contentObject->CurrentVersion;
+				//$errors[] = "no_exam_version";
+			}
+			if ( $http->hasPostVariable( "exam_language" ) ) {
 				$examLanguage = $http->variable( "exam_language" );
 			} else {
 				$examLanguage = $contentObject->CurrentLanguage;
@@ -51,35 +65,37 @@ if (count($errors) == 0) { // only need these the first time through?
 			}
 		}
 	}
-//Do we need this the second pass?  What if someone removes the version while someone is in the middle of a test. We need this for the first pass to get the value for random and for tthe results pass to get the value for SaveResults
-
-	//$node = eZContentObjectTreeNode::findMainNode( $examID );
-//eZFire::debug($node,"NODE");
-//eZFire::debug($contentObject->attribute( "class_identifier" )  ,"CLASS IDENTIFIER");
 } //end if no errors
+
 //eZFire::debug($examVersion,"Version");
 //eZFire::debug($examLanguage,"Language");
 //eZFire::debug($errors,"errors");
 
-//Need to to this after I have an examID
+//Need to do this after I have an examID
 if (!$http->hasSessionVariable( 'status['.$examID.']' )) { //Have to write something to the cookie
 	//$http->setSessionVariable( 'status['.$examID.']', time() );
 	$http->setSessionVariable( 'status['.$examID.']', "FIRST" );
-} /* If someone hits the back button we just drop through to the results page again.
+}
+/* If someone hits the back button we just drop through to the results page again.
  elseif ( $http->sessionVariable( 'status' ) == "DONE" ) {  //Maybe should show the results again?  Dunno.
 	$errors[] = "threshold_exceeded";
 }
 */
-//IS this maybe too close? I keep getting false negatives.
-if ( !eZSession::userHasSessionCookie() ) { //Have to check every time just in case someone turns cookies off in the middle - is that really what we are checking here?  I don't think so.
-//WHAT DO WE DO HERE... RETEST FLAG WON'T WORK AND COMPLICATED MODE WON'T WORK.. WE ALSO WON'T HAVE A UNIQUE ID TO STORE THE RESULTS.  WE SHOULD JUST ERROR OUT HERE, NO?  I'LL DO NOTHING FOR NOW
-//This isn't working right
-	//$errors[] = "i_can_haz_no_cookie";
-//eZFire::debug("NO COOKIE?");
+//eZFire::debug($http->sessionVariable( 'status['.$examID.']'), "STATUS" );
+
+//Got to do this AFTER we set something otherwise there potentially isn't a session yet.
+//if ( !eZSession::userHasSessionCookie() ) { //Have to check every time just in case someone turns cookies off in the middle
+$hash = eZSession::getUserSessionHash();
+//eZFire::debug($hash,"HASH");
+//$sessionKey = $http->getSessionKey();
+//eZFire::debug($sessionKey,"SESSION KEY");
+if ( !hash ) {
+	$errors[] = "i_can_haz_no_cookie";
 }
+
 if ($http->hasSessionVariable( 'exam_array['.$examID.']' )) {
 	$examArray = $http->sessionVariable( 'exam_array['.$examID.']' );
-//eZFire::debug($examArray,"GETTING EXAM ARRAY FROM SESSION");
+	//This should be empty at the beginning of a retest because we potentially have conditional elements in the array.  So we have to rerun the first time through code to build the exam array again.
 }
 //This is always dynamic so it can't be cached - unless it is really simple.... hmmm....
 
@@ -106,14 +122,14 @@ if (count($errors) == 0) {
 	$questionCount=0;
 	if ($http->hasPostVariable( 'mode' )) {
 		$mode = $http->postVariable( 'mode' );
-	//eZFire::debug($examArray,"GETTING EXAM ARRAY FROM SESSION");
+//eZFire::debug($examArray,"GETTING EXAM ARRAY FROM SESSION");
 	}
 	/********************************
 	*                               *
 	*    FIRST TIME THROUGH         *
 	*                               *
 	********************************/
-
+/*First time through, figure out what the question array is and load it in the session*/
 //eZFire::debug(count($examArray), "COUNT EXAM ARRAY RIGHT BEFORE FIRST TIME THROUGH");
 	if (count($examArray) < 1) {
 //eZFire::debug("CALCULATING EXAM ARRAY");
@@ -135,7 +151,6 @@ if (count($errors) == 0) {
 		//a non-random exam..
 		$random=true;
 		$conditionObjectArray = examAnswer::getConditions($examID,$examVersion,$examLanguage);
-//eZFire::debug($conditionObjectArray,"CONDITION ARRAY");
 		/* Conditions
 			if [not] picked	Remove			text, group, question 1 5
 			if [not] picked	Add				text, group, question 2 6
@@ -211,7 +226,7 @@ if (count($errors) == 0) {
 
 		foreach($examElements as $element) {
 			if( in_array( $element->ID, $conditionRemoveArray ) ) {
-//eZFire::debug($element->ID,"THIS SHOULD BE REMOVED");
+//eZFire::debug($element->ID,"THIS SHOULD BE REMOVED BECAUSE ITS A CONDITION");
 				continue;
 			}
 			switch($element->type) {
@@ -268,7 +283,7 @@ if (count($errors) == 0) {
 		$http->setSessionVariable( 'exam_array['.$examID.']' , $examArray );
 		$http->setSessionVariable( 'condition_array['.$examID.']',$answerConditionArray );
 	} else { 
-//eZFire::debug($examID,"SHOULD BE GETTING INFO FROM SESSION");
+//eZFire::debug($examID,"SHOULD BE GETTING INFO FROM SESSION - ITS A RETEST");
 
 		if ($http->hasSessionVariable( 'condition_array['.$examID.']' )) {
 
@@ -417,7 +432,7 @@ if (count($errors) == 0) {
 //eZFire::debug(count($checkList),"CHECK INDEX");
 
 //eZFire::debug($resultArray,"RESULT ARRAY");
-
+//eZFire::debug($examArray,"EXAM ARRAY GOING INTO RESULTS");
 //if it's simple mode then we should be dropping through right now by matching on the $questionCount
 
 	if ( ( $mode == 'simple' AND count($checkList) == $questionCount ) OR ( count($examArray) <  $index + count($checkIndex) AND $conditionAdd == false ) OR count($examArray) == 0 ) {
@@ -430,16 +445,17 @@ if (count($errors) == 0) {
 	//that means NO tpl variables can be passed and we'll have to refetch everything anyway
 		$status = $http->sessionVariable( 'status['.$examID.']' ) ;
 		$followup = false;
-		if ( $status == "RETEST" ) {
-			$followup = true;
-		}
 		$survey = false;
 		$passed = false;
 		$correct = false;
 		$correctCount = 0;
 		$saveResults = $dataMap["save_results"]->DataInt;
+		//Session key is different from hash.
 		$hash = $http->getSessionKey();
 
+		if ( $status == "RETEST" ) {
+			$followup = true;
+		}
 //eZFire::debug($saveResults,"SAVE RESULTS");
 		if (!$dataMap["pass_threshold"]->DataInt) { //otherwise it's a survey so always save statistics
 			$survey = true;
@@ -447,30 +463,36 @@ if (count($errors) == 0) {
 //eZFire::debug($saveResults,"SAVE RESULTS");
 //eZFire::debug($survey,"SURVEY");
 //eZFire::debug($status,"STATUS");
-		if ( $status != "DONE" ) { //If this is set to DONE someone hit the back button
-			if ( $saveResults == 1 OR $survey == true ) {
+		if ( $status != "DONE" ) { //If this is set to DONE someone hit the back button and we should just go to the results page
+			
 //eZFire::debug( "SAVING RESULTS" );
-				//Save question results
-				//$session = $http->getSessionKey() ? $http->getSessionKey() : md5sum(date(now));
-				//$hash = md5($session.$secretKey.$examID);
-				//If it's a dated result we'll have to add the exam id just in case they did multiple exams under one session
-/* Since the list of answerable questions is dynamic, we have to go by what is is examArray and assume it is correct.  Which means that if there is ever multiple answers or no answer at all, the totals/score will be off */
-				foreach( $examArray as $examAnswer ) {
-					$elementObject = examElement::fetch( $examAnswer[0] );
-					if ( $elementObject->type == "question" ) {
-						$questionIndex++;
-						if ($survey == false) {
-							$answerObject = examAnswer::fetch( $examAnswer[1] );
-							$correct = $answerObject->correct;
+			//Save question results
+			//$session = $http->getSessionKey() ? $http->getSessionKey() : md5sum(date(now));
+			//$hash = md5($session.$secretKey.$examID);
+			//If it's a dated result we'll have to add the exam id just in case they did multiple exams under one session
+			/* Since the list of answerable questions is dynamic, we have to go by what is is examArray and assume it is correct.  Which means that if there is ever multiple answers or no answer at all, the totals/score will be off */
+
+			foreach( $examArray as $examAnswer ) {
+				//We need these even if we don't save results
+				$elementObject = examElement::fetch( $examAnswer[0] );
+				if ( $elementObject->type == "question" ) {
+					$questionIndex++;
+					if ($survey == false) {
+						$answerObject = examAnswer::fetch( $examAnswer[1] );
+						$correct = $answerObject->correct;
 //eZFire::debug($correct,"CORRECT");
-							if ( $correct == true ) {
-								$correctCount++;
-							}
+						if ( $correct == true ) {
+							$correctCount++;
 						}
+					}
+				}
 //We're going to have to save the resultArray session variable here too, otherwise there is no way to display it in the results
+//We need the correct count even if we aren't saving results
 //eZFire::debug("ARE WE HERE, WHY ARENT WE HERE");
 //eZFire::debug("SHOULD BE SAVING THE RESULT")
-						$newResult = new examResult();
+				if ( $saveResults == 1 OR $survey == true ) {
+//eZFire::debug("SAVING NEW RESULT");
+					$newResult = new examResult();
 //eZFire::debug($examID, 'contentobject_id' );
 //eZFire::debug($hash, 'hash');
 //eZFire::debug($examAnswer[0],'question_id' );
@@ -478,23 +500,25 @@ if (count($errors) == 0) {
 //eZFire::debug($correct, 'correct');
 //eZFire::debug($followup, 'followup');
 //eZFire::debug($resultArray,'resultArray');
-						$newResult = new examResult();
-						$newResult->setAttribute( 'contentobject_id', $examID );
-						$newResult->setAttribute( 'hash', $hash );
-						$newResult->setAttribute( 'question_id', $examAnswer[0] );
-						$newResult->setAttribute( 'answer', $examAnswer[1] );
-						$newResult->setAttribute( 'correct', $correct );
-						$newResult->setAttribute( 'followup', $followup );
-						$newResult->setAttribute( 'conditional', $resultArray[$examAnswer[0]] );
-						$newResult->store();
-					}
-				}
-			}//end save results		
+					$newResult = new examResult();
+					$newResult->setAttribute( 'contentobject_id', $examID );
+					$newResult->setAttribute( 'hash', $hash );
+					$newResult->setAttribute( 'question_id', $examAnswer[0] );
+					$newResult->setAttribute( 'answer', $examAnswer[1] );
+					$newResult->setAttribute( 'correct', $correct );
+					$newResult->setAttribute( 'followup', $followup );
+					$newResult->setAttribute( 'conditional', $resultArray[$examAnswer[0]] );
+					$newResult->store();
+				}//end save results		
+			}//end foreach
+//eZFire::debug($correctCount,'correctCount');
+//eZFire::debug($questionIndex,'questionIndex');
+
 
 			if ($dataMap["pass_threshold"]->DataInt) { //otherwise it's a survey
 				if ($correctCount != 0) {//no division by zero here - dammit.
 					//$score = 100 - ceil( ( $resultIndex - $correctCount ) / $resultIndex * 100 );
-					$score = ceil( $correctCount / $resultIndex * 100 );
+					$score = ceil( $correctCount / $questionIndex * 100 );
 //eZFire::debug($score,"SCORE");
 					if ( $score >= $dataMap["pass_threshold"]->DataInt ) {
 						$passed = true;
@@ -503,23 +527,27 @@ if (count($errors) == 0) {
 					}
 				}
 			}
-
+//eZFire::debug($score,"SCORE");
+//eZFire::debug($followup,"FOLLOWUP");
+//eZFire::debug($passed,"PASSED");
 			if ( $saveResults ) {
+//eZFire::debug($saveResults,"SHOULD BE DOING THE INCREMENTS HERE");
 				$exam = exam::fetch( $examID );
 				$totalExam = $exam->increment( 'count' );
 //eZFire::debug($totalExam,"EXAM COUNT SHOULD HAVE INCREMENTED");
 				if (!$survey AND $passed) { //If it's a survey, then this won't mean anything
 					if ($followup) {
-							$secondPass = $exam->increment( 'pass_second' );
+						$secondPass = $exam->increment( 'pass_second' );
 //eZFire::debug($secondPass,"SECOND PASS SHOULD HAVE INCREMENTED");
 					}else{
-							$firstPass = $exam->increment( 'pass_first' );
+						$firstPass = $exam->increment( 'pass_first' );
 //eZFire::debug($totalExam,"FIRST PASS SHOULD HAVE INCREMENTED");
 					}
 				}	
 				$highScore = $exam->highScore( $score );
 			} else {//if save results
-//WE NEED  $score IN A SESSION VARIABLE IF WE DONT SAVE RESULTS maybe $survey is useful too
+//WE NEED $score and $passed IN A SESSION VARIABLE IF WE DONT SAVE RESULTS
+				$http->setSessionVariable( 'passed['.$examID.']', $passed );
 				$http->setSessionVariable( 'score['.$examID.']', $score );
 			}
 		} //if not DONE

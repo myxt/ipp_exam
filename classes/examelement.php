@@ -228,16 +228,16 @@ class examElement extends eZPersistentObject
 		$db = eZDB::instance();
 		$db->begin();
 		/*check for children if group, answers if question and permission*/
-		switch ($element->type) {
+		switch ($this->type) {
 			case "question":
-				$children = count( $element->getAnswers() );
+				$children = count( $this->getAnswers() );
 				if ($children != 0 ) {
 					$query = "DELETE FROM `exam_answer` WHERE `question_id` = ".$this->ID;
 					$db->query( $query );
 				}
 				break;
 			case "group":
-				$children = count( $element->getChildren() );
+				$children = count( $this->getChildren() );
 				if ($children != 0 ) {
 					$query = "DELETE FROM `exam_structure` WHERE `parent` = ".$this->ID;
 					$db->query( $query );

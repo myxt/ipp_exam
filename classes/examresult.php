@@ -97,7 +97,7 @@ class examResult extends eZPersistentObject
 		$examResult = eZPersistentObject::fetchObjectList( examResult::definition(),
 														null,
 														array( 'hash' => $hash , 'contentobject_id' => $exam_id ),
-														array( 'followup' => 'asc' ),
+														array( 'question_id' => 'asc', 'followup' => 'desc' ),
 														$asObject
 											);
 		return $examResult;

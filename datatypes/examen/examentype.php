@@ -51,7 +51,7 @@ class ExamenType extends eZDataType
      Sets the default value.
     */
     function postInitializeObjectAttribute( $contentObjectAttribute, $currentVersion, $originalContentObjectAttribute )
-    {
+    { //This creates a new version or copies a version.
 //eZFire::debug(__FUNCTION__,"WE ARE HERE");
 
 //eZFire::debug($contentObjectAttribute->attribute( 'version' ),"object attribute version");
@@ -65,9 +65,10 @@ class ExamenType extends eZDataType
 			$exam->setAttribute( 'language_code', $contentObjectAttribute->attribute( "language_code" ) );
 			$exam->store();
 		} else { //if it's a new version gotta clone it
-
-
-			//if ( $contentObjectAttribute->attribute( 'version' ) != $currentVersion )  {
+//eZFire::debug($currentVersion,"PUBLISHED VERSION");
+//eZFire::debug($contentObjectAttribute->attribute( 'version' ),"NEW VERSION");
+//eZFire::debug($originalContentObjectAttribute->attribute( 'version' ),"OLD VERSION");
+			if ( $contentObjectAttribute->attribute( 'version' ) != $currentVersion )  {
 
 				$examElements = exam::getstructure($originalContentObjectAttribute->attribute( 'contentobject_id' ),$originalContentObjectAttribute->attribute( 'version' ),$originalContentObjectAttribute->attribute( 'language_code' ));
 
@@ -81,17 +82,19 @@ class ExamenType extends eZDataType
 												$contentObjectAttribute->attribute( 'language_code' ) );
 					if ($elementObject->type == 'question' ) {
 						foreach( $elementObject->answers as $answer ) {
-
+//eZFire::debug($newElement->attribute( 'id' ),"ADDING");
 							examAnswer::add(	$contentObjectAttribute->attribute( 'contentobject_id' ),
-											$newElement->attribute( 'id' ),
+											$newElement->attribute( 'id' ),//question_id
 											$answer->attribute( 'priority' ),
 											$answer->attribute( 'option_id' ),
 											$answer->attribute( 'option_value' ),
+											$answer->attribute( 'correct' ),
 											$answer->attribute( 'content' ),
 											$contentObjectAttribute->attribute( 'version' ),
 											$contentObjectAttribute->attribute( 'language_code' ) );
 						}
 					}
+
 					if ($elementObject->type == 'group' ) {
 						foreach( $elementObject->children as $child) {
 							$newElement = examElement::add(	$contentObjectAttribute->attribute( 'contentobject_id' ),
@@ -109,6 +112,7 @@ class ExamenType extends eZDataType
 													$answer->attribute( 'priority' ),
 													$answer->attribute( 'option_id' ),
 													$answer->attribute( 'option_value' ),
+													$answer->attribute( 'correct' ),
 													$answer->attribute( 'content' ),
 													$contentObjectAttribute->attribute( 'version' ),
 													$contentObjectAttribute->attribute( 'language_code' ) );
@@ -117,7 +121,7 @@ class ExamenType extends eZDataType
 						}
 					}
 				}
-			//}
+			}
 		}
     }
 
@@ -273,7 +277,7 @@ if so, update the table. for the appropriate element.  We'll need the element id
 				$question = array_keys($customAction['newAnswer']);
 				$question_id = $question[0] ? $question[0] : 0;
 				$answer_priority = $answer_priority_array[$question_id] + 1;
-				examAnswer::add( $contentObjectAttribute->attribute( 'contentobject_id' ), $question_id, $answer_priority ,"","","", $contentObjectAttribute->attribute( 'version' ),$contentObjectAttribute->attribute( 'language_code' ) );
+				examAnswer::add( $contentObjectAttribute->attribute( 'contentobject_id' ), $question_id, $answer_priority ,"","","","", $contentObjectAttribute->attribute( 'version' ),$contentObjectAttribute->attribute( 'language_code' ) );
 			}
 			if ( $customAction["removeAnswer"] ) {
 				$element_id = array_keys($customAction['removeAnswer']);

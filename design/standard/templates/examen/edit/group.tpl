@@ -1,7 +1,7 @@
 {def $cols=88}
 <div class="group">
 	<label>{"group"|i18n('design/exam')|upcase} {$element.id}</label>
-	<input class="button" value="Remove" name="CustomActionButton[remove][{$element.id}]" type="submit">
+	<input class="button" value="{'Remove'|i18n('design/exam')}" name="CustomActionButton[remove][{$element.id}]" type="submit">
 	<input type="hidden" value="0" name="random_{$element.id}" /> {*Have to prime it otherwise never unchecked*}
 	{'Random'|i18n('design/exam')}: <input type="checkbox" id="random" name="random_{$element.id}"{if eq($element.options.random,1)} checked{/if}  />
 	<div class="listbutton">

@@ -3,7 +3,8 @@
 	<label>{'question'|i18n('design/exam')|upcase} {$element.id}</label>
 	<input class="button" value="{'Remove'|i18n('design/exam')}" name="CustomActionButton[remove][{$element.id}]" type="submit">
 	<input type="hidden" value="0" name="random_{$element.id}" /> {*Have to prime it otherwise never unchecked*}
-	{'Random'|i18n('design/exam')}: <input type="checkbox" id="random" name="random_{$element.id}"{if eq($element.options.random,1)} checked{/if}  />
+	{'Random'|i18n('design/exam')}: <input type="checkbox" id="random" name="random_{$element.id}"{if $element.options.random} checked="checked"{/if}  />
+{*$element.options.random." ".$element.id|ezfire("ELEMENT RANDOM")*}
 	<div class="listbutton">
 		<input type="image" src="/design/admin2/images/button-move_down.gif" alt="Down" name="MoveDown_{$element.id}" title="{'Use these buttons to move elements up or down'|i18n('design/exam')}" />&nbsp;
 		<input type="image" src="/design/admin2/images/button-move_up.gif" alt="Up" name="MoveUp_{$element.id}" {'Use these buttons to move elements up or down'|i18n('design/exam')}" />
@@ -29,7 +30,8 @@
 			<label>{'answer'|i18n('design/exam')} {$answer.id}:</label>
 			<input class="button" value="{'Remove'|i18n('design/exam')}" name="CustomActionButton[removeAnswer][{$answer.id}]" type="submit">
 			<input type="hidden" value="0" name="answer_correct_{$answer.id}" /> {*Have to prime it otherwise never unchecked*}
-			{'Correct'|i18n('design/exam')}: <input type="checkbox" name="answer_correct_{$answer.id}" {if eq($answer.correct,1)}checked{/if} />
+{*$answer.id." ".$answer.correct|ezfire("ANSWER CORRECT")*}
+			{'Correct'|i18n('design/exam')}: <input type="checkbox" name="answer_correct_{$answer.id}" {if $answer.correct}checked="checked"{/if} />
 			{'Condition'|i18n('design/exam')}: 
 			<select id="answer_condition" name="answer_condition_{$answer.id}">
 				{*If these values are changed bad things will happen*}

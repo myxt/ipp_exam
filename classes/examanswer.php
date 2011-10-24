@@ -132,7 +132,7 @@ class examAnswer extends eZPersistentObject
 		return $rows;
 	}
 
-	function add( $contentobject_id, $question_id, $priority = 0, $option_id, $option_value, $content, $version, $language_code = "eng-GB" )
+	function add( $contentobject_id, $question_id, $priority = 0, $option_id, $option_value, $correct, $content, $version, $language_code = "eng-GB" )
 	{
 //eZFire::debug($contentobject_id,"OBJECT ID IN ANSWER ADD");
 		$newAnswer = new examAnswer();
@@ -141,6 +141,7 @@ class examAnswer extends eZPersistentObject
 		$newAnswer->setAttribute( 'priority', $priority );
 		$newAnswer->setAttribute( 'option_id', $option_id );
 		$newAnswer->setAttribute( 'option_value', $option_value );
+		$newAnswer->setAttribute( 'correct', $option_value );
 		$newAnswer->setAttribute( 'content', $content );
 		$newAnswer->setAttribute( 'version', $version );
 		$newAnswer->setAttribute( 'language_code', $language_code );
