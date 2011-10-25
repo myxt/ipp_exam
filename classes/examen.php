@@ -247,13 +247,9 @@ class exam extends eZPersistentObject
 	function removeVersion($id,$version,$language_code )
 	{
 		$examElements = $this->getElements($id, $version, $language_code);
+
 		foreach($examElements as $elementObject) {
 			$elementObject->removeElement();
-			if ($elementObject->type == 'question' ) {
-				foreach( $elementObject->getAnswers as $answer ) {
-					$answer->removeAnswer();
-				}
-			}
 		}
 	}
 }

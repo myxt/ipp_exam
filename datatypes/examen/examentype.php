@@ -71,7 +71,9 @@ class ExamenType extends eZDataType
 			if ( $contentObjectAttribute->attribute( 'version' ) != $currentVersion )  {
 
 				$examElements = exam::getstructure($originalContentObjectAttribute->attribute( 'contentobject_id' ),$originalContentObjectAttribute->attribute( 'version' ),$originalContentObjectAttribute->attribute( 'language_code' ));
-
+				$elementIdMap = array();
+				$answerArray = array();
+				$newElementArray = array();
 				foreach($examElements as $elementObject) {
 					$newElement = examElement::add(	$contentObjectAttribute->attribute( 'contentobject_id' ),
 												$elementObject->attribute( 'priority' ) ,
@@ -80,10 +82,13 @@ class ExamenType extends eZDataType
 												$elementObject->attribute( 'content' ),
 												$contentObjectAttribute->attribute( 'version' ),
 												$contentObjectAttribute->attribute( 'language_code' ) );
+					$elementIdMap[$elementObject->ID] = $newElement->ID;
+					$newElementArray[] = $newElement;
 					if ($elementObject->type == 'question' ) {
 						foreach( $elementObject->answers as $answer ) {
 //eZFire::debug($newElement->attribute( 'id' ),"ADDING");
-							examAnswer::add(	$contentObjectAttribute->attribute( 'contentobject_id' ),
+//eZFire::debug($answer->attribute( 'correct' ),"WHY ISN'T THIS CORRECT?");
+						$answerArray[] = examAnswer::add(	$contentObjectAttribute->attribute( 'contentobject_id' ),
 											$newElement->attribute( 'id' ),//question_id
 											$answer->attribute( 'priority' ),
 											$answer->attribute( 'option_id' ),
@@ -93,6 +98,7 @@ class ExamenType extends eZDataType
 											$contentObjectAttribute->attribute( 'version' ),
 											$contentObjectAttribute->attribute( 'language_code' ) );
 						}
+						
 					}
 
 					if ($elementObject->type == 'group' ) {
@@ -102,12 +108,14 @@ class ExamenType extends eZDataType
 														$child->attribute( 'type' ),
 														$elementObject->ID,
 														$child->attribute( 'content' ),
-														$child->attribute( 'version' ),
-														$child->attribute( 'language_code' ) );
+														$contentObjectAttribute->attribute( 'version' ),
+														$contentObjectAttribute->attribute( 'language_code' ) );
+							$elementIdMap[$child->ID] = $newElement->ID;
+							$newElementArray[] = $newElement;
 							if ($child->type == 'question' ) {
-//How do we know what the new option value is going to be - craaaaap.
+//How do we know what the new option value or parent is going to be - craaaaap.
 								foreach( $child->answers as $answer ) {
-									examAnswer::add(	$contentObjectAttribute->attribute( 'contentobject_id' ),
+									$answerArray[] = examAnswer::add(	$contentObjectAttribute->attribute( 'contentobject_id' ),
 													$newElement->attribute( 'id' ),
 													$answer->attribute( 'priority' ),
 													$answer->attribute( 'option_id' ),
@@ -119,9 +127,27 @@ class ExamenType extends eZDataType
 								}
 							}
 						}
+					} // if group
+				} //foreach structure element
+//eZFire::debug($answerArray,"ANSWER ARRAY");
+//eZFire::debug($newElementArray,"ELEMENT ARRAY");
+//eZFire::debug($elementIdMap,"elementIdMap");
+				//we've got to fix the element parent and the option value.
+				foreach($answerArray as $checkAnswer) {
+					if( $checkAnswer->option_value != 0 ){
+						$checkAnswer->setAttribute( 'option_value', $elementIdMap[$checkAnswer->option_value] );
+						$checkAnswer->store();
 					}
 				}
-			}
+				foreach($newElementArray as $checkElement) {
+					$parentID = $checkElement->attribute( 'parent' );
+//eZFire::debug($parentID,"parentID");
+					if( $parentID != 0 ){
+						$checkElement->setAttribute( 'parent', $elementIdMap[$parentID] );
+						$checkElement->store();
+					}
+				}
+			} //if $version != currentVersion
 		}
     }
 

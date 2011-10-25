@@ -28,9 +28,10 @@
 	</div>
 	{/default}
 	<div class="children">
+{*$element.children|ezfire("children")*}
 		{foreach $element.children as $child}
 			{if eq($element.type,"question")} {*need elements for condition choices*}
-				{exam_edit_gui element=$child structure=$structure}
+				{exam_edit_gui element=$child elements=$elements}
 			{else}
 				{exam_edit_gui element=$child}
 			{/if}

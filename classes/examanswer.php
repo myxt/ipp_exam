@@ -141,11 +141,12 @@ class examAnswer extends eZPersistentObject
 		$newAnswer->setAttribute( 'priority', $priority );
 		$newAnswer->setAttribute( 'option_id', $option_id );
 		$newAnswer->setAttribute( 'option_value', $option_value );
-		$newAnswer->setAttribute( 'correct', $option_value );
+		$newAnswer->setAttribute( 'correct', $correct );
 		$newAnswer->setAttribute( 'content', $content );
 		$newAnswer->setAttribute( 'version', $version );
 		$newAnswer->setAttribute( 'language_code', $language_code );
 		$newAnswer->store();
+		return $newAnswer;
 //eZFire::debug($newAnswer->ContentObjectID,"WTF");
 	}
 	function removeAnswer()

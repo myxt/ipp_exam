@@ -128,6 +128,8 @@ class examElement extends eZPersistentObject
 	}
 	function getChildren()
 	{
+//eZFire::debug($this->type,"TYPE IN GET CHILDREN");
+//eZFire::debug($this->ID,"THIS IS THE PARENT ID");
 		if ($this->type != "group" ) return;
 		$rows = eZPersistentObject::fetchObjectList( examElement::definition(),
 											null,
@@ -135,6 +137,7 @@ class examElement extends eZPersistentObject
 											array( 'priority' => 'asc' ),
 											null,
 											true );
+//eZFire::debug($rows,"ROWS");
 		return $rows;
 	}
 	function getAnswers()
