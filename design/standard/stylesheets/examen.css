@@ -102,13 +102,22 @@ div.listbutton {
 }
 #exam-result div.answer 
 {
-	height:32;
+    position: relative;
+    padding: 0 0 0 20px;
 }
 
 #exam-result div.answer div.icon
 {
-	width:32px;
-	float:left;
+    display: block;
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 0;
+    text-indent: -99999px;
+    background-repeat: no-repeat;
+    overflow: hidden;
 }
 
 #exam-result div.answer div.icon.correct

@@ -1,9 +1,11 @@
-<!DOCTYPE TS><TS>
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE TS>
+<TS version="2.0" language="nl_NL">
 <context>
     <name>design/exam</name>
     <message>
         <source>Start Exam</source>
-        <translation>Begin Examen</translation>
+        <translation>Examen beginnen</translation>
     </message>
     <message>
         <source>id</source>
@@ -15,23 +17,23 @@
     </message>
     <message>
         <source>number of testees</source>
-        <translation>antaal deelnemers</translation>
+        <translation>aantal deelnemers</translation>
     </message>
     <message>
         <source>pass on first try</source>
-        <translation>Geslaagd of de eerste poging</translation>
+        <translation>Geslaagd bij de eerste poging</translation>
     </message>
     <message>
         <source>pass on second try</source>
-        <translation>geslaagd op de tweede poging</translation>
+        <translation>geslaagd bij de tweede poging</translation>
     </message>
     <message>
         <source>High score</source>
-        <translation>hoge score</translation>
+        <translation>Hoogste score</translation>
     </message>
     <message>
         <source>text</source>
-        <translation>text</translation>
+        <translation>tekst</translation>
     </message>
     <message>
         <source>total answered</source>
@@ -39,11 +41,11 @@
     </message>
     <message>
         <source>correct on first try</source>
-        <translation>goed op de eerste poging</translation>
+        <translation>goed bij de eerste poging</translation>
     </message>
     <message>
         <source>correct on second try</source>
-        <translation>goed op de tweede poging</translation>
+        <translation>goed bij de tweede poging</translation>
     </message>
     <message>
         <source>question</source>
@@ -59,15 +61,15 @@
     </message>
     <message>
         <source>Times chosen</source>
-        <translation>Keer gekozen</translation>
+        <translation>Aantal keer gekozen</translation>
     </message>
     <message>
         <source>Exam not found.</source>
-        <translation>Examen neit gevonden.</translation>
+        <translation>Examen niet gevonden.</translation>
     </message>
     <message>
         <source>No exams have been created yet.</source>
-        <translation>Geen examens zijn nog niet aangemaakt.</translation>
+        <translation>Er zijn nog geen examens aangemaakt.</translation>
     </message>
     <message>
         <source>group</source>
@@ -75,55 +77,55 @@
     </message>
     <message>
         <source>Use these buttons to move elements up or down</source>
-        <translation>Gebruik de rangschikking knoppen om de rangschikking van elementen te bepalen.</translation>
+        <translation>Gebruik deze knoppen om de volgorde van de elementen te bepalen</translation>
     </message>
     <message>
         <source>pagebreak</source>
-        <translation>nieuwe pagina</translation>
+        <translation>pagina-einde</translation>
     </message>
     <message>
         <source>if picked remove</source>
-        <translation>Indien gekozen verwijder</translation>
+        <translation>Indien gekozen verwijderen</translation>
     </message>
     <message>
         <source>if picked add</source>
-        <translation>Indien gekozen voeg toe</translation>
+        <translation>Indien gekozen toevoegen</translation>
     </message>
     <message>
         <source>if picked follow with</source>
-        <translation>Indien gekozen volg met</translation>
+        <translation>Indien gekozen vervolgen met</translation>
     </message>
     <message>
         <source>if picked display in results</source>
-        <translation>Indien gekozen weergave van de resultaten</translation>
+        <translation>Indien gekozen in resultaten weergeven</translation>
     </message>
     <message>
         <source>if not picked remove</source>
-        <translation>Indien niet gekozen verwijder</translation>
+        <translation>Indien niet gekozen verwijderen</translation>
     </message>
     <message>
         <source>if not picked add</source>
-        <translation>Indien niet gekozen voeg toe</translation>
+        <translation>Indien niet gekozen toevoegen</translation>
     </message>
     <message>
         <source>if not picked follow with</source>
-        <translation>Indien niet gekozen volg met</translation>
+        <translation>Indien niet gekozen vervolgen met</translation>
     </message>
     <message>
         <source>if not picked display in results</source>
-        <translation>Indien niet gekozen weergave van de resultaten</translation>
+        <translation>Indien niet gekozen in de resultaten weergeven</translation>
     </message>
     <message>
         <source>You passed</source>
-        <translation>Je bent geslaagd</translation>
+        <translation>U bent geslaagd</translation>
     </message>
     <message>
         <source>on your second try.</source>
-        <translation>op uw tweede poging.</translation>
+        <translation>bij uw tweede poging.</translation>
     </message>
     <message>
         <source>You failed</source>
-        <translation>Je hebt gefaald</translation>
+        <translation>U bent niet geslaagd</translation>
     </message>
     <message>
         <source>Do you want to try again?</source>
@@ -131,11 +133,11 @@
     </message>
     <message>
         <source>Restart Exam</source>
-        <translation>Herstart Examen</translation>
+        <translation>Examen opnieuw beginnen</translation>
     </message>
     <message>
         <source>That was your second attempt.  Study harder and try again some other day.</source>
-        <translation>Dat was uw tweede poging. Studie harder en weer een andere dag te proberen.</translation>
+        <translation>Dit was uw tweede poging. bestudeer de stof nog eens en probeer het daarna weer.</translation>
     </message>
     <message>
         <source>Your score was [score]% correct</source>
@@ -145,34 +147,34 @@
     <message>
         <source>You were one of [examCount] to take this exam.  Of which [passFirst] passed.</source>
         <comment>score</comment>
-        <translation>Je was een van de [examCount] om dit examen te nemen. Waarvan [passFirst] zijn geslaagd.</translation>
+        <translation>U bent een van de [examCount] personen die dit examen heeft gedaan. Daarvan zijn [passFirst] personen geslaagd</translation>
     </message>
     <message>
         <source>on the first try and [passSecond] passed on the second try.</source>
         <comment>score</comment>
-        <translation>op de eerste poging en [passSecond] op de tweede poging.</translation>
+        <translation>bij de eerste poging en [passSecond] bij de tweede poging.</translation>
     </message>
     <message>
         <source>The highest score recorded was [highScore].</source>
         <comment>score</comment>
-        <translation>De beste score was [highScore].</translation>
+        <translation>De hoogste score was [highScore].</translation>
     </message>
     <message>
         <source>Congratulations, you got the high score.</source>
-        <translation>Gefeliciteerd, je hebt de hoge score.</translation>
+        <translation>Gefeliciteerd, u heeft de hoogste score behaald.</translation>
     </message>
     <message>
         <source>Do you wish to have a certificate to commemorate your success?</source>
-        <translation>Wilt u een certificaat voor uw succes te herdenken hebben?</translation>
+        <translation>Wilt u een certificaat ter herinnering van uw slagen?</translation>
     </message>
     <message>
         <source>Download Certificate</source>
-        <translation>Download Certificaat</translation>
+        <translation>Certificaat downloaden</translation>
     </message>
     <message>
         <source>I passed the exam at [url]</source>
         <comment>url</comment>
-        <translation></translation>
+        <translation>Ik ben geslaagd voor [url]</translation>
     </message>
     <message>
         <source>ERROR</source>
@@ -200,15 +202,15 @@
     </message>
     <message>
         <source>No such object.</source>
-        <translation>Een dergelijk object.</translation>
+        <translation>Object niet gevonden.</translation>
     </message>
     <message>
         <source>Wrong object type.  Check your exam id.</source>
-        <translation>Verkeerd object type. Controleer uw examen id.</translation>
+        <translation>Verkeerd objecttype. Controleer uw examen id.</translation>
     </message>
     <message>
         <source>You&apos;ve tried to many times for today.  Try again on another day.</source>
-        <translation>Je hebt te veel keer vandaag geprobeerd. Probeer het opnieuw op een andere dag.</translation>
+        <translation>U hebt het vandaag te vaak geprobeerd. Probeer het op een andere dag opnieuw.</translation>
     </message>
     <message>
         <source>Random</source>
@@ -216,27 +218,27 @@
     </message>
     <message>
         <source>New Question</source>
-        <translation>Nieuw Vraag</translation>
+        <translation>Nieuwe Vraag</translation>
     </message>
     <message>
         <source>New Text</source>
-        <translation>Nieuw Text</translation>
+        <translation>Nieuw Tekst</translation>
     </message>
     <message>
         <source>New Pagebreak</source>
-        <translation>Nieuw pagina</translation>
+        <translation>Nieuw Pagina-einde</translation>
     </message>
     <message>
         <source>Update Priorities</source>
-        <translation>Actualiseer prioriteiten</translation>
+        <translation>Prioriteiten actualiseren</translation>
     </message>
     <message>
         <source>Remove</source>
-        <translation>Verwijder</translation>
+        <translation>Verwijderen</translation>
     </message>
     <message>
         <source>Correct</source>
-        <translation>Correct</translation>
+        <translation>Juist</translation>
     </message>
     <message>
         <source>Condition</source>
@@ -244,7 +246,7 @@
     </message>
     <message>
         <source>Add Answer</source>
-        <translation>Nieuw antwoord</translation>
+        <translation>Antwoord toevoegen</translation>
     </message>
 </context>
 </TS>
