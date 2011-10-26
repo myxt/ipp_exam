@@ -563,6 +563,7 @@ if (count($errors) == 0) {
 			$http->setSessionVariable( 'status['.$examID.']', "DONE" );
 		}
 //Reinitialize values for retest
+//$http->removeSessionVariable()
 $http->setSessionVariable( 'index['.$examID.']' , 0 ); //Running count of where we are
 $http->setSessionVariable( 'exam_array['.$examID.']', array() ); //array of elements
 $http->setSessionVariable( 'condition_array['.$examID.']', array() ); //array of conditions to match on

@@ -142,3 +142,12 @@ div.class-exam div.exam-message {
 	margin: 0em;
 	background-color: #FFCCCC;
 }
+
+/* social media on results page */
+#sharebox img                                   { cursor:pointer; }
+#sharebox form {
+        margin-top:1em;
+}
+#sharebox form#mail-results label {
+        display:block; float:left; width:50px; padding-top:.5em;
+}

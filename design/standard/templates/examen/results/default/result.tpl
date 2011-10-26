@@ -51,11 +51,11 @@
 				</p>
 			{/if}
 
-			{if $socialMedia}
+			{*if $socialMedia*}
 				<p>
-				{include uri="design:examen/results/socialmedia.tpl" url="" message="'I passed the exam at [url]'|i18n('design/exam','url',hash('[url]',$url))"}
+				{include uri="design:examen/results/socialmedia.tpl" examID=$examID hash=$hash}
 				</p>
-			{/if}
+			{*/if*}
 		{/if} {* end if passed *}
 	{/if} {*end if survey*}
 </div>

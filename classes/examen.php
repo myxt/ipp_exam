@@ -122,7 +122,11 @@ class exam extends eZPersistentObject
 //eZFire::debug($this->contentObject,"CONTENT OBJECT");
 		if (is_object($this->contentObject))
 		{
-			return $this->getStructure($this->contentObject->attribute( 'id' ),$this->contentObject->attribute( 'current_version' ),$this->contentObject->CurrentLanguage);
+			$structure = $this->getStructure($this->contentObject->attribute( 'id' ),$this->contentObject->attribute( 'current_version' ),$this->contentObject->CurrentLanguage);
+			if ( $this->contentObject.data_map.random.data_int ) {
+				shuffle($structure);
+			}
+			return $structure;
 		} else {
 			return false;
 		}

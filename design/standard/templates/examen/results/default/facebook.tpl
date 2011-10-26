@@ -1,0 +1,1 @@
+{*The sharer script is depreciated so there is no way to send a comment*}
