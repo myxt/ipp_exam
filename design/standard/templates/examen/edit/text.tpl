@@ -10,7 +10,7 @@
 	{default	element_base=exam
 			editorRow=2}
 	<div class="oe-window">
-		<textarea class="box" id="{$element_base}_data_text_{$element.id}" name="{$element_base}_data_text_{$element.id}" cols="70" rows="{$editorRow}">{$element.content}</textarea>
+		<textarea class="box" id="{$element_base}_data_text_{$element.id}" name="{$element_base}_data_text_{$element.id}" cols="70" rows="{$editorRow}">{$element.input_xml}</textarea>
 	</div>
 
 	<div class="block">

@@ -76,7 +76,6 @@
 		{*if there are no pagebreaks and no conditions and there are less than 10 questions then we can do it easy*}
 		{if and(eq($pagebreak,false()),eq($condition,false()),lt($structure|count,10))}
 			{*This is the simple mode, for short quizes/surveys that have not conditions and no pagebreaks - should go to exam and drop straight to the results section*}
-SIMPLE<br>
 				<form name="simple exam" method="post" action={'examen/exam/'|ezurl}>
 				<input type="hidden" name="mode" value="simple">
 				<input type="hidden" name="exam_id" value="{$node.object.id}">
@@ -103,7 +102,6 @@ SIMPLE<br>
 				<input class="button" type="submit" name="SubmitButton" value="{'Submit'|i18n( 'design/admin/node/view/full' )}" title="{'Submit'|i18n( 'design/admin/node/view/full' )}" />
 			</form>
 		{else} {*complicated mode*}
-COMPLICATED<br>
 {*We should have a session check here the first time through... but there will be no session the first time through, sigh*}  
 			<form name="advanced exam" method="post" action={'examen/exam/'|ezurl}>
 				<input type="hidden" name="exam_id" value="{$node.object.id}">

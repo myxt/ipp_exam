@@ -92,7 +92,7 @@ class examElement extends eZPersistentObject
 										'required' => false )
 					),
 					'keys' => array( 'id' ),
-					'function_attributes' => array(  'template_name' => 'templateName', 'content' => 'content', 'children' => 'children', 'answers' => 'getAnswers', 'options' => 'getOptions', 'statistics' => 'getStats' ),
+					'function_attributes' => array(  'template_name' => 'templateName', 'content' => 'content', 'children' => 'children', 'answers' => 'getAnswers', 'options' => 'getOptions', 'statistics' => 'getStats', 'getXMLContent' => 'getXMLContent', 'input_xml' => 'inputXML' ),
 					'increment_key' => 'id',
 					'class_name' => 'examElement',
 					'sort' => array( 'id' => 'asc' ),
@@ -116,11 +116,44 @@ class examElement extends eZPersistentObject
 	}
 	function getContent( $languageCode = 'eng-GB' )
 	{
-//        $xmlObject = new eZXMLText( $this->content, null );
-//        $outputHandler = $xmlObject->attribute( 'output' );
-//eZFire::debug($xmlObject,"IS THIS REAL");
-        //return $outputHandler->attribute( 'output_text' );
 		return $this->content;
+	}
+	function getXMLContent( $languageCode = 'eng-GB' )
+	{
+//eZFire::debug($this->content,"THIS CONTENT");
+		$xmlObject = new eZXMLText( $this->content, null );
+//eZFire::debug($xmlObject,"RETURNING XMLOBJECT");
+return $xmlObject;
+		$xmlData = $xmlObject->XMLData;
+//eZFire::debug($xmlData,"XMLDATA COMING OUT");
+/*
+		$outputHandler = new eZXHTMLXMLOutput( $xmlData, false );
+		$charset = 'UTF-8';
+		$codec = eZTextCodec::instance( false, $charset );
+		$text = $codec->convertString( $text );
+/*
+        if ( trim( $text ) == '' )
+        {
+            return $metaData;
+        }
+*/
+//$text = $xmlData;
+/*
+        $dom = new DOMDocument( '1.0', 'utf-8' );
+
+		$success = $dom->loadXML( $text );
+
+        if ( $success )
+        {
+            $metaData = trim( eZXMLTextType::concatTextContent( $dom->documentElement ) );
+        }
+*/
+//Thsi is wrong.
+///eZFire::debug($metaData,"Metadata");
+//eZFire::debug($text,"text");
+//eZFire::debug($outputHandler,"OutputHandler");
+		//return $metaData;
+		return $xmlObject;
 	}
 	function children()
 	{
@@ -150,6 +183,9 @@ class examElement extends eZPersistentObject
 											array( 'priority' => 'asc' ),
 											null,
 											true );
+//except... we only want these to be random on the front end not the backend, sigh.
+		//if($this->xmlOptions['random'])
+			//shuffle($rows);
 		return $rows;
 	}
 	static function getAnswerIDs( $id = 0, $version = 1, $languageCode = 'eng-GB' )
@@ -212,17 +248,19 @@ class examElement extends eZPersistentObject
 		$type = $this->type;
 		return $type;
 	}
-	function add( $contentobject_id, $priority = 0, $type = "group", $parent = 0, $content, $version, $language_code )
+	function add( $contentobject_id, $priority = 0, $type = "group", $parent = 0, $xmlOptions, $content, $version, $language_code )
 	{
 		$newElement = new examElement();
 		$newElement->setAttribute( 'contentobject_id', $contentobject_id );
 		$newElement->setAttribute( 'priority', $priority );
 		$newElement->setAttribute( 'type', $type );
 		$newElement->setAttribute( 'parent', $parent );
+		$newElement->setAttribute( 'xmloptions', $xmlOptions );
 		$newElement->setAttribute( 'content', $content );
 		$newElement->setAttribute( 'version', $version );
 		$newElement->setAttribute( 'language_code', $language_code );
 		$newElement->store();
+//eZFire::debug($newElement->attribute( 'xmloptions' ),"NEW ELEMENT");
 //eZFire::debug("RETURNING ".$newElement);
 		return $newElement;
 	}
@@ -267,6 +305,7 @@ class examElement extends eZPersistentObject
         {
             $options = array();
             $dom = new DOMDocument( '1.0', 'utf-8' );
+//eZFire::debug($this->xmlOptions,"XMLOPTIONS");
             $dom->loadXML( $this->xmlOptions );
             $optionArray = $dom->getElementsByTagName( "option" );
             if ( $optionArray )
@@ -344,6 +383,22 @@ class examElement extends eZPersistentObject
     {
         return $this->XMLData;
     }
+	function inputXML()
+	{
+//eZFire::debug( $this->ID, "ID");
+		$xmlObject = $this->getXMLContent();
+//eZFire::debug( $xmlObject->XMLData , "XMLData" );
+		$dom = new DOMDocument( '1.0', 'utf-8' );
+		$success = $dom->loadXML( $xmlObject->XMLData );
+
+		$editOutput = new eZSimplifiedXMLEditOutput();
+		$dom->formatOutput = true;
+		if ( eZDebugSetting::isConditionTrue( 'kernel-datatype-ezxmltext', eZDebug::LEVEL_DEBUG ) )
+			eZDebug::writeDebug( $dom->saveXML(), eZDebugSetting::changeLabel( 'kernel-datatype-ezxmltext', __METHOD__ . ' xml string stored in database' ) );
+		$output = $editOutput->performOutput( $dom );
+//eZFire::debug($output,"OUTPUT" );       
+        return $output;
+	}
 }
 
 ?>

@@ -134,7 +134,6 @@ class examAnswer extends eZPersistentObject
 
 	function add( $contentobject_id, $question_id, $priority = 0, $option_id, $option_value, $correct, $content, $version, $language_code = "eng-GB" )
 	{
-//eZFire::debug($contentobject_id,"OBJECT ID IN ANSWER ADD");
 		$newAnswer = new examAnswer();
 		$newAnswer->setAttribute( 'contentobject_id', $contentobject_id );
 		$newAnswer->setAttribute( 'question_id', $question_id );
@@ -147,7 +146,6 @@ class examAnswer extends eZPersistentObject
 		$newAnswer->setAttribute( 'language_code', $language_code );
 		$newAnswer->store();
 		return $newAnswer;
-//eZFire::debug($newAnswer->ContentObjectID,"WTF");
 	}
 	function removeAnswer()
 	{

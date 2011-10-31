@@ -12,7 +12,7 @@
 
 	{default editorRow=2}
 	<div class="oe-window">
-		<textarea class="box" id="exam_group_data_text_{$element.id}" name="exam_group_data_text_{$element.id}" cols="{$cols}" rows="{$editorRow}">{$element.content}</textarea>
+		<textarea class="box" id="exam_group_data_text_{$element.id}" name="exam_group_data_text_{$element.id}" cols="{$cols}" rows="{$editorRow}">{$element.input_xml}</textarea>
 	</div>
 	<div class="block">
 		{if $input_handler.can_disable}
@@ -28,7 +28,6 @@
 	</div>
 	{/default}
 	<div class="children">
-{*$element.children|ezfire("children")*}
 		{foreach $element.children as $child}
 			{if eq($element.type,"question")} {*need elements for condition choices*}
 				{exam_edit_gui element=$child elements=$elements}

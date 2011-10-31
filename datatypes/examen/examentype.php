@@ -65,9 +65,6 @@ class ExamenType extends eZDataType
 			$exam->setAttribute( 'language_code', $contentObjectAttribute->attribute( "language_code" ) );
 			$exam->store();
 		} else { //if it's a new version gotta clone it
-//eZFire::debug($currentVersion,"PUBLISHED VERSION");
-//eZFire::debug($contentObjectAttribute->attribute( 'version' ),"NEW VERSION");
-//eZFire::debug($originalContentObjectAttribute->attribute( 'version' ),"OLD VERSION");
 			if ( $contentObjectAttribute->attribute( 'version' ) != $currentVersion )  {
 
 				$examElements = exam::getstructure($originalContentObjectAttribute->attribute( 'contentobject_id' ),$originalContentObjectAttribute->attribute( 'version' ),$originalContentObjectAttribute->attribute( 'language_code' ));
@@ -79,6 +76,7 @@ class ExamenType extends eZDataType
 												$elementObject->attribute( 'priority' ) ,
 												$elementObject->attribute( 'type' ),
 												$elementObject->attribute( 'parent' ),
+												$elementObject->attribute( 'xmloptions' ),
 												$elementObject->attribute( 'content' ),
 												$contentObjectAttribute->attribute( 'version' ),
 												$contentObjectAttribute->attribute( 'language_code' ) );
@@ -86,8 +84,7 @@ class ExamenType extends eZDataType
 					$newElementArray[] = $newElement;
 					if ($elementObject->type == 'question' ) {
 						foreach( $elementObject->answers as $answer ) {
-//eZFire::debug($newElement->attribute( 'id' ),"ADDING");
-//eZFire::debug($answer->attribute( 'correct' ),"WHY ISN'T THIS CORRECT?");
+
 						$answerArray[] = examAnswer::add(	$contentObjectAttribute->attribute( 'contentobject_id' ),
 											$newElement->attribute( 'id' ),//question_id
 											$answer->attribute( 'priority' ),
@@ -98,7 +95,6 @@ class ExamenType extends eZDataType
 											$contentObjectAttribute->attribute( 'version' ),
 											$contentObjectAttribute->attribute( 'language_code' ) );
 						}
-						
 					}
 
 					if ($elementObject->type == 'group' ) {
@@ -107,6 +103,7 @@ class ExamenType extends eZDataType
 														$child->attribute( 'priority' ) ,
 														$child->attribute( 'type' ),
 														$elementObject->ID,
+														$child->attribute( 'xmloptions' ),
 														$child->attribute( 'content' ),
 														$contentObjectAttribute->attribute( 'version' ),
 														$contentObjectAttribute->attribute( 'language_code' ) );
@@ -151,35 +148,114 @@ class ExamenType extends eZDataType
 		}
     }
 
-    function validateObjectAttributeHTTPInput( $http, $base, $contentObjectAttribute )
-    {
+	function validateObjectAttributeHTTPInput( $http, $base, $contentObjectAttribute )
+	{
+//This is hit BEFORE stuff is saved... which means you can't check using stuff that's in the database.  So... basically have to dump the database values into arrays and check against http values.  Also, only the last message is passed - there is no way to get multiple errors, so, have to either rewrite the edit template or bail out on every failure instead of getting them all at once.
+//Also, want to only do this on publish... not store, otherwise it'll end up being impossible to edit.  It would be nice to get an error message on store, but, once again that would mean rewriting the edit template. 
+//eZFire::debug(__FUNCTION__,"ARE WE HERE?");
+		if ( $http->hasPostVariable( "PublishButton" ) )
+		{
+			$failStatus = eZInputValidator::STATE_INVALID;
+		} else {
+			$failStatus = eZInputValidator::STATE_INTERMEDIATE;
+		}
 
-//eZFire::debug($attribute,__FUNCTION__);
-//eZFire::debug($http,"http");
-//eZFire::debug($base,"base");
-//eZFire::debug($contentObjectAttribute,"contentObjectAttribute");
+		$examObject = eZContentObject::fetch($contentObjectAttribute->attribute( 'contentobject_id' ));
+		$version = $examObject->version( $contentObjectAttribute->attribute( 'version' ));
+		$dataMap = $version->DataMap();
+		$passThreshold = (int) $dataMap['pass_threshold']->DataInt;
 
-        $classAttribute = $contentObjectAttribute->contentClassAttribute();
+		$examElements = exam::getElements($contentObjectAttribute->attribute( 'contentobject_id' ),$contentObjectAttribute->attribute( 'version' ),$contentObjectAttribute->attribute( 'language_code' ));
 
-
-        if ( $http->hasPostVariable( $base . '_data_text_' . $contentObjectAttribute->attribute( 'id' ) ) )
-        {
-            $data = $http->postVariable( $base . '_data_text_' . $contentObjectAttribute->attribute( 'id' ) );
-		$isValid = eZInputValidator::STATE_ACCEPTED;
 		$validation = array();
-//		$examID = $contentObjectAttribute->attribute( self::CONTENT_VALUE );
-//		$exam = $this->fetch( $examID );
+		//Gotta get the version and get the value of passthreshold here.
 
-		if ( is_object( $exam ) )
-            {
-			$params = array( 'prefix_attribute' => self::PREFIX_ATTRIBUTE,
-						'contentobjectattribute_id' => $contentObjectAttribute->attribute( 'id' ) );
-			$status = $exam->validateEditActions( $validation, $params );
-            }
-        }
+		/*There should be at least one question left after all conditions have been taken into account.*/
+		$questionCount=0;
+		$questionCondition=0;
+		foreach($examElements as $elementObject){
+			if ($elementObject->type == "question" ) {
+				$questionCount++;
+				$correct=0;
+				foreach($elementObject->answers as $answerCount => $answerObject) {
+					$answer_id=$answerObject->ID;
+					if ( $http->hasPostVariable( "answer_correct_".$answer_id ) ) {
+						if ( $http->variable( "answer_correct_".$answer_id ) == "on" ) {
+							$correct++;
+						}
+					} elseif($answerObject->correct == 1) {
+						$correct++;
+					}
+					$answerOption = $http->hasPostVariable( "answer_condition_".$answer_id ) ?  $http->postVariable( "answer_condition_".$answer_id ) :  $answerObject->option_id;
+					$answerValue = $http->hasPostVariable( "answer_value_".$answer_id ) ? $http->postVariable( "answer_value_".$answer_id ) : $answerObject->option_value;
 
-        return eZInputValidator::STATE_ACCEPTED;
-    }
+					/*An option id with no option value or vice-versa should be flagged.*/
+					if ( $answerOption AND !$answerValue OR $answerValue AND !$answerOption ) {
+						$validation['error'] = true;
+						$validation['custom_rules'][] = array( 'message' => ezpI18n::tr( 'design/examen', 'Every question with a condition must have a condition value and vice-versa.  Question %1 Answer %2 does not.', null, array($elementObject->ID, $answerObject->ID ) ) );
+//eZFire::debug($validation,"VALIDATION");
+						$contentObjectAttribute->setValidationError( ezpI18n::tr( 'design/exam', $error['message'] ) );
+						$contentObjectAttribute->setHasValidationError();
+						return $failStatus;
+					}
+					/*If a question element is a condition it has to be from the same group.*/
+					if ( $answerOption != 0 ) {
+						if( $elementObject->parent != 0 ) {
+							if ( $answerValue != 0 ) {
+								$checkObject = examElement::fetch( $answerValue );
+								if ( $checkObject->type == "question" ) {
+									$questionCondition++;
+									if ( $elementObject->parent != $checkObject->parent ) {
+										$validation['error'] = true;
+										$validation['custom_rules'][] = array( 'message' => ezpI18n::tr( 'design/examen', 'A condition element can only come from the same group.  Question %1 Answer %2 does not meet this criteria.', null, array($elementObject->ID, $answerObject->ID) ) );
+//eZFire::debug($validation,"VALIDATION");
+
+										$contentObjectAttribute->setValidationError( ezpI18n::tr( 'design/exam', $error['message'] ) );
+										$contentObjectAttribute->setHasValidationError();
+										return $failStatus;
+									}
+								}
+							}
+						}
+					}
+
+				}  //end foreach answer
+
+				//If not a survey every question must have one correct answer
+				if ( $passThreshold != 0 AND $correct != 1 ) {
+					$validation['error'] = true;
+					$validation['custom_rules'][] = array( 'message' => ezpI18n::tr( 'design/examen', 'If there is a pass threshhold, every question must have one correct answer.  Question %1 does not have one correct answer.', null, array($elementObject->ID) ) );
+//eZFire::debug($validation,"VALIDATION");
+					$contentObjectAttribute->setValidationError( ezpI18n::tr( 'design/exam', $error['message'] ) );
+					$contentObjectAttribute->setHasValidationError();
+					return $failStatus;
+				}
+				//Every question must have at least two answers
+//eZFire::debug($answerCount,"ANSEWR COUNT");
+				if ( $answerCount < 1 ) { //Count starts at [0] [1]
+					$validation['error'] = true;
+					$validation['custom_rules'][] = array( 'message' => ezpI18n::tr( 'design/examen', 'Every question must have at least two answers.  Question %1 does not.', null, array($elementObject->ID) ) );
+//eZFire::debug($validation,"VALIDATION");
+					$contentObjectAttribute->setValidationError( ezpI18n::tr( 'design/exam', $error['message'] ) );
+					$contentObjectAttribute->setHasValidationError();
+					return $failStatus;
+				}
+
+			}//end if question
+		} //end foreach elemennt
+
+		if ( $questionCount - $questionConditon < 1 ) {
+			$validation['error'] = true;
+			$validation['custom_rules'][] = array( 'message' => ezpI18n::tr( 'design/examen', 'After taking into account conditions there are no questions left.' ) );
+//eZFire::debug($validation,"VALIDATION");
+			$contentObjectAttribute->setValidationError( ezpI18n::tr( 'design/exam', $error['message'] ) );
+			$contentObjectAttribute->setHasValidationError();
+			return $failStatus;
+		}
+		//We passed!
+//eZFire::debug("INPUT VALIDATED");
+		return eZInputValidator::STATE_ACCEPTED;
+	}
 
     /*!
      Fetches the http post var string input and stores it in the data instance.  On store and save.
@@ -229,10 +305,8 @@ if so, update the table. for the appropriate element.  We'll need the element id
 
 			if ($elementObject->type == "group" ) {
 				if ( $http->hasPostVariable( "exam_group_data_text_".$element_id ) ) {
-//$xmlObject = new eZXMLText( $http->postVariable( "exam_group_data_text_".$element_id ), null );
-//eZFire::debug($xmlObject,"XML OBEJCT");
-//$elementObject->setAttribute('content',$xmlObject);
-					$elementObject->setAttribute('content',$http->postVariable( "exam_group_data_text_".$element_id ) );
+					$xmlData = $this->eZXMLTextConvert( $http->postVariable( "exam_group_data_text_".$element_id ) );
+					$elementObject->setAttribute('content',$xmlData );
 				}
 				if ( $http->hasPostVariable( "random_".$element_id ) ) {
 					if ( $http->variable( "random_".$element_id ) == "on" ) {
@@ -243,10 +317,8 @@ if so, update the table. for the appropriate element.  We'll need the element id
 				}
 			}
 			if ( $http->hasPostVariable( "exam_data_text_".$element_id ) ) {
-//eZFire::debug( $http->hasPostVariable( "exam_data_text_".$element_id ),"CONTENT");
-//$xmlObject = new eZXMLText( $http->postVariable( "exam_data_text_".$element_id ), null );
-//$elementObject->setAttribute('content', $xmlObject);
-				$elementObject->setAttribute('content',$http->postVariable( "exam_data_text_".$element_id ) );
+				$xmlData = $this->eZXMLTextConvert( $http->postVariable( "exam_data_text_".$element_id ) );
+				$elementObject->setAttribute('content',$xmlData );
 			}
 			if ($elementObject->type == "question" ) {
 				$answer_priority_array[$element_id] = 0;
@@ -270,7 +342,8 @@ if so, update the table. for the appropriate element.  We'll need the element id
 						$answerObject->setAttribute('priority',$http->postVariable( "answer_priority_".$answer_id ));
 					}
 					if ( $http->hasPostVariable( "answer_data_text_".$answer_id ) ) {
-						$answerObject->setAttribute('content',$http->postVariable( "answer_data_text_".$answer_id ));
+						//answer is a textarea not xmltext
+						$answerObject->setAttribute('content', $http->postVariable( "answer_data_text_".$answer_id ));
 					}
 					if ( $http->hasPostVariable( "answer_condition_".$answer_id ) ) {
 						$answerObject->setAttribute('option_id',$http->postVariable( "answer_condition_".$answer_id ));
@@ -292,12 +365,12 @@ if so, update the table. for the appropriate element.  We'll need the element id
 			$priority = $biggest_priority + 1;
 			$customAction = $http->postVariable( "CustomActionButton" );
 			if ( $customAction["newGroup"] ) { //Always a parent, never a child
-				examElement::add( $contentObjectAttribute->attribute( 'contentobject_id' ), $priority , "group", 0, "", $contentObjectAttribute->attribute( 'version' ),$contentObjectAttribute->attribute( 'language_code' ) );
+				examElement::add( $contentObjectAttribute->attribute( 'contentobject_id' ), $priority , "group", 0, "",$this->eZXMLTextConvert(), $contentObjectAttribute->attribute( 'version' ),$contentObjectAttribute->attribute( 'language_code' ) );
 			}
 			if ( $customAction["newQuestion"] ) {
 				$parent = array_keys($customAction['newQuestion']);
 				$parent = $parent[0] ? $parent[0] : 0;
-				examElement::add( $contentObjectAttribute->attribute( 'contentobject_id' ), $priority , "question", $parent, "", $contentObjectAttribute->attribute( 'version' ),$contentObjectAttribute->attribute( 'language_code' ) );
+				examElement::add( $contentObjectAttribute->attribute( 'contentobject_id' ), $priority , "question", $parent,"", $this->eZXMLTextConvert(), $contentObjectAttribute->attribute( 'version' ),$contentObjectAttribute->attribute( 'language_code' ) );
 			}
 			if ( $customAction["newAnswer"] ) {
 				$question = array_keys($customAction['newAnswer']);
@@ -312,12 +385,12 @@ if so, update the table. for the appropriate element.  We'll need the element id
 			if ( $customAction["newText"] ) {
 				$parent = array_keys($customAction['newText']);
 				$parent = $parent[0] ? $parent[0] : 0;
-				examElement::add( $contentObjectAttribute->attribute( 'contentobject_id' ), $priority , "text", $parent, "", $contentObjectAttribute->attribute( 'version' ),$contentObjectAttribute->attribute( 'language_code' ) );
+				examElement::add( $contentObjectAttribute->attribute( 'contentobject_id' ), $priority , "text", $parent, "", $this->eZXMLTextConvert(), $contentObjectAttribute->attribute( 'version' ),$contentObjectAttribute->attribute( 'language_code' ) );
 			}
 			if ( $customAction["newBreak"] ) {
 				$parent = array_keys($customAction['newBreak']);
 				$parent = $parent[0] ? $parent[0] : 0;
-				examElement::add( $contentObjectAttribute->attribute( 'contentobject_id' ), $priority , "pagebreak", $parent, "", $contentObjectAttribute->attribute( 'version' ),$contentObjectAttribute->attribute( 'language_code' ) );
+				examElement::add( $contentObjectAttribute->attribute( 'contentobject_id' ), $priority , "pagebreak", $parent,"", "", $contentObjectAttribute->attribute( 'version' ),$contentObjectAttribute->attribute( 'language_code' ) );
 			}
 			if ( $customAction["remove"] ) {
 				$element_id = array_keys($customAction['remove']);
@@ -592,6 +665,41 @@ if so, update the table. for the appropriate element.  We'll need the element id
 			}
         }
     }
+	function onPublish( $contentObjectAttribute, $contentObject, $publishedNodes )
+	{
+
+	}
+	function eZXMLTextConvert( $inputXML = "" )
+	{
+		$xmlData = "<section xmlns:image='http://ez.no/namespaces/ezpublish3/image/' xmlns:xhtml='http://ez.no/namespaces/ezpublish3/xhtml/' xmlns:custom='http://ez.no/namespaces/ezpublish3/custom/' >";
+		$xmlData .= $inputXML;
+		$xmlData .= "</section>";
+//eZFire::debug($xmlData,"XMLDATA GOING IN");
+		return $xmlData;
+/*
+		$xmlObject = new eZXMLText( $inputXML, null );
+		$inputHandler = $xmlObject->attribute( 'input' );
+		$data =& $inputHandler->convertInput( $xmlData );
+		$domString =& eZXMLTextType::domString( $data[0] );
+
+		$domString = preg_replace( "#<paragraph> </paragraph>#", "<paragraph>&nbsp;</paragraph>", $domString );
+		$domString = str_replace ( "<paragraph />" , "", $domString );
+		$domString = str_replace ( "<line />" , "", $domString );
+		$domString = str_replace ( "<paragraph></paragraph>" , "", $domString );
+		$domString = preg_replace( "#<paragraph>&nbsp;</paragraph>#", "<paragraph />", $domString );
+		$domString = preg_replace( "#<paragraph></paragraph>#", "", $domString );
+
+		$domString = preg_replace( "#[\n]+#", "", $domString );
+		$domString = preg_replace( "#&lt;/line&gt;#", "\n", $domString );
+		$domString = preg_replace( "#&lt;paragraph&gt;#", "\n\n", $domString );
+
+		$xml = new eZXML();
+		$tmpDom = $xml->domTree( $domString, array( 'CharsetConversion' => false ) );
+		$domString = eZXMLTextType::domString( $tmpDom );
+
+		return $domString;
+*/
+	}
 }
 
 eZDataType::register( ExamenType::DATA_TYPE_STRING, "ExamenType" );
