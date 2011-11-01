@@ -124,7 +124,7 @@ class examElement extends eZPersistentObject
 		$xmlObject = new eZXMLText( $this->content, null );
 //eZFire::debug($xmlObject,"RETURNING XMLOBJECT");
 return $xmlObject;
-		$xmlData = $xmlObject->XMLData;
+		//$xmlData = $xmlObject->XMLData;
 //eZFire::debug($xmlData,"XMLDATA COMING OUT");
 /*
 		$outputHandler = new eZXHTMLXMLOutput( $xmlData, false );
@@ -149,7 +149,7 @@ return $xmlObject;
         }
 */
 //Thsi is wrong.
-///eZFire::debug($metaData,"Metadata");
+//eZFire::debug($metaData,"Metadata");
 //eZFire::debug($text,"text");
 //eZFire::debug($outputHandler,"OutputHandler");
 		//return $metaData;
@@ -389,12 +389,15 @@ return $xmlObject;
 		$xmlObject = $this->getXMLContent();
 //eZFire::debug( $xmlObject->XMLData , "XMLData" );
 		$dom = new DOMDocument( '1.0', 'utf-8' );
+		if (!is_object($xmlObject)) return false;
 		$success = $dom->loadXML( $xmlObject->XMLData );
-
+//eZFire::debug($success,"SUCCESS");
 		$editOutput = new eZSimplifiedXMLEditOutput();
 		$dom->formatOutput = true;
+//eZFire::debug("AFTER FORMAT OUTPUT");
 		if ( eZDebugSetting::isConditionTrue( 'kernel-datatype-ezxmltext', eZDebug::LEVEL_DEBUG ) )
 			eZDebug::writeDebug( $dom->saveXML(), eZDebugSetting::changeLabel( 'kernel-datatype-ezxmltext', __METHOD__ . ' xml string stored in database' ) );
+		if (!is_object($editOutput )) return false;
 		$output = $editOutput->performOutput( $dom );
 //eZFire::debug($output,"OUTPUT" );       
         return $output;
