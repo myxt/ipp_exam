@@ -1,30 +1,11 @@
--- phpMyAdmin SQL Dump
--- version 3.4.5deb1
--- http://www.phpmyadmin.net
---
--- Host: localhost
--- Generation Time: Oct 17, 2011 at 10:07 AM
--- Server version: 5.1.58
--- PHP Version: 5.2.6-1+lenny13
-
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
-
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8 */;
 
---
--- Database: `ez450`
---
-
--- --------------------------------------------------------
-
---
--- Table structure for table `exam_answer`
---
 
 DROP TABLE IF EXISTS `exam_answer`;
 CREATE TABLE IF NOT EXISTS `exam_answer` (
@@ -41,12 +22,6 @@ CREATE TABLE IF NOT EXISTS `exam_answer` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
--- --------------------------------------------------------
-
---
--- Table structure for table `exam_results`
---
-
 DROP TABLE IF EXISTS `exam_results`;
 CREATE TABLE IF NOT EXISTS `exam_results` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -61,12 +36,6 @@ CREATE TABLE IF NOT EXISTS `exam_results` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
--- --------------------------------------------------------
-
---
--- Table structure for table `exam_statistics`
---
-
 DROP TABLE IF EXISTS `exam_statistics`;
 CREATE TABLE IF NOT EXISTS `exam_statistics` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -76,14 +45,9 @@ CREATE TABLE IF NOT EXISTS `exam_statistics` (
   `pass_second` int(11) DEFAULT NULL,
   `enabled` tinyint(1) NOT NULL,
   `high_score` int(3) NOT NULL,
+  `score_tally` int(11) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `exam_structure`
---
 
 DROP TABLE IF EXISTS `exam_structure`;
 CREATE TABLE IF NOT EXISTS `exam_structure` (

@@ -1,5 +1,5 @@
 {*can't be cached*}
-{set-block scope=root variable=status}{concat('status[',$node.object.id,']'), 'session' )}{/set-block}
+{set-block scope=root variable=status}{ezhttp(concat('status[',$node.object.id,']'), 'session' )}{/set-block}
 {def $pagebreak=false()
 	$condition=false()
 	$structure=$node.object.data_map.exam_attributes.content.structure
@@ -15,9 +15,14 @@
     </div>
 
 	{*should check for status session variable and just go to results if it's set to done here*}
+	{*Have to see if it's a survey or exam first*}
 	{if eq( $status, "DONE" ) }
 		<div class="exam-message">
-			{"You have already taken this exam today for the maximum allowed times."|i18n( 'design/exam' )}
+			{if $survey}
+				{"You have already taken this survey today for the maximum allowed times."|i18n( 'design/exam' )}
+			{else}
+				{"You have already taken this exam today for the maximum allowed times."|i18n( 'design/exam' )}
+			{/if}
 			<form name="advanced exam" method="post" action={'examen/result/'|ezurl}>
 				<input type="hidden" name="exam_id" value="{$node.object.id}">
 				<input type="hidden" name="exam_version" value="{$node.contentobject_version}">
@@ -74,7 +79,7 @@
 	{*There are two modes at this point - simple and complicated - if an exam has no pagebreaks, has no conditions and is less than 10 questions then it should go to simple - otherwise it should go to complicated.  The default should be one element per page from that point on, but, if there are no follow conditions and there are page breaks maybe we can do multiple questions per page*}
 
 		{*if there are no pagebreaks and no conditions and there are less than 10 questions then we can do it easy*}
-		{if and(eq($pagebreak,false()),eq($condition,false()),lt($structure|count,10))}
+		{if and(eq($pagebreak,false()),eq($condition,false()),lt($structure|count,12))}
 			{*This is the simple mode, for short quizes/surveys that have not conditions and no pagebreaks - should go to exam and drop straight to the results section*}
 				<form name="simple exam" method="post" action={'examen/exam/'|ezurl}>
 				<input type="hidden" name="mode" value="simple">
@@ -82,7 +87,7 @@
 				<input type="hidden" name="exam_version" value="{$node.contentobject_version}">
 				<input type="hidden" name="exam_language" value="{$node.object.current_language}">
 				{if $node.object.data_map.random}
-					{set $structure = $structure|shuffle}
+					{set $structure = $structure}
 				{/if}
 				{foreach $structure as $element}
 					{if eq($element.type,"group")}

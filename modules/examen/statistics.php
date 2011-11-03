@@ -3,9 +3,6 @@
 /* if we have no parameter, do the overview.  If there is a parameter and it is an exam id - show the full view of the exam.exam_id */
 
 $Module = $Params['Module'];
-
-$settingsINI = eZINI::instance( 'examen.ini' );
-$secretKey = $settingsINI->variable('examSettings','secretKey');
 $http = eZHTTPTool::instance();
 $tpl = eZTemplate::factory();
 

@@ -10,6 +10,7 @@ class examElement extends eZPersistentObject
     function examElement( $row = array() )
     {
         $this->eZPersistentObject( $row );
+/*
 		$this->ClassIdentifier = false;
 		if ( isset( $row['contentclass_identifier'] ) )
 			$this->ClassIdentifier = $row['contentclass_identifier'];
@@ -36,6 +37,8 @@ class examElement extends eZPersistentObject
 			$this->CurrentLanguage = $topPriorityLanguage->attribute( 'locale' );
 			}
 		}
+*/
+/*If you want it in the template it has to be here */
 		$id = $row['id'];
 		$priority = $row['priority'];
 //eZFire::debug($priority,"PRIORITY");
@@ -44,10 +47,10 @@ class examElement extends eZPersistentObject
 		$parent = $row['parent'];
 		$this->content = $this->getContent();
 		$this->children = $this->getChildren();
-		$this->answers = $this->getAnswers();
+		//$this->answers = $this->getAnswers();
 		$this->statistics = $this->getStats();
 		$this->options = $this->getOptions();
-
+//eZFire::debug($this,"THIS");
     }
 
 	static function definition()
@@ -92,7 +95,7 @@ class examElement extends eZPersistentObject
 										'required' => false )
 					),
 					'keys' => array( 'id' ),
-					'function_attributes' => array(  'template_name' => 'templateName', 'content' => 'content', 'children' => 'children', 'answers' => 'getAnswers', 'options' => 'getOptions', 'statistics' => 'getStats', 'getXMLContent' => 'getXMLContent', 'input_xml' => 'inputXML' ),
+					'function_attributes' => array(  'template_name' => 'templateName', 'content' => 'content', 'children' => 'children', 'answers' => 'getAnswers', 'randomAnswers' => 'randomAnswers', 'options' => 'getOptions', 'statistics' => 'getStats', 'getXMLContent' => 'getXMLContent', 'input_xml' => 'inputXML' ),
 					'increment_key' => 'id',
 					'class_name' => 'examElement',
 					'sort' => array( 'id' => 'asc' ),
@@ -118,41 +121,9 @@ class examElement extends eZPersistentObject
 	{
 		return $this->content;
 	}
-	function getXMLContent( $languageCode = 'eng-GB' )
+	function getXMLContent()
 	{
-//eZFire::debug($this->content,"THIS CONTENT");
 		$xmlObject = new eZXMLText( $this->content, null );
-//eZFire::debug($xmlObject,"RETURNING XMLOBJECT");
-return $xmlObject;
-		//$xmlData = $xmlObject->XMLData;
-//eZFire::debug($xmlData,"XMLDATA COMING OUT");
-/*
-		$outputHandler = new eZXHTMLXMLOutput( $xmlData, false );
-		$charset = 'UTF-8';
-		$codec = eZTextCodec::instance( false, $charset );
-		$text = $codec->convertString( $text );
-/*
-        if ( trim( $text ) == '' )
-        {
-            return $metaData;
-        }
-*/
-//$text = $xmlData;
-/*
-        $dom = new DOMDocument( '1.0', 'utf-8' );
-
-		$success = $dom->loadXML( $text );
-
-        if ( $success )
-        {
-            $metaData = trim( eZXMLTextType::concatTextContent( $dom->documentElement ) );
-        }
-*/
-//Thsi is wrong.
-//eZFire::debug($metaData,"Metadata");
-//eZFire::debug($text,"text");
-//eZFire::debug($outputHandler,"OutputHandler");
-		//return $metaData;
 		return $xmlObject;
 	}
 	function children()
@@ -161,8 +132,6 @@ return $xmlObject;
 	}
 	function getChildren()
 	{
-//eZFire::debug($this->type,"TYPE IN GET CHILDREN");
-//eZFire::debug($this->ID,"THIS IS THE PARENT ID");
 		if ($this->type != "group" ) return;
 		$rows = eZPersistentObject::fetchObjectList( examElement::definition(),
 											null,
@@ -170,12 +139,10 @@ return $xmlObject;
 											array( 'priority' => 'asc' ),
 											null,
 											true );
-//eZFire::debug($rows,"ROWS");
 		return $rows;
 	}
 	function getAnswers()
 	{
-//eZFire::debug(__FUNCTION__,"WHY AREN'T WE HERE");
 		if ($this->type != "question" ) return;
 		$rows = eZPersistentObject::fetchObjectList( examAnswer::definition(),
 											null,
@@ -183,10 +150,15 @@ return $xmlObject;
 											array( 'priority' => 'asc' ),
 											null,
 											true );
-//except... we only want these to be random on the front end not the backend, sigh.
-		//if($this->xmlOptions['random'])
-			//shuffle($rows);
 		return $rows;
+	}
+	function randomAnswers()
+	{
+		$answers = $this->getAnswers();
+		$optionArray = $this->options;
+		if($optionArray['random'])
+			shuffle($answers);
+		return $answers;
 	}
 	static function getAnswerIDs( $id = 0, $version = 1, $languageCode = 'eng-GB' )
 	{
@@ -300,27 +272,33 @@ return $xmlObject;
 		return $this->getOptions();
 	}
     function getOptions()
-    { //At this point the only option is random... but we'll do it like this in the event there is some expansion
-        if ( $this->xmlOptions != '' )
-        {
-            $options = array();
-            $dom = new DOMDocument( '1.0', 'utf-8' );
+    {
+//eZFire::debug(__FUNCTION__,"WE ARE HERE");
+ //At this point the only option is random... but we'll do it like this in the event there is some expansion
+/* in the template {$element.options['random']|ezfire("ELEMENT RANDOM")} */
+		if ( $this->xmlOptions != '' )
+		{
+			$options = array();
+			$dom = new DOMDocument( '1.0', 'utf-8' );
 //eZFire::debug($this->xmlOptions,"XMLOPTIONS");
-            $dom->loadXML( $this->xmlOptions );
-            $optionArray = $dom->getElementsByTagName( "option" );
-            if ( $optionArray )
-            {
-                foreach ( $optionArray as $option )
-                {
-				$label = $option->getAttribute( "label" );
-				$value = $option->getAttribute( "value" );
-//eZFire::debug($option,"OPTINO");
+			$dom->loadXML( $this->xmlOptions );
+			$optionArray = $dom->getElementsByTagName( "option" );
+//eZFire::debug($optionArray,"OPTION ARRAY");
+			if ( $optionArray )
+			{
+				foreach ( $optionArray as $option )
+				{
+					$label = $option->getAttribute( "label" );
+					$value = $option->getAttribute( "value" );
+//eZFire::debug($value,"OPTINO");
 //eZFire::debug($label,"LABLE");
-				$options[$label] =  $value;
-                }
-			 return $options;
-            }
-        }
+					$options[$label] =  $value;
+				}
+//eZFire::debug($options,"RETURNING");
+				return $options;
+			}
+		}
+		return false;
 
 	}
 	public function updateOption( $updateArray )

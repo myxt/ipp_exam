@@ -27,8 +27,8 @@
 
 		{if $showStatistics}
 		<div class="statistics-text">
-			{'You were one of [examCount] to take this exam.  Of which [passFirst] passed.'|i18n('design/exam','score',hash('[examCount]',$examCount,'[passFirst]',$passFirst))}
-			{if and($retest,ne($passSecond,0))} {'on the first try and [passSecond] passed on the second try.'|i18n('design/exam','score',hash('[passSecond]',$passSecond))}{/if} {'The highest score recorded was [highScore].'|i18n('design/exam','score',hash('[highScore]',$highScore))}  {if ge($score,$highScore)}{'Congratulations, you got the high score.'|i18n('design/exam')}{/if}
+			{'You were one of [examCount] to take this exam.  Of which [passFirst] passed'|i18n('design/exam','score',hash('[examCount]',$examCount,'[passFirst]',$passFirst))}
+			{if and($retest,ne($passSecond,0))} {'on the first try and [passSecond] passed on the second try'|i18n('design/exam','score',hash('[passSecond]',$passSecond))}{/if}. {'The average score is [average]%.'|i18n('design/exam','score',hash('[average]',$average))} {'The highest score recorded is [highScore]%.'|i18n('design/exam','score',hash('[highScore]',$highScore))}  {if ge($score,$highScore)}{'Congratulations, you got the high score.'|i18n('design/exam')}{/if}
 		</div>
 		{/if}
 		{if $showCorrect}

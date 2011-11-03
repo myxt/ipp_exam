@@ -82,8 +82,9 @@ class ExamenType extends eZDataType
 												$contentObjectAttribute->attribute( 'language_code' ) );
 					$elementIdMap[$elementObject->ID] = $newElement->ID;
 					$newElementArray[] = $newElement;
-					if ($elementObject->type == 'question' ) {
-						foreach( $elementObject->answers as $answer ) {
+					if ($elementObject->attribute( 'type' ) == 'question' ) {
+
+						foreach( $elementObject->getAnswers() as $answer ) {
 
 						$answerArray[] = examAnswer::add(	$contentObjectAttribute->attribute( 'contentobject_id' ),
 											$newElement->attribute( 'id' ),//question_id
@@ -97,7 +98,7 @@ class ExamenType extends eZDataType
 						}
 					}
 
-					if ($elementObject->type == 'group' ) {
+					if ($elementObject->attribute( 'type' ) == 'group' ) {
 						foreach( $elementObject->children as $child) {
 							$newElement = examElement::add(	$contentObjectAttribute->attribute( 'contentobject_id' ),
 														$child->attribute( 'priority' ) ,
@@ -109,9 +110,9 @@ class ExamenType extends eZDataType
 														$contentObjectAttribute->attribute( 'language_code' ) );
 							$elementIdMap[$child->ID] = $newElement->ID;
 							$newElementArray[] = $newElement;
-							if ($child->type == 'question' ) {
+							if ($child->attribute( 'type' ) == 'question' ) {
 //How do we know what the new option value or parent is going to be - craaaaap.
-								foreach( $child->answers as $answer ) {
+								foreach( $child->getAnswers() as $answer ) {
 									$answerArray[] = examAnswer::add(	$contentObjectAttribute->attribute( 'contentobject_id' ),
 													$newElement->attribute( 'id' ),
 													$answer->attribute( 'priority' ),
@@ -174,10 +175,10 @@ class ExamenType extends eZDataType
 		$questionCount=0;
 		$questionCondition=0;
 		foreach($examElements as $elementObject){
-			if ($elementObject->type == "question" ) {
+			if ($elementObject->attribute( 'type' ) == "question" ) {
 				$questionCount++;
 				$correct=0;
-				foreach($elementObject->answers as $answerCount => $answerObject) {
+				foreach($elementObject->getAnswers() as $answerCount => $answerObject) {
 					$answer_id=$answerObject->ID;
 					if ( $http->hasPostVariable( "answer_correct_".$answer_id ) ) {
 						if ( $http->variable( "answer_correct_".$answer_id ) == "on" ) {
@@ -203,7 +204,7 @@ class ExamenType extends eZDataType
 						if( $elementObject->parent != 0 ) {
 							if ( $answerValue != 0 ) {
 								$checkObject = examElement::fetch( $answerValue );
-								if ( $checkObject->type == "question" ) {
+								if ( $checkObject->attribute( 'type' ) == "question" ) {
 									$questionCondition++;
 									if ( $elementObject->parent != $checkObject->parent ) {
 										$validation['error'] = true;
@@ -303,7 +304,7 @@ if so, update the table. for the appropriate element.  We'll need the element id
 				}
 			}
 
-			if ($elementObject->type == "group" ) {
+			if ($elementObject->attribute( 'type' ) == "group" ) {
 				if ( $http->hasPostVariable( "exam_group_data_text_".$element_id ) ) {
 					$xmlData = $this->eZXMLTextConvert( $http->postVariable( "exam_group_data_text_".$element_id ) );
 					$elementObject->setAttribute('content',$xmlData );
@@ -320,7 +321,7 @@ if so, update the table. for the appropriate element.  We'll need the element id
 				$xmlData = $this->eZXMLTextConvert( $http->postVariable( "exam_data_text_".$element_id ) );
 				$elementObject->setAttribute('content',$xmlData );
 			}
-			if ($elementObject->type == "question" ) {
+			if ($elementObject->attribute( 'type' ) == "question" ) {
 				$answer_priority_array[$element_id] = 0;
 				if ( $http->hasPostVariable( "random_".$element_id ) ) {
 					if ( $http->variable( "random_".$element_id ) == "on" ) {
@@ -329,7 +330,7 @@ if so, update the table. for the appropriate element.  We'll need the element id
 						$elementObject->updateOption( array( "random" => "0" ) );
 					}
 				}
-				foreach($elementObject->answers as $answerObject) {
+				foreach($elementObject->getAnswers() as $answerObject) {
 					$answer_id = $answerObject->ID;
 					if ( $http->hasPostVariable( "answer_correct_".$answer_id ) ) {
 						if ( $http->variable( "answer_correct_".$answer_id ) == "on" ) {

@@ -40,7 +40,6 @@ class exam extends eZPersistentObject
 			}
 		}
 		$this->contentObject = $this->getObject(); //This won't work with drafts - not sure it should be here
-		$this->structure = $this->structure();
 		//$this->elements = $this->getElements();
 	}
 
@@ -73,6 +72,10 @@ class exam extends eZPersistentObject
 										'default' => '0',
 										'required' => true ),
 						'high_score' => array( 'name' => 'high_score',
+										'datatype' => 'integer',
+										'default' => '0',
+										'required' => true ),
+						'score_tally' => array( 'name' => 'score_tally',
 										'datatype' => 'integer',
 										'default' => '0',
 										'required' => true )
@@ -117,13 +120,13 @@ class exam extends eZPersistentObject
 	}
 	public function structure() 
 	{ //This returns the current version structure.  Can't be used with edit etc.  This maintains the heirarchy.
-
-//eZFire::debug(__FUNCTION__,"WE ARE HERE");
-//eZFire::debug($this->contentObject,"CONTENT OBJECT");
 		if (is_object($this->contentObject))
 		{
 			$structure = $this->getStructure($this->contentObject->attribute( 'id' ),$this->contentObject->attribute( 'current_version' ),$this->contentObject->CurrentLanguage);
-			if ( $this->contentObject.data_map.random.data_int ) {
+			$contentObject = $this->getObject();
+			$dataMap = $contentObject->DataMap();
+			$random = $dataMap['random']->DataInt;
+			if ( $random ) {
 				shuffle($structure);
 			}
 			return $structure;
@@ -131,14 +134,8 @@ class exam extends eZPersistentObject
 			return false;
 		}
 	}
-	function getStructure( $id = 0, $version = 1, $languageCode = 'eng-GB', $istplfetch = false )
+	static function getStructure( $id = 0, $version = 1, $languageCode = 'eng-GB', $istplfetch = false )
 	{ //Only top level items.
-//eZFire::debug(__FUNCTION__,"WE ARE HERE");
-//eZFire::debug($this->contentObject,"CONTENT OBJECT");
-//eZFire::debug($id,"id");
-//eZFire::debug($version,"structure version");
-//eZFire::debug($languageCode,"struture language");
-
 		$rows = eZPersistentObject::fetchObjectList( examElement::definition(),
 								null,
 								array( 'contentobject_id' => $id,
@@ -148,7 +145,6 @@ class exam extends eZPersistentObject
 								array( 'priority' => 'asc' ),
 								null,
 								true );
-//eZFire::debug(count($rows),"ROW COUNT");
 		if ($istplfetch) return array( 'result' => $rows );
 		else return $rows;
 	}
@@ -225,7 +221,10 @@ class exam extends eZPersistentObject
 		}
 		return $old;
 	}
-
+	function average()
+	{//Return the average.
+		return round( $this->score_tally / $this->count );
+	}
 	public function __clone()
 	{ //used by copy
 
@@ -256,145 +255,6 @@ class exam extends eZPersistentObject
 		foreach($examElements as $elementObject) {
 			$elementObject->removeElement();
 		}
-	}
-	function examArray($examID,$examVersion,$examLanguage)
-	{ //Need this for both the examen module and for validation.
-		$examElements = $this->getStructure($examID,$examVersion,$examLanguage );
-//eZFire::debug($examElements,"EXAM STRUCTURE");
-		//but we don't want to shuffle if there are pagebreaks, except if the pagebreak is the last element.
-		//Doesn't make much sense to shuffle text blocks either.  I can only really see textblocks as being useful as a condition or for 
-		//a non-random exam..
-		$random=true;
-		$conditionObjectArray = $this->getConditions($examID,$examVersion,$examLanguage);
-		/* Conditions
-			if [not] picked	Remove			text, group, question 1 5
-			if [not] picked	Add				text, group, question 2 6
-			if [not] picked	Follow With		text, group, question 3 7
-			if [not] picked	Display in Resuts	text				  4 8 
-
-			Conditions that override Random UNLESS the <conditional element> is in the same group and the group is NOT random and the priorty of the question is less than the <conditional element>.  Since a group cannot be a member of a group it will always override random
-				if [not] picked	Remove
-				if [not] picked	Follow With
-			1 5 3 7
-			Conditions that imply that the element must be removed from the initial list
-				if [not] picked	Add
-				if [not] picked	Display in Resuts
-			2 6 4 8
-		*/
-		foreach($conditionObjectArray as $condition) {
-//eZFire::debug($condition->option_id,"CONDITION OPTION ID");
-//eZFire::debug($condition->option_value,"CONDITION VALUE ID");
-			switch ($condition->option_id) { //This could be a mod at this point but I have a funny feeling this will be extended
-				case 1:
-				case 5:
-					$random=false;
-					break;
-				case 3:
-				case 7:
-					//Have to put these in the check array so that we can check on them
-					$answerConditionArray[$condition->option_value] = array( 'answer_id' => $condition->ID, 'option_id' =>  $condition->option_id, 'option_value' => $condition->option_value );
-					$random=false;
-					break;
-				case 2:
-				case 4:
-				case 6:
-				case 8:
-//eZFire::debug($condition->option_value,"IN THE CASE?");
-					$conditionRemoveArray[] = $condition->option_value;
-					break;
-			}
-			/*Gotta match on the question id to be able to do the NOT*/
-//eZFire::debug($condition,"CONDITION");
-			$answerConditionArray[$condition->questionID] = array( 'answer_id' => $condition->ID, 'option_id' =>  $condition->option_id, 'option_value' => $condition->option_value );
-		}
-//eZFire::debug($answerConditionArray,"ANSWER CONDITON ARRAY");
-		$elementCount = count($examElements);
-
-		/*Check if anything overrides random*/
-		if ( $dataMap["random"]->DataInt == 1 AND $random == true ) {
-			
-			foreach($examElements as $ElementIndex => $element) {
-				if ($element.type == "pagebreak") {//If there is any top-level pagebreak that is NOT the last element... random has to be turned off.
-						if ( $ElementIndex != $elementCount ) {
-							$random = false;
-						}
-						break; //don't need more than one
-				}
-				if ($element.type == "question") {//parse conditiosn
-						if ( $ElementIndex != $elementCount ) {
-							$random = false;
-						}
-						break; //don't need more than one
-				}
-				if ($element.type == "group") {//Do it all again for the children, sigh.
-						if ( $ElementIndex != $elementCount ) {
-							$random = false;
-						}
-						break; //don't need more than one
-				}
-			}
-			if ( $random ) {
-//eZFire::debug("WE HAVE RANDOM");
-				shuffle($examElements);
-			}
-		}
-
-		foreach($examElements as $element) {
-			if( in_array( $element->ID, $conditionRemoveArray ) ) {
-//eZFire::debug($element->ID,"THIS SHOULD BE REMOVED BECAUSE ITS A CONDITION");
-				continue;
-			}
-			switch($element->type) {
-				case "pagebreak":
-					//if (!$random) { //if it's random we can toss because we can't use it anyway
-						$examArray[]=array($element->ID , "" );
-					//}
-					break;
-				case "text":
-					$examArray[]=array($element->ID , "" );	
-					break;
-				case "question":
-					$examArray[]=array($element->ID , "" );	
-					$questionCount++;
-					break;
-				case "group": //Now we have to recursively do the whole thing again, doh
-					if ( $element->option->random == 1 ) {
-						$childRandom = true;
-						$children = $element->children;
-						$childrenCount = count($children);
-						foreach($children as $childIndex => $child) {
-							if ($child->type == "pagebreak") {//If there is a pagebreak that is NOT the last member of the group... random has to be turned off.
-								if ( $childIndex != $childrenCount ) {
-									$childRandom = false;
-								}
-								break; //don't need more than one
-							}
-						}
-						if ( $childRandom == true )
-							shuffle($children);
-					}
-					foreach($children as $child) {
-						switch($child->type) {
-							case "pagebreak":
-								if (!$random) { //if it's random we can toss because we can't use it anyway
-									$groupArray[] = array($child->ID , "" );
-								}
-								break;
-							case "text":
-									$groupArray[] = array($child->ID , "" );
-							case "question":
-									$groupArray[] = array($child->ID , "" );
-									$questionCount++;
-								break;
-							case "group": 
-								break;
-						}
-					}
-					$examArray = array_merge($examArray, $groupArray);
-				break;
-			} //end switch
-		} //end foreach
-		return array($examArray,$answerConditionArray);
 	}
 }
 

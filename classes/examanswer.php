@@ -116,7 +116,7 @@ class examAnswer extends eZPersistentObject
 		return $rows;
 	}
 
-	function getConditions($id = 0, $version = 1, $languageCode = 'eng-GB')
+	static function getConditions($id = 0, $version = 1, $languageCode = 'eng-GB')
 	{
 		$rows = eZPersistentObject::fetchObjectList( examAnswer::definition(),
 											array('question_id', 'id', 'option_id','option_value'),

@@ -10,8 +10,6 @@ we can be coming months later to the exam/hash result that was displayed on the 
 
 //eZFire::debug("IN RESULT.PHP");
 $Module = $Params['Module'];
-$settingsINI = eZINI::instance( 'examen.ini' );
-$secretKey = $settingsINI->variable('examSettings','secretKey');
 $http = eZHTTPTool::instance();
 $tpl = eZTemplate::factory();
 $Result = array();
@@ -75,6 +73,7 @@ if ( !$data instanceof eZClusterFileFailure )
 		$results = examResult::fetchSurvey( $examID );
 		//A survey could still have multiple questions.
 		$total=count($results);
+		$countArray = array();
 		foreach( $results as $result ) {
 			if(!$countArray[$result->attribute('question_id')][$result->attribute('answer')]) {
 				$countArray[$result->attribute('question_id')][$result->attribute('answer')] = 1;
@@ -153,17 +152,12 @@ if ( !$data instanceof eZClusterFileFailure )
 		}
 		if ($dataMap["show_statistics"]) {
 			$exam = exam::fetch( $examID );
-	//eZFire::debug($exam,"EXAM");
-	//eZFire::debug($dataMap["show_statistics"]->DataInt,"SHOW STATS");
-	//eZFire::debug($exam->attribute( 'count' ),"COUNT");
-	//eZFire::debug($exam->attribute( 'pass_first' ),"pass_first");
-	//eZFire::debug($exam->attribute( 'pass_second' ),"pass_second");
-	//eZFire::debug($exam->attribute( 'high_score' ),"high_score");
-
+			$tpl->setVariable("average", $exam->average());
 			$tpl->setVariable("showStatistics", true);
 			$tpl->setVariable("examCount", $exam->attribute( 'count' ));
 			$tpl->setVariable("passFirst", $exam->attribute( 'pass_first' ));
 			$tpl->setVariable("passSecond", $exam->attribute( 'pass_second' ));
+			$tpl->setVariable("highScore", $exam->attribute( 'high_score' ));
 			$tpl->setVariable("highScore", $exam->attribute( 'high_score' ));
 			$tpl->setVariable("retest",$dataMap["retest"]->DataInt);
 			$tpl->setVariable("certificate",$dataMap["certificate"]->DataInt);

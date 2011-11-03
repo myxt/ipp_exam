@@ -1,8 +1,6 @@
 <?php
 #To download a generated (pdf) certificate from the result page
 $Module = $Params['Module'];
-$settingsINI = eZINI::instance( 'examen.ini' );
-$secretKey = $settingsINI->variable('examSettings','secretKey');
 $http = eZHTTPTool::instance();
 $tpl = eZTemplate::factory();
 $Result = array();

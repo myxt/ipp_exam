@@ -1,4 +1,5 @@
 {if $survey}
+	{def $percent=0}
 	<div class="question">
 		<div class="text">
 			{$element.content}
@@ -9,11 +10,12 @@
 			<td width="30%">
 				{$answer.content}
 			</td>
+			{set $percent=cond($percents[$answer.id],$percents[$answer.id],0)}
 			<td width="10px">
-				{$percents[$answer.id]}%
+				{$percent}%
 			</td>
 			<td class="survey-answer">
-				<div class="survey-bar" style="width:{$percents[$answer.id]}%; float:left;" >&nbsp;</div>
+				<div class="survey-bar" style="width:{$percent}%; float:left;" >&nbsp;</div>
 			</td>
 		</tr>
 		{/foreach}

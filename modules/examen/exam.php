@@ -2,8 +2,6 @@
 //eZFire::debug("IN EXAM.PHP");
 
 $Module = $Params['Module'];
-$settingsINI = eZINI::instance( 'examen.ini' );
-$secretKey = $settingsINI->variable('examSettings','secretKey');
 $http = eZHTTPTool::instance();
 $tpl = eZTemplate::factory();
 $Result = array();
@@ -89,7 +87,7 @@ $hash = eZSession::getUserSessionHash();
 //eZFire::debug($hash,"HASH");
 //$sessionKey = $http->getSessionKey();
 //eZFire::debug($sessionKey,"SESSION KEY");
-if ( !hash ) {
+if ( !$hash ) {
 	$errors[] = "i_can_haz_no_cookie";
 }
 
@@ -131,6 +129,10 @@ if (count($errors) == 0) {
 	********************************/
 /*First time through, figure out what the question array is and load it in the session*/
 //eZFire::debug(count($examArray), "COUNT EXAM ARRAY RIGHT BEFORE FIRST TIME THROUGH");
+	$conditionRemoveArray = array();
+	$answerConditionArray = array();
+	$conditionArray = array();
+	$resultArray = array();
 	if (count($examArray) < 1) {
 //eZFire::debug("CALCULATING EXAM ARRAY");
 		/* First time through have to initialize the element list
@@ -166,6 +168,7 @@ if (count($errors) == 0) {
 				if [not] picked	Display in Resuts
 			2 6 4 8
 		*/
+
 		foreach($conditionObjectArray as $condition) {
 //eZFire::debug($condition->option_id,"CONDITION OPTION ID");
 //eZFire::debug($condition->option_value,"CONDITION VALUE ID");
@@ -199,19 +202,19 @@ if (count($errors) == 0) {
 		if ( $dataMap["random"]->DataInt == 1 AND $random == true ) {
 			
 			foreach($examElements as $ElementIndex => $element) {
-				if ($element.type == "pagebreak") {//If there is any top-level pagebreak that is NOT the last element... random has to be turned off.
+				if ($element->attribute( 'type' ) == "pagebreak") {//If there is any top-level pagebreak that is NOT the last element... random has to be turned off.
 						if ( $ElementIndex != $elementCount ) {
 							$random = false;
 						}
 						break; //don't need more than one
 				}
-				if ($element.type == "question") {//parse conditiosn
+				if ($element->attribute( 'type' ) == "question") {//parse conditiosn
 						if ( $ElementIndex != $elementCount ) {
 							$random = false;
 						}
 						break; //don't need more than one
 				}
-				if ($element.type == "group") {//Do it all again for the children, sigh.
+				if ($element->attribute( 'type' ) == "group") {//Do it all again for the children, sigh.
 						if ( $ElementIndex != $elementCount ) {
 							$random = false;
 						}
@@ -471,7 +474,7 @@ if (count($errors) == 0) {
 			//$hash = md5($session.$secretKey.$examID);
 			//If it's a dated result we'll have to add the exam id just in case they did multiple exams under one session
 			/* Since the list of answerable questions is dynamic, we have to go by what is is examArray and assume it is correct.  Which means that if there is ever multiple answers or no answer at all, the totals/score will be off */
-
+			$questionIndex = 0;
 			foreach( $examArray as $examAnswer ) {
 				//We need these even if we don't save results
 				$elementObject = examElement::fetch( $examAnswer[0] );
@@ -513,7 +516,7 @@ if (count($errors) == 0) {
 			}//end foreach
 //eZFire::debug($correctCount,'correctCount');
 //eZFire::debug($questionIndex,'questionIndex');
-
+			$score = 0; //For survey
 
 			if ($dataMap["pass_threshold"]->DataInt) { //otherwise it's a survey
 				if ($correctCount != 0) {//no division by zero here - dammit.
@@ -545,6 +548,9 @@ if (count($errors) == 0) {
 					}
 				}	
 				$highScore = $exam->highScore( $score );
+				$oldTally = $exam->attribute( 'score_tally' );
+				$exam->setAttribute( 'score_tally', $oldTally + $score );
+				$exam->store();
 			} else {//if save results
 //WE NEED $score and $passed IN A SESSION VARIABLE IF WE DONT SAVE RESULTS
 				$http->setSessionVariable( 'passed['.$examID.']', $passed );
