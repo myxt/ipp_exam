@@ -10,6 +10,7 @@ class examAnswer extends eZPersistentObject
     function examAnswer( $row = array() )
     {
 		$this->eZPersistentObject( $row );
+/*
 		$this->ClassIdentifier = false;
 		if ( isset( $row['contentclass_identifier'] ) )
 			$this->ClassIdentifier = $row['contentclass_identifier'];
@@ -36,6 +37,10 @@ class examAnswer extends eZPersistentObject
 			$this->CurrentLanguage = $topPriorityLanguage->attribute( 'locale' );
 			}
 		}
+*/
+//        $db = eZDB::instance();
+//eZFire::debug($this->ID,"THIS ID ANSWER"); 
+//eZFire::debug($db->transactionCounter(),"TRANSACTION COUNTER"); 
     }
 
 	static function definition()
@@ -94,27 +99,12 @@ class examAnswer extends eZPersistentObject
 
     static function fetch( $id , $asObject = true )
     {
-
         $examAnswer = eZPersistentObject::fetchObject( examAnswer::definition(),
                                                                  null,
                                                                  array( 'id' => $id ),
                                                                  $asObject );
         return $examAnswer;
     }
-	function content( $languageCode = "eng-GB" )
-	{
-		return $this->getContent( $languageCode );
-	}
-	function getContent($languageCode = "eng-GB" )
-	{
-		$rows = eZPersistentObject::fetchObjectList( examAnswer::definition(),
-											null,
-											array( 'id' => $this->ID),
-											array( 'priority' => 'asc' ),
-											null,
-											true );
-		return $rows;
-	}
 
 	static function getConditions($id = 0, $version = 1, $languageCode = 'eng-GB')
 	{
