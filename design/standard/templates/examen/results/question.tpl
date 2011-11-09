@@ -10,7 +10,7 @@
 			<td width="30%">
 				{$answer.content}
 			</td>
-			{set $percent=cond($percents[$answer.id],$percents[$answer.id],0)}
+			{set $percent=cond($percents[$answer.id],$percents[$answer.id],false,0)}
 			<td width="10px">
 				{$percent}%
 			</td>
