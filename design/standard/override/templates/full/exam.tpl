@@ -1,5 +1,6 @@
-{*can't be cached*}
-{set-block scope=root variable=status}{ezhttp(concat('status[',$node.object.id,']'), 'session' )}{/set-block}
+{*can't be cached otherwise random order isn't random*}
+{set-block scope=root variable=cache_ttl}0{/set-block}
+{set-block scope=root variable=status}{cond(ezhttp_hasvariable(concat('status[',$node.object.id,']')),ezhttp(concat('status[',$node.object.id,']'), 'session' ))}{/set-block}
 {def $pagebreak=false()
 	$condition=false()
 	$structure=$node.object.data_map.exam_attributes.content.structure
@@ -36,7 +37,7 @@
 			{if eq($element.type,"group")}
 				{if ne(count($element.children),0)}
 					{foreach $element.children as $child}
-						{if eq($child.type,"pagebreak")}
+						{if eq($child.type,"question")}
 							{foreach $child.answers as $answer}
 								{if ne($answer.option_value,0)}
 									{set $condition=true()}
@@ -76,10 +77,10 @@
 			{/if}
 		{/foreach}
 
-	{*There are two modes at this point - simple and complicated - if an exam has no pagebreaks, has no conditions and is less than 10 questions then it should go to simple - otherwise it should go to complicated.  The default should be one element per page from that point on, but, if there are no follow conditions and there are page breaks maybe we can do multiple questions per page*}
+	{*There are two modes at this point - simple and complicated - if an exam has no pagebreaks, has no conditions and is less than 10 questions then it should go to simple - otherwise it should go to complicated.  The default should be one element per page from that point on, but, if there are no follow conditions and there are page breaks we can do multiple questions per page*}
 
 		{*if there are no pagebreaks and no conditions and there are less than 10 questions then we can do it easy*}
-		{if and(eq($pagebreak,false()),eq($condition,false()),lt($structure|count,12))}
+		{if and(eq($pagebreak,false()),eq($condition,false()),lt($structure|count,11))}
 			{*This is the simple mode, for short quizes/surveys that have not conditions and no pagebreaks - should go to exam and drop straight to the results section*}
 				<form name="simple exam" method="post" action={'examen/exam/'|ezurl}>
 				<input type="hidden" name="mode" value="simple">
@@ -94,7 +95,7 @@
 						<div class="group text">
 							{$element.content}
 						</div>
-						{foreach $element.children as $child}
+						{foreach $element.randomChildren as $child}
 							{if or(eq($child.type,"question"),eq($child.type,"text"))}
 								{exam_view_gui element=$child simple=true()}
 							{/if}
