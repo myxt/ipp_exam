@@ -51,6 +51,9 @@ class examElement extends eZPersistentObject
 		$this->statistics = $this->getStats();
 		$this->options = $this->getOptions();
 //eZFire::debug($this,"THIS");
+//        $db = eZDB::instance();
+//eZFire::debug($this->ID,"THIS ID ELEMENT"); 
+//eZFire::debug($db->transactionCounter(),"TRANSACTION COUNTER"); 
     }
 
 	static function definition()
@@ -95,7 +98,7 @@ class examElement extends eZPersistentObject
 										'required' => false )
 					),
 					'keys' => array( 'id' ),
-					'function_attributes' => array(  'template_name' => 'templateName', 'content' => 'content', 'children' => 'children', 'answers' => 'getAnswers', 'randomAnswers' => 'randomAnswers', 'options' => 'getOptions', 'statistics' => 'getStats', 'getXMLContent' => 'getXMLContent', 'input_xml' => 'inputXML' ),
+					'function_attributes' => array(  'template_name' => 'templateName', 'content' => 'content', 'children' => 'children', 'answers' => 'getAnswers', 'randomAnswers' => 'randomAnswers', 'randomChildren' => 'randomChildren', 'options' => 'getOptions', 'statistics' => 'getStats', 'getXMLContent' => 'getXMLContent', 'input_xml' => 'inputXML' ),
 					'increment_key' => 'id',
 					'class_name' => 'examElement',
 					'sort' => array( 'id' => 'asc' ),
@@ -141,6 +144,14 @@ class examElement extends eZPersistentObject
 											true );
 		return $rows;
 	}
+	function randomChildren()
+	{
+		$children = $this->getChildren();
+		$optionArray = $this->options;
+		if($optionArray['random'])
+			shuffle($children);
+		return $children;
+	}
 	function getAnswers()
 	{
 		if ($this->type != "question" ) return;
@@ -150,6 +161,7 @@ class examElement extends eZPersistentObject
 											array( 'priority' => 'asc' ),
 											null,
 											true );
+//eZFire::debug($rows,"ROWS");
 		return $rows;
 	}
 	function randomAnswers()
@@ -183,9 +195,6 @@ class examElement extends eZPersistentObject
 
 	function getStats()
 	{
-//eZFire::debug(__FUNCTION__,"WE ARE HERE");
-//eZFire::debug($this->type,"ELEMENT TYPE");
-//eZFire::debug($this->ID,"QUESTION ID");
 		if( $this->type != "question" ) return false;
 		$db = eZDB::instance();
 		$db->begin();
@@ -203,7 +212,6 @@ class examElement extends eZPersistentObject
 		foreach( $queryResult as $answer) {
 			$result['answer_count'][$answer['answer']] = $answer['count'];
 		}
-//eZFire::debug($result,"RETURNING");
 		return $result;
 	}
 	function priorityUp()
@@ -220,7 +228,7 @@ class examElement extends eZPersistentObject
 		$type = $this->type;
 		return $type;
 	}
-	function add( $contentobject_id, $priority = 0, $type = "group", $parent = 0, $xmlOptions, $content, $version, $language_code )
+	static function add( $contentobject_id, $priority = 0, $type = "group", $parent = 0, $xmlOptions, $content, $version, $language_code )
 	{
 		$newElement = new examElement();
 		$newElement->setAttribute( 'contentobject_id', $contentobject_id );
@@ -232,8 +240,6 @@ class examElement extends eZPersistentObject
 		$newElement->setAttribute( 'version', $version );
 		$newElement->setAttribute( 'language_code', $language_code );
 		$newElement->store();
-//eZFire::debug($newElement->attribute( 'xmloptions' ),"NEW ELEMENT");
-//eZFire::debug("RETURNING ".$newElement);
 		return $newElement;
 	}
 	function removeElement()
