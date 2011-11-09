@@ -13,6 +13,7 @@ class exam extends eZPersistentObject
 	function exam( $row = array())
 	{
 		$this->eZPersistentObject( $row );
+/*
 		$this->ClassIdentifier = false;
 		if ( isset( $row['contentclass_identifier'] ) )
 			$this->ClassIdentifier = $row['contentclass_identifier'];
@@ -39,8 +40,13 @@ class exam extends eZPersistentObject
 			$this->CurrentLanguage = $topPriorityLanguage->attribute( 'locale' );
 			}
 		}
-		$this->contentObject = $this->getObject(); //This won't work with drafts - not sure it should be here
+*/
+		$this->contentObject = $this->getObject(); //Where do we use this?
 		//$this->elements = $this->getElements();
+//        $db = eZDB::instance();
+//eZFire::debug($this->ID,"THIS ID EXAM"); 
+//eZFire::debug($db->transactionCounter(),"TRANSACTION COUNTER");
+
 	}
 
 	static function definition()
@@ -183,9 +189,15 @@ class exam extends eZPersistentObject
 	}
 	function getObject()
 	{
-//eZFire::debug($this->contentObjectID,"WE BE HEEAH");
-		return eZContentObject::fetch( $this->contentObjectID );
+		if ($this->contentObjectID) {
+		$object = eZContentObject::fetch( $this->contentObjectID );
+			if (is_object( $object )) {
+				return $object;
+			}
+		} // else it's a draft
+		return false;
 	}
+
 	public function questions()
 	{
 		//$contentObjectID = $this->contentObjectID;
