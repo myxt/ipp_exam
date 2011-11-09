@@ -72,10 +72,11 @@ if ( !$data instanceof eZClusterFileFailure )
 	// if it's a survey we're going to have to return an array of count( total => x, answer1 => x, answer2 => x );
 		$results = examResult::fetchSurvey( $examID );
 		//A survey could still have multiple questions.
+		//This is returning the results for all versions and all languages.  This isn't right.
 		$total=count($results);
 		$countArray = array();
 		foreach( $results as $result ) {
-			if(!$countArray[$result->attribute('question_id')][$result->attribute('answer')]) {
+			if(!isset($countArray[$result->attribute('question_id')][$result->attribute('answer')])) {
 				$countArray[$result->attribute('question_id')][$result->attribute('answer')] = 1;
 			} else {
 				$countArray[$result->attribute('question_id')][$result->attribute('answer')] = $countArray[$result->attribute('question_id')][$result->attribute('answer')] + 1;
