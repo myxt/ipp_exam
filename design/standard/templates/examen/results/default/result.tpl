@@ -12,7 +12,7 @@
 			<div class="failed">
 				<div class="headline">{'You failed'|i18n('design/exam')|upcase}</div>
 				{if $followup|not} {'Do you want to try again?'|i18n('design/exam')}
-					<form name="advanced exam" method="post" action={$node.path_identification_string|ezurl}>
+					<form name="advanced exam" method="post" action={$node.url_alias|ezurl}>
 						<input type="hidden" name="exam_id" value="{$examID}">
 						<input class="button" type="submit" name="SubmitButton" value="{'Restart Exam'|i18n( 'design/exam' )}" title="{'Restart Exam'|i18n( 'design/exam' )}" />
 					</form>
