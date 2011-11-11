@@ -10,6 +10,7 @@ class examResult extends eZPersistentObject
     function examResult( $row = array() )
     {
         $this->eZPersistentObject( $row );
+/*
 		$this->ClassIdentifier = false;
 		if ( isset( $row['contentclass_identifier'] ) )
 			$this->ClassIdentifier = $row['contentclass_identifier'];
@@ -36,6 +37,7 @@ class examResult extends eZPersistentObject
 			$this->CurrentLanguage = $topPriorityLanguage->attribute( 'locale' );
 			}
 		}
+*/
     }
 
 	static function definition()

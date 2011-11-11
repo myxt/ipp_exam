@@ -13,40 +13,7 @@ class exam extends eZPersistentObject
 	function exam( $row = array())
 	{
 		$this->eZPersistentObject( $row );
-/*
-		$this->ClassIdentifier = false;
-		if ( isset( $row['contentclass_identifier'] ) )
-			$this->ClassIdentifier = $row['contentclass_identifier'];
-		$this->ClassName = false;
-		if ( isset( $row['contentclass_name'] ) )
-			$this->ClassName = $row['contentclass_name'];
-		if ( isset( $row['serialized_name_list'] ) )
-			$this->ClassName = eZContentClass::nameFromSerializedString( $row['serialized_name_list'] );
-
-		$this->CurrentLanguage = false;
-		if ( isset( $row['content_translation'] ) )
-		{
-			$this->CurrentLanguage = $row['content_translation'];
-		}
-		else if ( isset( $row['real_translation'] ) )
-		{
-			$this->CurrentLanguage = $row['real_translation'];
-		}
-		else if ( isset( $row['language_mask'] ) )
-		{
-			$topPriorityLanguage = eZContentLanguage::topPriorityLanguageByMask( $row['language_mask'] );
-			if ( $topPriorityLanguage )
-			{
-			$this->CurrentLanguage = $topPriorityLanguage->attribute( 'locale' );
-			}
-		}
-*/
 		$this->contentObject = $this->getObject(); //Where do we use this?
-		//$this->elements = $this->getElements();
-//        $db = eZDB::instance();
-//eZFire::debug($this->ID,"THIS ID EXAM"); 
-//eZFire::debug($db->transactionCounter(),"TRANSACTION COUNTER");
-
 	}
 
 	static function definition()
@@ -155,8 +122,8 @@ class exam extends eZPersistentObject
 		else return $rows;
 	}
 	static function elements()
-	{ //all elements
-		$this->getElements( $this->ContentObjectID, $this->ContentObject->version, $this->ContentObject->languageCode );
+	{ //all elements - this isn't ever used
+		return $this->getElements( $this->ContentObjectID, $this->ContentObject->version, $this->ContentObject->languageCode );
 	}
 	static function getElements( $id = 0, $version = 1, $languageCode = 'eng-GB', $istplfetch = false )
 	{ //all elements
@@ -236,15 +203,6 @@ class exam extends eZPersistentObject
 	function average()
 	{//Return the average.
 		return round( $this->score_tally / $this->count );
-	}
-	public function __clone()
-	{ //used by copy
-
-	}
-
-	function validateEditActions( $validation, $params )
-	{ //called by validateObjectAttributeHTTPInput
-//eZFire::debug(__FUNCTION__,"WE ARE HERE");
 	}
 	function removeExam()
 	{ //called by deleteStoredObjectAttribute

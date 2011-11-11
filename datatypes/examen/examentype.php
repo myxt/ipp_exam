@@ -31,7 +31,6 @@ class ExamenType extends eZDataType
     }
     function initializeObjectAttribute( $objectAttribute, $currentVersion, $originalContentObjectAttribute )
     {
-//eZFire::debug(__FUNCTION__,"WE ARE HERE");
 /* This will be needed if we set the xmltext of the content object for diffing
         if ( $currentVersion != false )
         {
@@ -52,11 +51,6 @@ class ExamenType extends eZDataType
     */
     function postInitializeObjectAttribute( $contentObjectAttribute, $currentVersion, $originalContentObjectAttribute )
     { //This creates a new version or copies a version.
-//eZFire::debug(__FUNCTION__,"WE ARE HERE");
-
-//eZFire::debug($contentObjectAttribute->attribute( 'version' ),"object attribute version");
-//eZFire::debug($currentVersion,"CURRENT VERSION");
-//eZFire::debug($originalContentObjectAttribute->attribute( 'version' ),"OriginalContentObjectAttribute version");
 
 		if ( !$currentVersion ) {
 			$exam = new exam;
@@ -127,9 +121,6 @@ class ExamenType extends eZDataType
 						}
 					} // if group
 				} //foreach structure element
-//eZFire::debug($answerArray,"ANSWER ARRAY");
-//eZFire::debug($newElementArray,"ELEMENT ARRAY");
-//eZFire::debug($elementIdMap,"elementIdMap");
 				//we've got to fix the element parent and the option value.
 				foreach($answerArray as $checkAnswer) {
 					if( $checkAnswer->option_value != 0 ){
@@ -139,7 +130,6 @@ class ExamenType extends eZDataType
 				}
 				foreach($newElementArray as $checkElement) {
 					$parentID = $checkElement->attribute( 'parent' );
-//eZFire::debug($parentID,"parentID");
 					if( $parentID != 0 ){
 						$checkElement->setAttribute( 'parent', $elementIdMap[$parentID] );
 						$checkElement->store();
@@ -153,7 +143,6 @@ class ExamenType extends eZDataType
 	{
 //This is hit BEFORE stuff is saved... which means you can't check using stuff that's in the database.  So... basically have to dump the database values into arrays and check against http values.  Also, only the last message is passed - there is no way to get multiple errors, so, have to either rewrite the edit template or bail out on every failure instead of getting them all at once.
 //Also, want to only do this on publish... not store, otherwise it'll end up being impossible to edit.  It would be nice to get an error message on store, but, once again that would mean rewriting the edit template. 
-//eZFire::debug(__FUNCTION__,"ARE WE HERE?");
 		if ( $http->hasPostVariable( "PublishButton" ) )
 		{
 			$failStatus = eZInputValidator::STATE_INVALID;
@@ -193,8 +182,7 @@ class ExamenType extends eZDataType
 					/*An option id with no option value or vice-versa should be flagged.*/
 					if ( $answerOption AND !$answerValue OR $answerValue AND !$answerOption ) {
 						$validation['error'] = true;
-						$validation['custom_rules'][] = array( 'message' => ezpI18n::tr( 'design/examen', 'Every question with a condition must have a condition value and vice-versa.  Question %1 Answer %2 does not.', null, array($elementObject->ID, $answerObject->ID ) ) );
-//eZFire::debug($validation,"VALIDATION");
+						$validation['custom_rules'][] = array( 'message' => ezpI18n::tr( 'design/exam', 'Every question with a condition must have a condition value and vice-versa.  Question %1 Answer %2 does not.', null, array($elementObject->ID, $answerObject->ID ) ) );
 						$contentObjectAttribute->setValidationError( ezpI18n::tr( 'design/exam', $error['message'] ) );
 						$contentObjectAttribute->setHasValidationError();
 						return $failStatus;
@@ -208,8 +196,7 @@ class ExamenType extends eZDataType
 									$questionCondition++;
 									if ( $elementObject->parent != $checkObject->parent ) {
 										$validation['error'] = true;
-										$validation['custom_rules'][] = array( 'message' => ezpI18n::tr( 'design/examen', 'A condition element can only come from the same group.  Question %1 Answer %2 does not meet this criteria.', null, array($elementObject->ID, $answerObject->ID) ) );
-//eZFire::debug($validation,"VALIDATION");
+										$validation['custom_rules'][] = array( 'message' => ezpI18n::tr( 'design/exam', 'A condition element can only come from the same group.  Question %1 Answer %2 does not meet this criteria.', null, array($elementObject->ID, $answerObject->ID) ) );
 
 										$contentObjectAttribute->setValidationError( ezpI18n::tr( 'design/exam', $error['message'] ) );
 										$contentObjectAttribute->setHasValidationError();
@@ -225,18 +212,15 @@ class ExamenType extends eZDataType
 				//If not a survey every question must have one correct answer
 				if ( $passThreshold != 0 AND $correct != 1 ) {
 					$validation['error'] = true;
-					$validation['custom_rules'][] = array( 'message' => ezpI18n::tr( 'design/examen', 'If there is a pass threshhold, every question must have one correct answer.  Question %1 does not have one correct answer.', null, array($elementObject->ID) ) );
-//eZFire::debug($validation,"VALIDATION");
+					$validation['custom_rules'][] = array( 'message' => ezpI18n::tr( 'design/exam', 'If there is a pass threshhold, every question must have one correct answer.  Question %1 does not have one correct answer.', null, array($elementObject->ID) ) );
 					$contentObjectAttribute->setValidationError( ezpI18n::tr( 'design/exam', $error['message'] ) );
 					$contentObjectAttribute->setHasValidationError();
 					return $failStatus;
 				}
 				//Every question must have at least two answers
-//eZFire::debug($answerCount,"ANSEWR COUNT");
 				if ( $answerCount < 1 ) { //Count starts at [0] [1]
 					$validation['error'] = true;
-					$validation['custom_rules'][] = array( 'message' => ezpI18n::tr( 'design/examen', 'Every question must have at least two answers.  Question %1 does not.', null, array($elementObject->ID) ) );
-//eZFire::debug($validation,"VALIDATION");
+					$validation['custom_rules'][] = array( 'message' => ezpI18n::tr( 'design/exam', 'Every question must have at least two answers.  Question %1 does not.', null, array($elementObject->ID) ) );
 					$contentObjectAttribute->setValidationError( ezpI18n::tr( 'design/exam', $error['message'] ) );
 					$contentObjectAttribute->setHasValidationError();
 					return $failStatus;
@@ -247,14 +231,12 @@ class ExamenType extends eZDataType
 
 		if ( $questionCount - $questionConditon < 1 ) {
 			$validation['error'] = true;
-			$validation['custom_rules'][] = array( 'message' => ezpI18n::tr( 'design/examen', 'After taking into account conditions there are no questions left.' ) );
-//eZFire::debug($validation,"VALIDATION");
+			$validation['custom_rules'][] = array( 'message' => ezpI18n::tr( 'design/exam', 'After taking into account conditions there are no questions left.' ) );
 			$contentObjectAttribute->setValidationError( ezpI18n::tr( 'design/exam', $error['message'] ) );
 			$contentObjectAttribute->setHasValidationError();
 			return $failStatus;
 		}
 		//We passed!
-//eZFire::debug("INPUT VALIDATED");
 		return eZInputValidator::STATE_ACCEPTED;
 	}
 
@@ -264,15 +246,6 @@ class ExamenType extends eZDataType
 
     function fetchObjectAttributeHTTPInput( $http, $base, $contentObjectAttribute )
     {
-//eZFire::debug(__FUNCTION__,"WE ARE HERE");
-//eZFire::debug($contentObjectAttribute->ID,__FUNCTION__);
-//eZFire::debug($http,"http");
-//eZFire::debug($base,"base");
-//eZFire::debug($contentObjectAttribute,"contentObjectAttribute");
-//eZFire::debug($contentObjectAttribute->attribute( "contentobject_id" ) ,"contentObjectAttribute id");
-//eZFire::debug($contentObjectAttribute->attribute( "version" ) ,"version");
-//eZFire::debug($contentObjectAttribute->attribute( "language_code" ) ,"language");
-//eZFire::debug($_POST,"POST");
 /*
 answer_priority_
 condition
@@ -293,7 +266,6 @@ if so, update the table. for the appropriate element.  We'll need the element id
 		foreach($examElements as $priorityObject) {
 			$priorityArray[$priorityObject->ID] = array( $priorityObject->attribute( 'priority'), $priorityObject );
 		}
-//eZFire::debug($priorityArray,"PriorityArray");
 		foreach($examElements as $elementObject) {
 			$element_id = $elementObject->ID;
 
@@ -500,7 +472,6 @@ if so, update the table. for the appropriate element.  We'll need the element id
     */
     function storeObjectAttribute( $attribute )
     {
-//eZFire::debug(__FUNCTION__,"WE ARE HERE");
     }
 
     /*!
@@ -530,13 +501,11 @@ if so, update the table. for the appropriate element.  We'll need the element id
     */
     function objectAttributeContent( $contentObjectAttribute )
     {
-//eZFire::debug(__FUNCTION__,"WE ARE HERE");
         return exam::fetch($contentObjectAttribute->attribute( 'contentobject_id' ));
     }
 
     function fetchClassAttributeHTTPInput( $http, $base, $classAttribute )
     {
-//eZFire::debug(__FUNCTION__,"WE ARE HERE");
     }
 
     /*!
@@ -563,7 +532,6 @@ if so, update the table. for the appropriate element.  We'll need the element id
 
     function hasObjectAttributeContent( $contentObjectAttribute )
     {
-//eZFire::debug(__FUNCTION__,"WE ARE HERE");
         return trim( $contentObjectAttribute->attribute( 'data_text' ) ) != '';
     }
 
@@ -586,7 +554,6 @@ if so, update the table. for the appropriate element.  We'll need the element id
 
     function serializeContentClassAttribute( $classAttribute, $attributeNode, $attributeParametersNode )
     {
-//eZFire::debug(__FUNCTION__,"WE ARE HERE");
         $defaultValue = $classAttribute->attribute( 'data_text1' );
         $dom = $attributeParametersNode->ownerDocument;
         $defaultValueNode = $dom->createElement( 'default-value' );
@@ -597,7 +564,6 @@ if so, update the table. for the appropriate element.  We'll need the element id
 
     function unserializeContentObjectAttribute( $package, $objectAttribute, $attributeNode )
     {
-//eZFire::debug(__FUNCTION__,"WE ARE HERE");
        $rootNode = $attributeNode->getElementsByTagName( 'examen' )->item( 0 );
         $xmlString = $rootNode ? $rootNode->ownerDocument->saveXML( $rootNode ) : '';
         $objectAttribute->setAttribute( 'data_text', $xmlString );
@@ -638,11 +604,9 @@ if so, update the table. for the appropriate element.  We'll need the element id
 
 	function fixupObjectAttributeHTTPInput( $http, $base, $contentObjectAttribute )
 	{
-//eZFire::debug(__FUNCTION__,"WE ARE HERE");
 	}
 	function customObjectAttributeHTTPAction( $http, $action, $contentObjectAttribute, $parameters )
 	{
-//eZFire::debug(__FUNCTION__,"WE ARE HERE");
 	}
 
     function supportsBatchInitializeObjectAttribute()
@@ -666,16 +630,16 @@ if so, update the table. for the appropriate element.  We'll need the element id
 			}
         }
     }
+
 	function onPublish( $contentObjectAttribute, $contentObject, $publishedNodes )
 	{
-
 	}
+
 	function eZXMLTextConvert( $inputXML = "" )
 	{
 		$xmlData = "<section xmlns:image='http://ez.no/namespaces/ezpublish3/image/' xmlns:xhtml='http://ez.no/namespaces/ezpublish3/xhtml/' xmlns:custom='http://ez.no/namespaces/ezpublish3/custom/' >";
 		$xmlData .= $inputXML;
 		$xmlData .= "</section>";
-//eZFire::debug($xmlData,"XMLDATA GOING IN");
 		return $xmlData;
 /*
 		$xmlObject = new eZXMLText( $inputXML, null );

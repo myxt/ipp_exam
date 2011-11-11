@@ -32,7 +32,6 @@
 			<label>{'answer'|i18n('design/exam')} {$answer.id}:</label>
 			<input class="button" value="{'Remove'|i18n('design/exam')}" name="CustomActionButton[removeAnswer][{$answer.id}]" type="submit">
 			<input type="hidden" value="0" name="answer_correct_{$answer.id}" /> {*Have to prime it otherwise never unchecked*}
-{*$answer.id." ".$answer.correct|ezfire("ANSWER CORRECT")*}
 			{'Correct'|i18n('design/exam')}: <input type="checkbox" name="answer_correct_{$answer.id}" {if $answer.correct}checked="checked"{/if} />
 			{'Condition'|i18n('design/exam')}: 
 			<select id="answer_condition" name="answer_condition_{$answer.id}">

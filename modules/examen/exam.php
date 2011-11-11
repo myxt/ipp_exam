@@ -1,5 +1,4 @@
 <?php
-//eZFire::debug("IN EXAM.PHP");
 
 $Module = $Params['Module'];
 $http = eZHTTPTool::instance();
@@ -19,7 +18,6 @@ if ( $http->hasPostVariable( "exam_id" ) ) {
 } else {
 	$examID = $Params['exam_id'];
 }
-//eZFire::debug($examID,"examID");
 if (count($errors) == 0) { // only need these the first time through?
 	if (!ctype_digit($examID)) {  //no exam_id, we got nothing then
 		$errors[] = "no_exam_id";
@@ -65,10 +63,6 @@ if (count($errors) == 0) {
 	}
 } //end if no errors
 
-//eZFire::debug($examVersion,"Version");
-//eZFire::debug($examLanguage,"Language");
-//eZFire::debug($errors,"errors");
-
 //Need to do this after I have an examID
 if (!$http->hasSessionVariable( 'status['.$examID.']' )) { //Have to write something to the cookie
 	//$http->setSessionVariable( 'status['.$examID.']', time() );
@@ -79,14 +73,11 @@ if (!$http->hasSessionVariable( 'status['.$examID.']' )) { //Have to write somet
 	$errors[] = "threshold_exceeded";
 }
 */
-//eZFire::debug($http->sessionVariable( 'status['.$examID.']'), "STATUS" );
 
 //Got to do this AFTER we set something otherwise there potentially isn't a session yet.
 //if ( !eZSession::userHasSessionCookie() ) { //Have to check every time just in case someone turns cookies off in the middle
 $hash = eZSession::getUserSessionHash();
-//eZFire::debug($hash,"HASH");
 //$sessionKey = $http->getSessionKey();
-//eZFire::debug($sessionKey,"SESSION KEY");
 if ( !$hash ) {
 	$errors[] = "i_can_haz_no_cookie";
 }
@@ -110,17 +101,14 @@ $http->setSessionVariable( 'condition_array['.$examID.']', array() ); //array of
 $http->setSessionVariable( 'result_array['.$examID.']', array() ); //id of text elements to add to the result page on condition
 $http->setSessionVariable( 'score['.$examID.']', 0 ); //id of text elements to add to the result page on condition
 */
-//eZFire::debug($errors,"ERRORS");
 
 if (count($errors) == 0) {
 	$dataMap = $contentObject->DataMap();
 	/*start exam*/
 	$index = $http->hasSessionVariable( 'index['.$examID.']' ) ? $http->sessionVariable( 'index['.$examID.']' ) : 0;
-//eZFire::debug($index,"INDEX");
 	$questionCount=0;
 	if ($http->hasPostVariable( 'mode' )) {
 		$mode = $http->postVariable( 'mode' );
-//eZFire::debug($examArray,"GETTING EXAM ARRAY FROM SESSION");
 	}
 	/********************************
 	*                               *
@@ -128,13 +116,11 @@ if (count($errors) == 0) {
 	*                               *
 	********************************/
 /*First time through, figure out what the question array is and load it in the session*/
-//eZFire::debug(count($examArray), "COUNT EXAM ARRAY RIGHT BEFORE FIRST TIME THROUGH");
 	$conditionRemoveArray = array();
 	$answerConditionArray = array();
 	$conditionArray = array();
 	$resultArray = array();
 	if (count($examArray) < 1) {
-//eZFire::debug("CALCULATING EXAM ARRAY");
 		/* First time through have to initialize the element list
 			This will be array (	
 							array([element_id] => [user_answer])
@@ -142,12 +128,8 @@ if (count($errors) == 0) {
 							array([element_id] => [user_answer])
 						)
 		*/
-//eZFire::debug($examID,"ID");
-//eZFire::debug($examVersion,"Version");
-//eZFire::debug($examLanguage,"Language");
 		//We have to get only the top level structure here first so that we can shuffle on the group level if the random option is set
 		$examElements = exam::getStructure($examID,$examVersion,$examLanguage );
-//eZFire::debug($examElements,"EXAM STRUCTURE");
 		//but we don't want to shuffle if there are pagebreaks, except if the pagebreak is the last element.
 		//Doesn't make much sense to shuffle text blocks either.  I can only really see textblocks as being useful as a condition or for 
 		//a non-random exam..
@@ -170,8 +152,6 @@ if (count($errors) == 0) {
 		*/
 
 		foreach($conditionObjectArray as $condition) {
-//eZFire::debug($condition->option_id,"CONDITION OPTION ID");
-//eZFire::debug($condition->option_value,"CONDITION VALUE ID");
 			switch ($condition->option_id) { //This could be a mod at this point but I have a funny feeling this will be extended
 				case 1:
 				case 5:
@@ -187,15 +167,12 @@ if (count($errors) == 0) {
 				case 4:
 				case 6:
 				case 8:
-//eZFire::debug($condition->option_value,"IN THE CASE?");
 					$conditionRemoveArray[] = $condition->option_value;
 					break;
 			}
 			/*Gotta match on the question id to be able to do the NOT*/
-//eZFire::debug($condition,"CONDITION");
 			$answerConditionArray[$condition->questionID] = array( 'answer_id' => $condition->ID, 'option_id' =>  $condition->option_id, 'option_value' => $condition->option_value );
 		}
-//eZFire::debug($answerConditionArray,"ANSWER CONDITON ARRAY");
 		$elementCount = count($examElements);
 
 		/*Check if anything overrides random*/
@@ -222,14 +199,12 @@ if (count($errors) == 0) {
 				}
 			}
 			if ( $random ) {
-//eZFire::debug("WE HAVE RANDOM");
 				shuffle($examElements);
 			}
 		}
 
 		foreach($examElements as $element) {
 			if( in_array( $element->ID, $conditionRemoveArray ) ) {
-//eZFire::debug($element->ID,"THIS SHOULD BE REMOVED BECAUSE ITS A CONDITION");
 				continue;
 			}
 			switch($element->type) {
@@ -286,22 +261,14 @@ if (count($errors) == 0) {
 		$http->setSessionVariable( 'exam_array['.$examID.']' , $examArray );
 		$http->setSessionVariable( 'condition_array['.$examID.']',$answerConditionArray );
 	} else { 
-//eZFire::debug($examID,"SHOULD BE GETTING INFO FROM SESSION - ITS A RETEST");
-
 		if ($http->hasSessionVariable( 'condition_array['.$examID.']' )) {
 
 			$conditionArray = $http->sessionVariable( 'condition_array['.$examID.']' );
-//eZFire::debug($conditionArray,"GETTING CONDITION ARRAY FROM SESSION");
 		}
 		if ($http->hasSessionVariable( 'result_array['.$examID.']' )) {
 			$resultArray = $http->sessionVariable( 'result_array['.$examID.']' );
-//eZFire::debug("GETTING RESULT ARRAY FROM SESSION");
 		}
 	}
-
-//eZFire::debug($examArray,"EXAM ARRAY");
-//eZFire::debug(count($examArray),"EXAM ARRAY COUNT");
-//eZFire::debug($conditionArray,"CONDITION ARRAY");
 
 	/********************************
 	*                               *
@@ -311,11 +278,9 @@ if (count($errors) == 0) {
 
 	//if has submit - save answer to array and check for conditions - have to do this BEFORE we hit the results
 
-//eZFire::debug($_POST,"POST");
 	foreach($examArray as $checkIndex => $checkArray){ //loading the answers just in case a condition exists to remove something that was answered
 		if ( $http->hasPostVariable( "answer_".$checkArray[0]) ) {
 			$answerID = $http->variable( "answer_".$checkArray[0]);
-//eZFire::debug($answerID,"GOT ANSWER");
 			$examArray[$checkIndex][1] = $answerID;
 			$checkList[] = $checkArray[0];
 		}
@@ -344,14 +309,8 @@ if (count($errors) == 0) {
 					case 2: //if picked add
 
 						if ( $answerID == $answer_id ){
-//eZFire::debug(!in_array($keyCheck,$examID_array),"in array");
-//eZFire::debug($keyCheck,"KEY CHECK");
-//eZFire::debug($examID_array,"examID_array");
-							//if(!in_array($keyCheck,$examID_array)){ //doesn't already exist;  this isn't checking what you think it's checking
-//eZFire::debug($option_value,"ADDING");
-								$examArray[] = array( $option_value, "" );
-								$conditionAdd = true;
-							//}
+							$examArray[] = array( $option_value, "" );
+							$conditionAdd = true;
 						}
 						break;
 					case 3: //if picked follow with
@@ -369,9 +328,6 @@ if (count($errors) == 0) {
 						}
 						break;
 					case 4: //if picked display text in results
-//eZFire::debug("IN CASE FOUR");
-//eZFire::debug($answerID,"ANSWER ID");
-//eZFire::debug($answer_id,"answer_id");
 						if ( $answerID == $answer_id ){
 							$resultArray[$keyCheck] = $option_value;
 
@@ -419,23 +375,12 @@ if (count($errors) == 0) {
 			}
 		}
 	} //end foreach
-//eZFire::debug($examArray,"EXAM ARRAY BEFORE SETTING SESSION AGAIN");
 	$http->setSessionVariable( 'exam_array['.$examID.']' , $examArray );
-//eZFire::debug($examArray,"EXAM ARRAY AFTER HANDLE ANSWER");
 	/********************************
 	*                               *
 	*    RESULTS                    *
 	*                               *
 	********************************/
-//eZFire::debug($checkList,"THESE HAVE TO GO INTO A ELEMENTS - THEY HAVEN'T ACTUALLY BEEN LOADED?");
-//eZFire::debug($index,"INDEX");
-//eZFire::debug($mode,"MODE");
-//eZFire::debug($questionCount,"QuestionCount");
-//eZFire::debug(count($examArray),"EXAM ARRAY COUNT");
-//eZFire::debug(count($checkList),"CHECK INDEX");
-
-//eZFire::debug($resultArray,"RESULT ARRAY");
-//eZFire::debug($examArray,"EXAM ARRAY GOING INTO RESULTS");
 //if it's simple mode then we should be dropping through right now by matching on the $questionCount
 
 	if ( ( $mode == 'simple' AND count($checkList) == $questionCount ) OR ( count($examArray) <  $index + count($checkIndex) AND $conditionAdd == false ) OR count($examArray) == 0 ) {
@@ -459,16 +404,11 @@ if (count($errors) == 0) {
 		if ( $status == "RETEST" ) {
 			$followup = true;
 		}
-//eZFire::debug($saveResults,"SAVE RESULTS");
 		if (!$dataMap["pass_threshold"]->DataInt) { //otherwise it's a survey so always save statistics
 			$survey = true;
 		}
-//eZFire::debug($saveResults,"SAVE RESULTS");
-//eZFire::debug($survey,"SURVEY");
-//eZFire::debug($status,"STATUS");
 		if ( $status != "DONE" ) { //If this is set to DONE someone hit the back button and we should just go to the results page
 			
-//eZFire::debug( "SAVING RESULTS" );
 			//Save question results
 			//$session = $http->getSessionKey() ? $http->getSessionKey() : md5sum(date(now));
 			//$hash = md5($session.$secretKey.$examID);
@@ -483,7 +423,6 @@ if (count($errors) == 0) {
 					if ($survey == false) {
 						$answerObject = examAnswer::fetch( $examAnswer[1] );
 						$correct = $answerObject->correct;
-//eZFire::debug($correct,"CORRECT");
 						if ( $correct == true ) {
 							$correctCount++;
 						}
@@ -491,18 +430,8 @@ if (count($errors) == 0) {
 				}
 //We're going to have to save the resultArray session variable here too, otherwise there is no way to display it in the results
 //We need the correct count even if we aren't saving results
-//eZFire::debug("ARE WE HERE, WHY ARENT WE HERE");
-//eZFire::debug("SHOULD BE SAVING THE RESULT")
 				if ( $saveResults == 1 OR $survey == true ) {
-//eZFire::debug("SAVING NEW RESULT");
 					$newResult = new examResult();
-//eZFire::debug($examID, 'contentobject_id' );
-//eZFire::debug($hash, 'hash');
-//eZFire::debug($examAnswer[0],'question_id' );
-//eZFire::debug($examAnswer[1], 'answer' );
-//eZFire::debug($correct, 'correct');
-//eZFire::debug($followup, 'followup');
-//eZFire::debug($resultArray,'resultArray');
 					$newResult = new examResult();
 					$newResult->setAttribute( 'contentobject_id', $examID );
 					$newResult->setAttribute( 'hash', $hash );
@@ -514,15 +443,12 @@ if (count($errors) == 0) {
 					$newResult->store();
 				}//end save results		
 			}//end foreach
-//eZFire::debug($correctCount,'correctCount');
-//eZFire::debug($questionIndex,'questionIndex');
 			$score = 0; //For survey
 
 			if ($dataMap["pass_threshold"]->DataInt) { //otherwise it's a survey
 				if ($correctCount != 0) {//no division by zero here - dammit.
 					//$score = 100 - ceil( ( $resultIndex - $correctCount ) / $resultIndex * 100 );
 					$score = ceil( $correctCount / $questionIndex * 100 );
-//eZFire::debug($score,"SCORE");
 					if ( $score >= $dataMap["pass_threshold"]->DataInt ) {
 						$passed = true;
 					} else {
@@ -530,21 +456,14 @@ if (count($errors) == 0) {
 					}
 				}
 			}
-//eZFire::debug($score,"SCORE");
-//eZFire::debug($followup,"FOLLOWUP");
-//eZFire::debug($passed,"PASSED");
 			if ( $saveResults ) {
-//eZFire::debug($saveResults,"SHOULD BE DOING THE INCREMENTS HERE");
 				$exam = exam::fetch( $examID );
 				$totalExam = $exam->increment( 'count' );
-//eZFire::debug($totalExam,"EXAM COUNT SHOULD HAVE INCREMENTED");
 				if (!$survey AND $passed) { //If it's a survey, then this won't mean anything
 					if ($followup) {
 						$secondPass = $exam->increment( 'pass_second' );
-//eZFire::debug($secondPass,"SECOND PASS SHOULD HAVE INCREMENTED");
 					}else{
 						$firstPass = $exam->increment( 'pass_first' );
-//eZFire::debug($totalExam,"FIRST PASS SHOULD HAVE INCREMENTED");
 					}
 				}	
 				$highScore = $exam->highScore( $score );
@@ -588,21 +507,16 @@ $http->setSessionVariable( 'result_array['.$examID.']', array() ); //id of text 
 
 	} else { //end results
 		//fetch element(s) display element(s)
-//eZFire::debug("IN THE ELSE FTW");		
 		/********************************
 		*                               *
 		* HANDLE MULTI-PAGE EXAM OUTPUT *
 		*                               *
 		********************************/
-//eZFire::debug($examArray,"EXAM ARRAY BEFORE WHILE LOOP");
-//eZFire::debug($index,"INDEX");
 		$type = "";
 		while($index < count($examArray) AND $type != "pagebreak" AND $recurseCheck < 10 ) {
-//eZFire::debug($index,"INDEX");
 //Hmmm might want to put a recursive check here
 			$elementID = $examArray[$index][0];
 			if($recurseCheck != 0 AND in_array($elementID,$conditionArray) ) {
-//eZFire::debug("HITTING A CONDITON");
 				continue;
 			}
 			$element = examElement::fetch( $elementID );

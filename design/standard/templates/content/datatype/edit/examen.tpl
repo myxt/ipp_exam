@@ -9,8 +9,6 @@
 											'language_code', $attribute.language_code )
 				)
 }
-{*$structure|ezfire("structure")*}
-{*$elements|ezfire("elements")*}
 <div id="exam-edit">
 	<div class="buttons">
 		<input class="button" id="newGroup" name="CustomActionButton[newGroup]" value="{'New Group'|i18n('design/exam')}" type="Submit">

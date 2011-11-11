@@ -1,19 +1,10 @@
-Datatype:
-edit:
-Should convert the textblock to a ezxmltext class. 
-Validation - not done yet
-
-diff - not done yet
-copy - not well tested yet - conditions for copied elements are wrong. Chicken and egg.
-
-Exam view:
-Simple view -  done
-Multi-page - done
-
-result:
-Social Media
-Mail
-Retest
-Should do a lot more error checking for the download page.  Also maybe should be a class attribute pointing to an image file instead of what's in design.
 
 Userguide
+
+fetchSurvey is returning data for all versions/languages but is only able to display the last version since the previous versions data doesn't match the content-object ids.  Spews lots of index errors because of it.  Got to redo this.
+
+Condition for Survey, as in - show in results text needs to be added
+
+
+
+

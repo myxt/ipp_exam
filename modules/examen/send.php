@@ -119,7 +119,6 @@ if ( count($errors) == 0 ) {
 		$tpl = eZTemplate::factory();
 		$tpl->setVariable( 'link', $link );
 		$facebook = $tpl->fetch( 'design:examen/results/'.$mode.'/facebook.tpl' );
-	//eZFire::debug($facebook,"AFTER FETCH");
 		$facebook = urlencode( trim($facebook) );
 		$facebook = str_replace("%7C","=",$facebook);
 		$facebook = str_replace("%5E","&",$facebook);

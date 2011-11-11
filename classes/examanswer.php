@@ -10,37 +10,6 @@ class examAnswer extends eZPersistentObject
     function examAnswer( $row = array() )
     {
 		$this->eZPersistentObject( $row );
-/*
-		$this->ClassIdentifier = false;
-		if ( isset( $row['contentclass_identifier'] ) )
-			$this->ClassIdentifier = $row['contentclass_identifier'];
-		$this->ClassName = false;
-		if ( isset( $row['contentclass_name'] ) )
-			$this->ClassName = $row['contentclass_name'];
-		if ( isset( $row['serialized_name_list'] ) )
-			$this->ClassName = eZContentClass::nameFromSerializedString( $row['serialized_name_list'] );
-
-		$this->CurrentLanguage = false;
-		if ( isset( $row['content_translation'] ) )
-		{
-			$this->CurrentLanguage = $row['content_translation'];
-		}
-		else if ( isset( $row['real_translation'] ) )
-		{
-			$this->CurrentLanguage = $row['real_translation'];
-		}
-		else if ( isset( $row['language_mask'] ) )
-		{
-			$topPriorityLanguage = eZContentLanguage::topPriorityLanguageByMask( $row['language_mask'] );
-			if ( $topPriorityLanguage )
-			{
-			$this->CurrentLanguage = $topPriorityLanguage->attribute( 'locale' );
-			}
-		}
-*/
-//        $db = eZDB::instance();
-//eZFire::debug($this->ID,"THIS ID ANSWER"); 
-//eZFire::debug($db->transactionCounter(),"TRANSACTION COUNTER"); 
     }
 
 	static function definition()
