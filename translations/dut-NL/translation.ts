@@ -153,22 +153,18 @@
     </message>
     <message>
         <source>Your score was [score]% correct</source>
-        <comment>score</comment>
-        <translation>Uw score was [score]% correct</translation>
+        <translation type="obsolete">Uw score was [score]% correct</translation>
     </message>
     <message>
-        <source>You were one of [examCount] to take this exam.  Of which [passFirst] passed.</source>
-        <comment>score</comment>
+        <source>You were one of [examCount] to take this exam. Of which [passFirst] passed.</source>
         <translation type="obsolete">U bent een van de [examCount] personen die dit examen heeft gedaan. Daarvan zijn [passFirst] personen geslaagd</translation>
     </message>
     <message>
         <source>on the first try and [passSecond] passed on the second try.</source>
-        <comment>score</comment>
         <translation type="obsolete">bij de eerste poging en [passSecond] bij de tweede poging.</translation>
     </message>
     <message>
         <source>The highest score recorded was [highScore].</source>
-        <comment>score</comment>
         <translation type="obsolete">De hoogste score was [highScore].</translation>
     </message>
     <message>
@@ -302,19 +298,19 @@
     </message>
     <message>
         <source>You were one of [examCount] to take this exam.  Of which [passFirst] passed</source>
-        <translation>Je was een van de [examCount] om dit examen te nemen.  Waarvan [passFirst] zijn geslaagd.</translation>
+        <translation type="obsolete">Je was een van de [examCount] om dit examen te nemen.  Waarvan [passFirst] zijn geslaagd.</translation>
     </message>
     <message>
         <source>on the first try and [passSecond] passed on the second try</source>
-        <translation>bij de eerste poging en [passSecond] zijn geslaagd aan de tweede poging</translation>
+        <translation type="obsolete">bij de eerste poging en [passSecond] zijn geslaagd aan de tweede poging</translation>
     </message>
     <message>
         <source>The average score is [average]%.</source>
-        <translation>De gemiddelde score is [average]%.</translation>
+        <translation type="obsolete">De gemiddelde score is [average]%.</translation>
     </message>
     <message>
         <source>The highest score recorded is [highScore]%.</source>
-        <translation>De hoogste score is [highScore]%.</translation>
+        <translation type="obsolete">De hoogste score is [highScore]%.</translation>
     </message>
     <message>
         <source>the exam at</source>
@@ -343,6 +339,55 @@
     <message>
         <source>Publish a link to your results on Hyves</source>
         <translation>Publiceer een link naar jouw resultaten op Hyves</translation>
+    </message>
+    <message>
+        <source>This survey is not available yet.</source>
+        <translation>Dit enquête is nog niet beschikbaar.</translation>
+    </message>
+    <message>
+        <source>This exam is not available yet.</source>
+        <translation>Dit examen is nog niet beschikbaar.</translation>
+    </message>
+    <message>
+        <source>This survey is no longer available.</source>
+        <translation>Dit enquête is niet meer beschikbaar.</translation>
+    </message>
+    <message>
+        <source>This exam is no longer available.</source>
+        <translation>Dit examen is niet meer beschikbaar.</translation>
+    </message>
+    <message>
+        <source>You were one of [examCount] to take this exam.  Of which [passFirst] passed</source>
+        <comment>score</comment>
+        <translation>Je was een van de [examCount] om dit examen te nemen.  Waarvan [passFirst] zijn geslaagd.</translation>
+    </message>
+    <message>
+        <source>on the first try and [passSecond] passed on the second try</source>
+        <comment>score</comment>
+        <translation>bij de eerste poging en [passSecond] zijn geslaagd aan de tweede poging</translation>
+    </message>
+    <message>
+        <source>The average score is [average]%.</source>
+        <comment>score</comment>
+        <translation>De gemiddelde score is [average]%.</translation>
+    </message>
+    <message>
+        <source>The highest score recorded is [highScore]%.</source>
+        <comment>score</comment>
+        <translation>De hoogste score is [highScore]%.</translation>
+    </message>
+    <message>
+        <source>This object is not available.</source>
+        <translation>Deze object is niet beschikbaar.</translation>
+    </message>
+    <message>
+        <source>Undefined error.</source>
+        <translation>Undefined error.</translation>
+    </message>
+    <message>
+        <source>Your score was [score]% correct</source>
+        <comment>score</comment>
+        <translation>Uw score was [score]% correct</translation>
     </message>
 </context>
 <context>
