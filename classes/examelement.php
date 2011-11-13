@@ -165,7 +165,7 @@ class examElement extends eZPersistentObject
 		$query = "SELECT COUNT(*) AS total FROM `exam_results` WHERE `question_id` = ".$this->ID;
 		$queryResult = $db->arrayQuery( $query, array( 'limit' => 1, 'column' => 'total' ) );
 		$result['total'] = $queryResult[0];
-		$queryResult = "SELECT COUNT(*) AS first_pass FROM `exam_results` WHERE `question_id` = ".$this->ID." AND `correct` = 1 AND `followup` = 0";
+		$query = "SELECT COUNT(*) AS first_pass FROM `exam_results` WHERE `question_id` = ".$this->ID." AND `correct` = 1 AND `followup` = 0";
 		$queryResult = $db->arrayQuery( $query,array( 'limit' => 1, 'column' => 'first_pass' ) );
 		$result['first_pass'] = $queryResult[0];
 		$query = "SELECT COUNT(*) AS second_pass FROM `exam_results` WHERE `question_id` = ".$this->ID." AND `correct` = 1 AND `followup` = 1";
