@@ -155,10 +155,18 @@ if ( !$data instanceof eZClusterFileFailure )
 	$mode = $dataMap["mode"]->DataText ? $dataMap["mode"]->DataText : "default";
 	$mode = "default";
 	$Result['content'] = $tpl->fetch( 'design:examen/results/'.$mode.'/result.tpl' );
+	$Result['path'] = array(	array(	'url' => false,
+								'text' => ezpI18n::tr( 'design/exam', 'Exam' ) ),
+						array(	'url' => false,
+								'text' =>  $examID ) );
 }
 
 if (!$Result['content']) { /*Got errors*/
 	$tpl->setVariable("errors", $errors);
 	$Result['content'] = $tpl->fetch( 'design:examen/view/error.tpl' );
+	$Result['path'] = array(	array(	'url' => false,
+								'text' => ezpI18n::tr( 'design/exam', 'Exam' ) ),
+						array(	'url' => false,
+								'text' => ezpI18n::tr( 'design/exam', 'Error' ) ) );
 }
 ?>

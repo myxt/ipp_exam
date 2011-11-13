@@ -131,4 +131,8 @@ if ( count($errors) == 0 ) {
 }
 $tpl->setVariable("errors", $errors);
 $Result['content'] = $tpl->fetch( 'design:examen/view/error.tpl' );
+$Result['path'] = array(	array(	'url' => false,
+							'text' => ezpI18n::tr( 'design/exam', 'Exam' ) ),
+					array(	'url' => false,
+							'text' => ezpI18n::tr( 'design/exam', 'Error' ) ) );
 ?>

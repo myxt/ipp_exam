@@ -540,10 +540,18 @@ $http->setSessionVariable( 'result_array['.$examID.']', array() ); //id of text 
 		$tpl->setVariable("exam_id", $examID );
 		$tpl->setVariable("elements", $elements );
 		$Result['content'] = $tpl->fetch( 'design:examen/view/element.tpl' );
+		$Result['path'] = array(	array(	'url' => false,
+									'text' => ezpI18n::tr( 'design/exam', 'Exam' ) ),
+							array(	'url' => false,
+									'text' =>  $examID ) );
 	}
 } 
 if (!$Result['content']) { /*Got errors*/
 	$tpl->setVariable("errors", $errors);
 	$Result['content'] = $tpl->fetch( 'design:examen/view/error.tpl' );
+	$Result['path'] = array(	array(	'url' => false,
+								'text' => ezpI18n::tr( 'design/exam', 'Exam' ) ),
+						array(	'url' => false,
+								'text' => ezpI18n::tr( 'design/exam', 'Error' ) ) );
 }
 ?>
