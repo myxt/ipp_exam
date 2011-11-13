@@ -31,20 +31,10 @@ if (!ctype_digit($examID)) {  //no exam_id, we got nothing then
 		$errors[] = "object_not_exam";
 	}
 }
-//If it's a survey, we don't need a hash.  And we need ALL results not just the ones that match to the hash - so we have to figure out if this is a survey first.
-$dataMap = $contentObject->DataMap();
 
-if ($dataMap["pass_threshold"]->DataInt) { //otherwise it's a survey and we don't care
-	$hash = $Params['hash'];
-	if (!$hash) {  //no exam_id, we got nothing then
-		$hash = $http->getSessionKey();
-		//$errors[] = "no_hash";
-	}
-} else {
-	$survey=true;
-}
 
 if ( count($errors) == 0 ) {
+	
 /*We could cache by examid/hash - or lack of hash
 /*list($handler, $data) = eZTemplateCacheBlock::retrieve( array( 'examdata',$http->sessionID() , $examId ), null, 0 );
 if ( !$data instanceof eZClusterFileFailure )
@@ -52,9 +42,6 @@ if ( !$data instanceof eZClusterFileFailure )
 	$Result['content']=$data;
 } else {
 */
-
-
-
 	/*These are the object options that determine results output
 	//	These happen in exam...
 	//	$dataMap["mode"]->DataText
@@ -66,6 +53,19 @@ if ( !$data instanceof eZClusterFileFailure )
 	//	$dataMap["show_statistics"]->DataInt
 	//	$dataMap["pass_threshold"]->DataInt
 	*/
+	//If it's a survey, we don't need a hash.  And we need ALL results not just the ones that match to the hash - so we have to figure out if this is a survey first.
+
+	$dataMap = $contentObject->DataMap();
+
+	if ($dataMap["pass_threshold"]->DataInt) { //otherwise it's a survey and we don't care
+		$hash = $Params['hash'];
+		if (!$hash) {  //no exam_id, we got nothing then
+			$hash = $http->getSessionKey();
+			//$errors[] = "no_hash";
+		}
+	} else {
+		$survey=true;
+	}
 	if ( $dataMap["pass_threshold"]->DataInt == 0 ) { //it's a survey and results will be different
 	// if it's a survey we're going to have to return an array of count( total => x, answer1 => x, answer2 => x );
 		$results = examResult::fetchSurvey( $examID );
@@ -132,13 +132,15 @@ if ( !$data instanceof eZClusterFileFailure )
 		}
 		if ($dataMap["show_statistics"]) {
 			$exam = exam::fetch( $examID );
-			$tpl->setVariable("average", $exam->average());
-			$tpl->setVariable("showStatistics", true);
-			$tpl->setVariable("examCount", $exam->attribute( 'count' ));
-			$tpl->setVariable("passFirst", $exam->attribute( 'pass_first' ));
-			$tpl->setVariable("passSecond", $exam->attribute( 'pass_second' ));
-			$tpl->setVariable("highScore", $exam->attribute( 'high_score' ));
-			$tpl->setVariable("highScore", $exam->attribute( 'high_score' ));
+			if ($exam) {
+				$tpl->setVariable("average", $exam->average());
+				$tpl->setVariable("showStatistics", true);
+				$tpl->setVariable("examCount", $exam->attribute( 'count' ));
+				$tpl->setVariable("passFirst", $exam->attribute( 'pass_first' ));
+				$tpl->setVariable("passSecond", $exam->attribute( 'pass_second' ));
+				$tpl->setVariable("highScore", $exam->attribute( 'high_score' ));
+				$tpl->setVariable("highScore", $exam->attribute( 'high_score' ));
+			}
 			$tpl->setVariable("retest",$dataMap["retest"]->DataInt);
 			$tpl->setVariable("certificate",$dataMap["certificate"]->DataInt);
 			$tpl->setVariable("resultArray", $resultArray);

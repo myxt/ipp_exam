@@ -28,6 +28,8 @@ if (count($errors) == 0) { // only need these the first time through?
 		$errors[] = "no_object";
 	} elseif ( $contentObject->attribute( "class_identifier" ) != "exam" ) {
 		$errors[] = "object_not_exam";
+	} else {
+		$dataMap = $contentObject->DataMap();
 	}
 }
 //The language and version may not be set?  They must be set to get anything in the examArray.  This should always come from the node view so that the language and version are correct for the siteaccess.
@@ -86,6 +88,9 @@ if ($http->hasSessionVariable( 'exam_array['.$examID.']' )) {
 	$examArray = $http->sessionVariable( 'exam_array['.$examID.']' );
 	//This should be empty at the beginning of a retest because we potentially have conditional elements in the array.  So we have to rerun the first time through code to build the exam array again.
 }
+if ( time() < $dataMap["start_date"]->DataInt OR ( time() > $dataMap["end_date"]->DataInt AND $dataMap["end_date"]->DataInt > 0 ) ) {
+	$errors[] = "date_out_of_bounds";
+}
 //This is always dynamic so it can't be cached - unless it is really simple.... hmmm....
 
 /**************************************
@@ -103,7 +108,6 @@ $http->setSessionVariable( 'score['.$examID.']', 0 ); //id of text elements to a
 */
 
 if (count($errors) == 0) {
-	$dataMap = $contentObject->DataMap();
 	/*start exam*/
 	$index = $http->hasSessionVariable( 'index['.$examID.']' ) ? $http->sessionVariable( 'index['.$examID.']' ) : 0;
 	$questionCount=0;
@@ -432,7 +436,6 @@ if (count($errors) == 0) {
 //We need the correct count even if we aren't saving results
 				if ( $saveResults == 1 OR $survey == true ) {
 					$newResult = new examResult();
-					$newResult = new examResult();
 					$newResult->setAttribute( 'contentobject_id', $examID );
 					$newResult->setAttribute( 'hash', $hash );
 					$newResult->setAttribute( 'question_id', $examAnswer[0] );
@@ -458,18 +461,20 @@ if (count($errors) == 0) {
 			}
 			if ( $saveResults ) {
 				$exam = exam::fetch( $examID );
-				$totalExam = $exam->increment( 'count' );
-				if (!$survey AND $passed) { //If it's a survey, then this won't mean anything
-					if ($followup) {
-						$secondPass = $exam->increment( 'pass_second' );
-					}else{
-						$firstPass = $exam->increment( 'pass_first' );
-					}
-				}	
-				$highScore = $exam->highScore( $score );
-				$oldTally = $exam->attribute( 'score_tally' );
-				$exam->setAttribute( 'score_tally', $oldTally + $score );
-				$exam->store();
+					if ($exam) { //Otherwise no elements - should never happen.
+					$totalExam = $exam->increment( 'count' );
+					if (!$survey AND $passed) { //If it's a survey, then this won't mean anything
+						if ($followup) {
+							$secondPass = $exam->increment( 'pass_second' );
+						}else{
+							$firstPass = $exam->increment( 'pass_first' );
+						}
+					}	
+					$highScore = $exam->highScore( $score );
+					$oldTally = $exam->attribute( 'score_tally' );
+					$exam->setAttribute( 'score_tally', $oldTally + $score );
+					$exam->store();
+				}
 			} else {//if save results
 //WE NEED $score and $passed IN A SESSION VARIABLE IF WE DONT SAVE RESULTS
 				$http->setSessionVariable( 'passed['.$examID.']', $passed );

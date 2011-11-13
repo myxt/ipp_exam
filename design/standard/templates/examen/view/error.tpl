@@ -27,6 +27,13 @@
 		{case match="threshold_exceeded"}
 			{"You've tried to many times for today.  Try again on another day."|i18n('design/exam')}
 		{/case}
+		{case match="date_out_of_bounds"}
+			{"This object is not available."|i18n('design/exam')}
+		{/case}
+		{case}
+			{"Undefined error."|i18n('design/exam')}
+		{/case}
+
 	{/switch}
 	</div>
 {/foreach}
