@@ -1,0 +1,4 @@
+Import the exam content class
+create the necessary sql tables by importing the mysql.sql file
+enable the extension
+generate autoloads
