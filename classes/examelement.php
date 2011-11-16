@@ -200,7 +200,9 @@ class examElement extends eZPersistentObject
 		$newElement->setAttribute( 'type', $type );
 		$newElement->setAttribute( 'parent', $parent );
 		$newElement->setAttribute( 'xmloptions', $xmlOptions );
-		$newElement->setAttribute( 'content', $content );
+/*This isn't enough*/
+$cleanContent = preg_replace("/&nbsp;/i", "", $content );
+		$newElement->setAttribute( 'content', $cleanContent );
 		$newElement->setAttribute( 'version', $version );
 		$newElement->setAttribute( 'language_code', $language_code );
 		$newElement->store();
@@ -312,16 +314,20 @@ class examElement extends eZPersistentObject
 		$this->store();
 		return $xmlString;
     }
-    function xmlData()
-    {
-        return $this->XMLData;
-    }
+	function xmlData()
+	{
+		return $this->XMLData;
+	}
 	function inputXML()
 	{
 		$xmlObject = $this->getXMLContent();
 		$dom = new DOMDocument( '1.0', 'utf-8' );
 		if (!is_object($xmlObject)) return false;
-		$success = $dom->loadXML( $xmlObject->XMLData );
+
+		$data = $xmlObject->XMLData;
+/*This isn't enough should maybe verify*/
+		$cleanData = preg_replace("/&nbsp;/i", "", $data );
+		$success = $dom->loadXML( $cleanData );
 		$editOutput = new eZSimplifiedXMLEditOutput();
 		$dom->formatOutput = true;
 		if ( eZDebugSetting::isConditionTrue( 'kernel-datatype-ezxmltext', eZDebug::LEVEL_DEBUG ) )
