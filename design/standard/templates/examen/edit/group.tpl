@@ -14,18 +14,20 @@
 	<div class="oe-window">
 		<textarea class="box" id="exam_group_data_text_{$element.id}" name="exam_group_data_text_{$element.id}" cols="{$cols}" rows="{$editorRow}">{$element.input_xml}</textarea>
 	</div>
+	{*if $input_handler.can_disable}
 	<div class="block">
-		{if $input_handler.can_disable}
+
 			<input class="button{if $layout_settings['buttons']|contains('disable')} hide{/if}" type="submit" name="CustomActionButton[{$element.id}_disable_editor]" value="{'Disable editor'|i18n('design/standard/content/datatype')}" />
-		{/if}
-		<script type="text/javascript">
-		<!--
-		eZOeAttributeSettings = eZOeGlobalSettings;
-		eZOeAttributeSettings['ez_attribute_id'] = {$element.id};
-		eZOeToggleEditor( 'exam_group_data_text_{$element.id}', eZOeAttributeSettings );
-		-->
-		</script>
 	</div>
+	{/if*}
+	<script type="text/javascript">
+	<!--
+	eZOeAttributeSettings = eZOeGlobalSettings;
+	eZOeAttributeSettings['ez_attribute_id'] = {$element.id};
+	eZOeToggleEditor( 'exam_group_data_text_{$element.id}', eZOeAttributeSettings );
+	-->
+	</script>
+
 	{/default}
 	<div class="children">
 		{foreach $element.children as $child}

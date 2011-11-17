@@ -1,6 +1,18 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.0" language="nl_NL">
+<!DOCTYPE TS><TS>
+<context>
+    <name>design/admin/node/view/full</name>
+    <message>
+        <source>Submit</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>design/admin/settings</name>
+    <message>
+        <source>Edit</source>
+        <translation>Bewerken</translation>
+    </message>
+</context>
 <context>
     <name>design/exam</name>
     <message>
@@ -141,23 +153,19 @@
     </message>
     <message>
         <source>Your score was [score]% correct</source>
-        <comment>score</comment>
-        <translation>Uw score was [score]% correct</translation>
+        <translation type="obsolete">Uw score was [score]% correct</translation>
     </message>
     <message>
-        <source>You were one of [examCount] to take this exam.  Of which [passFirst] passed.</source>
-        <comment>score</comment>
-        <translation>U bent een van de [examCount] personen die dit examen heeft gedaan. Daarvan zijn [passFirst] personen geslaagd</translation>
+        <source>You were one of [examCount] to take this exam. Of which [passFirst] passed.</source>
+        <translation type="obsolete">U bent een van de [examCount] personen die dit examen heeft gedaan. Daarvan zijn [passFirst] personen geslaagd</translation>
     </message>
     <message>
         <source>on the first try and [passSecond] passed on the second try.</source>
-        <comment>score</comment>
-        <translation>bij de eerste poging en [passSecond] bij de tweede poging.</translation>
+        <translation type="obsolete">bij de eerste poging en [passSecond] bij de tweede poging.</translation>
     </message>
     <message>
         <source>The highest score recorded was [highScore].</source>
-        <comment>score</comment>
-        <translation>De hoogste score was [highScore].</translation>
+        <translation type="obsolete">De hoogste score was [highScore].</translation>
     </message>
     <message>
         <source>Congratulations, you got the high score.</source>
@@ -174,7 +182,7 @@
     <message>
         <source>I passed the exam at [url]</source>
         <comment>url</comment>
-        <translation>Ik ben geslaagd voor [url]</translation>
+        <translation type="obsolete">Ik ben geslaagd voor [url]</translation>
     </message>
     <message>
         <source>ERROR</source>
@@ -247,6 +255,146 @@
     <message>
         <source>Add Answer</source>
         <translation>Antwoord toevoegen</translation>
+    </message>
+    <message>
+        <source>You have already taken this survey today for the maximum allowed times.</source>
+        <translation>U hebt dit onderzoek vandaag voor de maximaal toegestane tijden gedaan.</translation>
+    </message>
+    <message>
+        <source>You have already taken this exam today for the maximum allowed times.</source>
+        <translation>U hebt dit examen vandaag voor de maximaal toegestane tijden genomen.</translation>
+    </message>
+    <message>
+        <source>See Results</source>
+        <translation>Bekijk resultaten</translation>
+    </message>
+    <message>
+        <source>New Group</source>
+        <translation>Nieuwe Group</translation>
+    </message>
+    <message>
+        <source>I</source>
+        <translation>Ik</translation>
+    </message>
+    <message>
+        <source>passed</source>
+        <translation>geslaagd</translation>
+    </message>
+    <message>
+        <source>failed</source>
+        <translation>gezakt</translation>
+    </message>
+    <message>
+        <source>I took the exam at</source>
+        <translation>Ik nam het examen op</translation>
+    </message>
+    <message>
+        <source>and</source>
+        <translation>en</translation>
+    </message>
+    <message>
+        <source>with a score of</source>
+        <translation>met een score van</translation>
+    </message>
+    <message>
+        <source>You were one of [examCount] to take this exam.  Of which [passFirst] passed</source>
+        <translation type="obsolete">Je was een van de [examCount] om dit examen te nemen.  Waarvan [passFirst] zijn geslaagd.</translation>
+    </message>
+    <message>
+        <source>on the first try and [passSecond] passed on the second try</source>
+        <translation type="obsolete">bij de eerste poging en [passSecond] zijn geslaagd aan de tweede poging</translation>
+    </message>
+    <message>
+        <source>The average score is [average]%.</source>
+        <translation type="obsolete">De gemiddelde score is [average]%.</translation>
+    </message>
+    <message>
+        <source>The highest score recorded is [highScore]%.</source>
+        <translation type="obsolete">De hoogste score is [highScore]%.</translation>
+    </message>
+    <message>
+        <source>the exam at</source>
+        <translation>het examen op</translation>
+    </message>
+    <message>
+        <source>Do you want to try?</source>
+        <translation>Wil je proberen?</translation>
+    </message>
+    <message>
+        <source>Total</source>
+        <translation>Totaal</translation>
+    </message>
+    <message>
+        <source>Send your results to your friends</source>
+        <translation>Stuur uw resultaten naar uw vrienden </translation>
+    </message>
+    <message>
+        <source>Publish a link to your results on Facebook</source>
+        <translation>Publiceer een link naar jouw resultaten op Facebook</translation>
+    </message>
+    <message>
+        <source>Publish a link to your results on Twitter</source>
+        <translation>Publiceer een link naar jouw resultaten op Twitter</translation>
+    </message>
+    <message>
+        <source>Publish a link to your results on Hyves</source>
+        <translation>Publiceer een link naar jouw resultaten op Hyves</translation>
+    </message>
+    <message>
+        <source>This survey is not available yet.</source>
+        <translation>Dit enquête is nog niet beschikbaar.</translation>
+    </message>
+    <message>
+        <source>This exam is not available yet.</source>
+        <translation>Dit examen is nog niet beschikbaar.</translation>
+    </message>
+    <message>
+        <source>This survey is no longer available.</source>
+        <translation>Dit enquête is niet meer beschikbaar.</translation>
+    </message>
+    <message>
+        <source>This exam is no longer available.</source>
+        <translation>Dit examen is niet meer beschikbaar.</translation>
+    </message>
+    <message>
+        <source>You were one of [examCount] to take this exam.  Of which [passFirst] passed</source>
+        <comment>score</comment>
+        <translation>Je was een van de [examCount] om dit examen te nemen.  Waarvan [passFirst] zijn geslaagd.</translation>
+    </message>
+    <message>
+        <source>on the first try and [passSecond] passed on the second try</source>
+        <comment>score</comment>
+        <translation>bij de eerste poging en [passSecond] zijn geslaagd aan de tweede poging</translation>
+    </message>
+    <message>
+        <source>The average score is [average]%.</source>
+        <comment>score</comment>
+        <translation>De gemiddelde score is [average]%.</translation>
+    </message>
+    <message>
+        <source>The highest score recorded is [highScore]%.</source>
+        <comment>score</comment>
+        <translation>De hoogste score is [highScore]%.</translation>
+    </message>
+    <message>
+        <source>This object is not available.</source>
+        <translation>Deze object is niet beschikbaar.</translation>
+    </message>
+    <message>
+        <source>Undefined error.</source>
+        <translation>Undefined error.</translation>
+    </message>
+    <message>
+        <source>Your score was [score]% correct</source>
+        <comment>score</comment>
+        <translation>Uw score was [score]% correct</translation>
+    </message>
+</context>
+<context>
+    <name>design/standard/content/datatype</name>
+    <message>
+        <source>Disable editor</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>

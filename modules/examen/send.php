@@ -119,7 +119,6 @@ if ( count($errors) == 0 ) {
 		$tpl = eZTemplate::factory();
 		$tpl->setVariable( 'link', $link );
 		$facebook = $tpl->fetch( 'design:examen/results/'.$mode.'/facebook.tpl' );
-	//eZFire::debug($facebook,"AFTER FETCH");
 		$facebook = urlencode( trim($facebook) );
 		$facebook = str_replace("%7C","=",$facebook);
 		$facebook = str_replace("%5E","&",$facebook);
@@ -132,4 +131,8 @@ if ( count($errors) == 0 ) {
 }
 $tpl->setVariable("errors", $errors);
 $Result['content'] = $tpl->fetch( 'design:examen/view/error.tpl' );
+$Result['path'] = array(	array(	'url' => false,
+							'text' => ezpI18n::tr( 'design/exam', 'Exam' ) ),
+					array(	'url' => false,
+							'text' => ezpI18n::tr( 'design/exam', 'Error' ) ) );
 ?>

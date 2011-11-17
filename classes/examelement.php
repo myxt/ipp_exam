@@ -10,47 +10,15 @@ class examElement extends eZPersistentObject
     function examElement( $row = array() )
     {
         $this->eZPersistentObject( $row );
-/*
-		$this->ClassIdentifier = false;
-		if ( isset( $row['contentclass_identifier'] ) )
-			$this->ClassIdentifier = $row['contentclass_identifier'];
-		$this->ClassName = false;
-		if ( isset( $row['contentclass_name'] ) )
-			$this->ClassName = $row['contentclass_name'];
-		if ( isset( $row['serialized_name_list'] ) )
-			$this->ClassName = eZContentClass::nameFromSerializedString( $row['serialized_name_list'] );
-
-		$this->CurrentLanguage = false;
-		if ( isset( $row['content_translation'] ) )
-		{
-			$this->CurrentLanguage = $row['content_translation'];
-		}
-		else if ( isset( $row['real_translation'] ) )
-		{
-			$this->CurrentLanguage = $row['real_translation'];
-		}
-		else if ( isset( $row['language_mask'] ) )
-		{
-			$topPriorityLanguage = eZContentLanguage::topPriorityLanguageByMask( $row['language_mask'] );
-			if ( $topPriorityLanguage )
-			{
-			$this->CurrentLanguage = $topPriorityLanguage->attribute( 'locale' );
-			}
-		}
-*/
-/*If you want it in the template it has to be here */
 		$id = $row['id'];
 		$priority = $row['priority'];
-//eZFire::debug($priority,"PRIORITY");
 		$type = $row['type'];
-//eZFire::debug($type,"TYPE");
 		$parent = $row['parent'];
 		$this->content = $this->getContent();
 		$this->children = $this->getChildren();
 		//$this->answers = $this->getAnswers();
 		$this->statistics = $this->getStats();
 		$this->options = $this->getOptions();
-//eZFire::debug($this,"THIS");
     }
 
 	static function definition()
@@ -95,7 +63,7 @@ class examElement extends eZPersistentObject
 										'required' => false )
 					),
 					'keys' => array( 'id' ),
-					'function_attributes' => array(  'template_name' => 'templateName', 'content' => 'content', 'children' => 'children', 'answers' => 'getAnswers', 'randomAnswers' => 'randomAnswers', 'options' => 'getOptions', 'statistics' => 'getStats', 'getXMLContent' => 'getXMLContent', 'input_xml' => 'inputXML' ),
+					'function_attributes' => array(  'template_name' => 'templateName', 'content' => 'content', 'children' => 'children', 'answers' => 'getAnswers', 'randomAnswers' => 'randomAnswers', 'randomChildren' => 'randomChildren', 'options' => 'getOptions', 'statistics' => 'getStats', 'getXMLContent' => 'getXMLContent', 'input_xml' => 'inputXML' ),
 					'increment_key' => 'id',
 					'class_name' => 'examElement',
 					'sort' => array( 'id' => 'asc' ),
@@ -141,6 +109,14 @@ class examElement extends eZPersistentObject
 											true );
 		return $rows;
 	}
+	function randomChildren()
+	{
+		$children = $this->getChildren();
+		$optionArray = $this->options;
+		if($optionArray['random'])
+			shuffle($children);
+		return $children;
+	}
 	function getAnswers()
 	{
 		if ($this->type != "question" ) return;
@@ -183,16 +159,13 @@ class examElement extends eZPersistentObject
 
 	function getStats()
 	{
-//eZFire::debug(__FUNCTION__,"WE ARE HERE");
-//eZFire::debug($this->type,"ELEMENT TYPE");
-//eZFire::debug($this->ID,"QUESTION ID");
 		if( $this->type != "question" ) return false;
 		$db = eZDB::instance();
 		$db->begin();
 		$query = "SELECT COUNT(*) AS total FROM `exam_results` WHERE `question_id` = ".$this->ID;
 		$queryResult = $db->arrayQuery( $query, array( 'limit' => 1, 'column' => 'total' ) );
 		$result['total'] = $queryResult[0];
-		$queryResult = "SELECT COUNT(*) AS first_pass FROM `exam_results` WHERE `question_id` = ".$this->ID." AND `correct` = 1 AND `followup` = 0";
+		$query = "SELECT COUNT(*) AS first_pass FROM `exam_results` WHERE `question_id` = ".$this->ID." AND `correct` = 1 AND `followup` = 0";
 		$queryResult = $db->arrayQuery( $query,array( 'limit' => 1, 'column' => 'first_pass' ) );
 		$result['first_pass'] = $queryResult[0];
 		$query = "SELECT COUNT(*) AS second_pass FROM `exam_results` WHERE `question_id` = ".$this->ID." AND `correct` = 1 AND `followup` = 1";
@@ -203,7 +176,6 @@ class examElement extends eZPersistentObject
 		foreach( $queryResult as $answer) {
 			$result['answer_count'][$answer['answer']] = $answer['count'];
 		}
-//eZFire::debug($result,"RETURNING");
 		return $result;
 	}
 	function priorityUp()
@@ -220,7 +192,7 @@ class examElement extends eZPersistentObject
 		$type = $this->type;
 		return $type;
 	}
-	function add( $contentobject_id, $priority = 0, $type = "group", $parent = 0, $xmlOptions, $content, $version, $language_code )
+	static function add( $contentobject_id, $priority = 0, $type = "group", $parent = 0, $xmlOptions, $content, $version, $language_code )
 	{
 		$newElement = new examElement();
 		$newElement->setAttribute( 'contentobject_id', $contentobject_id );
@@ -234,8 +206,6 @@ $cleanContent = preg_replace("/&nbsp;/i", "", $content );
 		$newElement->setAttribute( 'version', $version );
 		$newElement->setAttribute( 'language_code', $language_code );
 		$newElement->store();
-//eZFire::debug($newElement->attribute( 'xmloptions' ),"NEW ELEMENT");
-//eZFire::debug("RETURNING ".$newElement);
 		return $newElement;
 	}
 	function removeElement()
@@ -275,28 +245,22 @@ $cleanContent = preg_replace("/&nbsp;/i", "", $content );
 	}
     function getOptions()
     {
-//eZFire::debug(__FUNCTION__,"WE ARE HERE");
  //At this point the only option is random... but we'll do it like this in the event there is some expansion
-/* in the template {$element.options['random']|ezfire("ELEMENT RANDOM")} */
+/* in the template {$element.options['random']} */
 		if ( $this->xmlOptions != '' )
 		{
 			$options = array();
 			$dom = new DOMDocument( '1.0', 'utf-8' );
-//eZFire::debug($this->xmlOptions,"XMLOPTIONS");
 			$dom->loadXML( $this->xmlOptions );
 			$optionArray = $dom->getElementsByTagName( "option" );
-//eZFire::debug($optionArray,"OPTION ARRAY");
 			if ( $optionArray )
 			{
 				foreach ( $optionArray as $option )
 				{
 					$label = $option->getAttribute( "label" );
 					$value = $option->getAttribute( "value" );
-//eZFire::debug($value,"OPTINO");
-//eZFire::debug($label,"LABLE");
 					$options[$label] =  $value;
 				}
-//eZFire::debug($options,"RETURNING");
 				return $options;
 			}
 		}
@@ -309,27 +273,20 @@ $cleanContent = preg_replace("/&nbsp;/i", "", $content );
 	 * <?xml version="1.0" encoding="utf-8"?>
 	 * <options><option label="random" value="1"/></options>
 	 */
-//eZFire::debug(__FUNCTION__,"WE ARE HERE");
-//eZFire::debug($updateArray,"UPDATE ARRAY");
 		//get existing
 		$existingOptions = $this->getOptions();
 		$dom = new DOMDocument( '1.0', 'utf-8' );
 		$root = $dom->createElement("options");
-//eZFire::debug($existingOptions,"OPTION ARRAY");
 		//take care of existing
 		if ( $existingOptions )
 		{
-//eZFire::debug("WE HAVE AN OPTION ARRAY");
 			foreach ( $existingOptions as $key => $value )
 			{	
-//eZFire::debug($key." ".$value,"EXISTING OPTION LOADING");
-//eZFire::debug($key." ".$value,"EXISTING OPTION LOADING");
 				if ( $key != "" ) { //should never happen outside of test circumstances
 					$root = $dom->appendChild($root);
 					$node = $dom->createElement("option");
 					$newnode = $root->appendChild($node);
 					if ( array_key_exists($key, $updateArray) ) {
-//eZFire::debug($updateArray[$key],"SHOULD BE SETTING NEW VALUE");
 						$value = $updateArray[$key];
 					}
 					$newnode->setAttribute( "label", $key  );
@@ -340,7 +297,6 @@ $cleanContent = preg_replace("/&nbsp;/i", "", $content );
 		//load new
 
 		$newAttributeArray = array_diff_key($updateArray,$existingOptions);
-//eZFire::debug($newAttributeArray,"NEW ATTRIBUTE ARRAY");
 		if ( $newAttributeArray )
 		{
 			$root = $dom->appendChild($root);
@@ -353,7 +309,6 @@ $cleanContent = preg_replace("/&nbsp;/i", "", $content );
 			}
 		} 
 		$xmlString = $dom->saveXML();
-//eZFire::debug($xmlString,"XMLSTRING");
 
 		$this->setAttribute( 'xmloptions', $xmlString );
 		$this->store();
@@ -365,9 +320,7 @@ $cleanContent = preg_replace("/&nbsp;/i", "", $content );
     }
 	function inputXML()
 	{
-//eZFire::debug( $this->ID, "ID");
 		$xmlObject = $this->getXMLContent();
-//eZFire::debug( $xmlObject->XMLData , "XMLData" );
 		$dom = new DOMDocument( '1.0', 'utf-8' );
 		if (!is_object($xmlObject)) return false;
                 $data = $xmlObject->XMLData;
@@ -376,12 +329,10 @@ $cleanContent = preg_replace("/&nbsp;/i", "", $content );
                 $success = $dom->loadXML( $cleanData );
 		$editOutput = new eZSimplifiedXMLEditOutput();
 		$dom->formatOutput = true;
-//eZFire::debug("AFTER FORMAT OUTPUT");
 		if ( eZDebugSetting::isConditionTrue( 'kernel-datatype-ezxmltext', eZDebug::LEVEL_DEBUG ) )
 			eZDebug::writeDebug( $dom->saveXML(), eZDebugSetting::changeLabel( 'kernel-datatype-ezxmltext', __METHOD__ . ' xml string stored in database' ) );
 		if (!is_object($editOutput )) return false;
 		$output = $editOutput->performOutput( $dom );
-//eZFire::debug($output,"OUTPUT" );       
         return $output;
 	}
 }

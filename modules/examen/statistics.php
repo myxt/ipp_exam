@@ -13,16 +13,29 @@ if( ctype_digit($examID) ) {
 	if (is_object($exam)) {
 		$tpl->setVariable("exam",$exam);
 		$Result['content'] = $tpl->fetch( 'design:examen/admin/exam.tpl' );
+		$Result['path'] = array(	array(	'url' => false,
+									'text' => ezpI18n::tr( 'design/exam', 'Exam' ) ),
+							array(	'url' => false,
+									'text' =>  $examID ) );
 	} else {
 		$object = new exam;
 		$exams = $object->fetchExams();
 		$tpl->setVariable("exams",$exams);
 		$Result['content'] = $tpl->fetch( 'design:examen/admin/overview.tpl' );
+		$Result['path'] = array(	array( 'url' => false,
+							'text' => ezpI18n::tr( 'design/exam', 'Exam' ) ),
+							array(	'url' => false,
+									'text' =>  ezpI18n::tr( 'design/exam', 'Overview' ) ) );
 	}
 } else { //overview page
 	$object = new exam;
 	$exams = $object->fetchExams();
 	$tpl->setVariable("exams",$exams);
 	$Result['content'] = $tpl->fetch( 'design:examen/admin/overview.tpl' );
+	$Result['path'] = array(	array(	'url' => false,
+								'text' => ezpI18n::tr( 'design/exam', 'Exam' ) ),
+						array(	'url' => false,
+								'text' =>  ezpI18n::tr( 'design/exam', 'Overview' ) ) );
+
 }
 ?>

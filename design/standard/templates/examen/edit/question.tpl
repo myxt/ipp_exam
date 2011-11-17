@@ -3,8 +3,7 @@
 	<label>{'question'|i18n('design/exam')|upcase} {$element.id}</label>
 	<input class="button" value="{'Remove'|i18n('design/exam')}" name="CustomActionButton[remove][{$element.id}]" type="submit">
 	<input type="hidden" value="0" name="random_{$element.id}" /> {*Have to prime it otherwise never unchecked*}
-	{'Random'|i18n('design/exam')}: <input type="checkbox" id="random" name="random_{$element.id}"{if $element.options.random} checked="checked"{/if}  />
-{*$element.options.random." ".$element.id|ezfire("ELEMENT RANDOM")*}
+	{'Random'|i18n('design/exam')}: <input type="checkbox" id="random" name="random_{$element.id}"{if $element.options['random']} checked="checked"{/if}  />
 	<div class="listbutton">
 		<input type="image" src="/design/admin2/images/button-move_down.gif" alt="Down" name="MoveDown_{$element.id}" title="{'Use these buttons to move elements up or down'|i18n('design/exam')}" />&nbsp;
 		<input type="image" src="/design/admin2/images/button-move_up.gif" alt="Up" name="MoveUp_{$element.id}" {'Use these buttons to move elements up or down'|i18n('design/exam')}" />
@@ -14,23 +13,25 @@
 	<div class="oe-window">
 		<textarea class="box" id="{$element_base}_data_text_{$element.id}" name="{$element_base}_data_text_{$element.id}" cols="{$cols}" rows="{$editorRow}">{$element.input_xml}</textarea>
 	</div>
+	{*if $input_handler.can_disable}
 	<div class="block">
-		<input class="button{if $layout_settings['buttons']|contains('disable')} hide{/if}" type="submit" name="CustomActionButton[{$element.id}_disable_editor]" value="{'Disable editor'|i18n('design/standard/content/datatype')}" />	
-		<script type="text/javascript">
-		<!--
-		eZOeAttributeSettings = eZOeGlobalSettings;
-		eZOeAttributeSettings['ez_element_id'] = {$element.id};
-		eZOeToggleEditor( '{$element_base}_data_text_{$element.id}', eZOeAttributeSettings );
-		-->
-		</script>
+
+			<input class="button{if $layout_settings['buttons']|contains('disable')} hide{/if}" type="submit" name="CustomActionButton[{$element.id}_disable_editor]" value="{'Disable editor'|i18n('design/standard/content/datatype')}" />
 	</div>
+	{/if*}
+	<script type="text/javascript">
+	<!--
+	eZOeAttributeSettings = eZOeGlobalSettings;
+	eZOeAttributeSettings['ez_element_id'] = {$element.id};
+	eZOeToggleEditor( '{$element_base}_data_text_{$element.id}', eZOeAttributeSettings );
+	-->
+	</script>
 	{/default}
 	<div class="answer">
 		{foreach $element.answers as $answer}
 			<label>{'answer'|i18n('design/exam')} {$answer.id}:</label>
 			<input class="button" value="{'Remove'|i18n('design/exam')}" name="CustomActionButton[removeAnswer][{$answer.id}]" type="submit">
 			<input type="hidden" value="0" name="answer_correct_{$answer.id}" /> {*Have to prime it otherwise never unchecked*}
-{*$answer.id." ".$answer.correct|ezfire("ANSWER CORRECT")*}
 			{'Correct'|i18n('design/exam')}: <input type="checkbox" name="answer_correct_{$answer.id}" {if $answer.correct}checked="checked"{/if} />
 			{'Condition'|i18n('design/exam')}: 
 			<select id="answer_condition" name="answer_condition_{$answer.id}">
