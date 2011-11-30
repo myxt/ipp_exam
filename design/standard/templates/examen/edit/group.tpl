@@ -30,9 +30,10 @@
 
 	{/default}
 	<div class="children">
+
 		{foreach $element.children as $child}
-			{if eq($element.type,"question")} {*need elements for condition choices*}
-				{exam_edit_gui element=$child elements=$elements}
+			{if eq($child.type,"question")} {*need elements for condition choices*}
+				{exam_edit_gui element=$child elements=$element.children}
 			{else}
 				{exam_edit_gui element=$child}
 			{/if}
