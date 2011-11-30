@@ -181,9 +181,7 @@ class ExamenType extends eZDataType
 
 					/*An option id with no option value or vice-versa should be flagged.*/
 					if ( $answerOption AND !$answerValue OR $answerValue AND !$answerOption ) {
-						$validation['error'] = true;
-						$validation['custom_rules'][] = array( 'message' => ezpI18n::tr( 'design/exam', 'Every question with a condition must have a condition value and vice-versa.  Question %1 Answer %2 does not.', null, array($elementObject->ID, $answerObject->ID ) ) );
-						$contentObjectAttribute->setValidationError( ezpI18n::tr( 'design/exam', $error['message'] ) );
+						$contentObjectAttribute->setValidationError( ezpI18n::tr( 'design/exam', 'Every question with a condition must have a condition value and vice-versa.  Question %1 Answer %2 does not.', null, array($elementObject->ID, $answerObject->ID ) ) );
 						$contentObjectAttribute->setHasValidationError();
 						return $failStatus;
 					}
@@ -195,10 +193,7 @@ class ExamenType extends eZDataType
 								if ( $checkObject->attribute( 'type' ) == "question" ) {
 									$questionCondition++;
 									if ( $elementObject->parent != $checkObject->parent ) {
-										$validation['error'] = true;
-										$validation['custom_rules'][] = array( 'message' => ezpI18n::tr( 'design/exam', 'A condition element can only come from the same group.  Question %1 Answer %2 does not meet this criteria.', null, array($elementObject->ID, $answerObject->ID) ) );
-
-										$contentObjectAttribute->setValidationError( ezpI18n::tr( 'design/exam', $error['message'] ) );
+										$contentObjectAttribute->setValidationError( ezpI18n::tr( 'design/exam', 'A condition element can only come from the same group.  Question %1 Answer %2 does not meet this criteria.', null, array($elementObject->ID, $answerObject->ID) ) );
 										$contentObjectAttribute->setHasValidationError();
 										return $failStatus;
 									}
@@ -211,17 +206,13 @@ class ExamenType extends eZDataType
 
 				//If not a survey every question must have one correct answer
 				if ( $passThreshold != 0 AND $correct != 1 ) {
-					$validation['error'] = true;
-					$validation['custom_rules'][] = array( 'message' => ezpI18n::tr( 'design/exam', 'If there is a pass threshhold, every question must have one correct answer.  Question %1 does not have one correct answer.', null, array($elementObject->ID) ) );
-					$contentObjectAttribute->setValidationError( ezpI18n::tr( 'design/exam', $error['message'] ) );
+					$contentObjectAttribute->setValidationError( ezpI18n::tr( 'design/exam', 'If there is a pass threshhold, every question must have one correct answer.  Question %1 does not have one correct answer.', null, array($elementObject->ID) ) );
 					$contentObjectAttribute->setHasValidationError();
 					return $failStatus;
 				}
 				//Every question must have at least two answers
 				if ( $answerCount < 1 ) { //Count starts at [0] [1]
-					$validation['error'] = true;
-					$validation['custom_rules'][] = array( 'message' => ezpI18n::tr( 'design/exam', 'Every question must have at least two answers.  Question %1 does not.', null, array($elementObject->ID) ) );
-					$contentObjectAttribute->setValidationError( ezpI18n::tr( 'design/exam', $error['message'] ) );
+					$contentObjectAttribute->setValidationError( ezpI18n::tr( 'design/exam', 'Every question must have at least two answers.  Question %1 does not.', null, array($elementObject->ID) ) );
 					$contentObjectAttribute->setHasValidationError();
 					return $failStatus;
 				}
@@ -230,9 +221,7 @@ class ExamenType extends eZDataType
 		} //end foreach elemennt
 
 		if ( $questionCount - $questionConditon < 1 ) {
-			$validation['error'] = true;
-			$validation['custom_rules'][] = array( 'message' => ezpI18n::tr( 'design/exam', 'After taking into account conditions there are no questions left.' ) );
-			$contentObjectAttribute->setValidationError( ezpI18n::tr( 'design/exam', $error['message'] ) );
+			$contentObjectAttribute->setValidationError( ezpI18n::tr( 'design/exam', 'After taking into account conditions there are no questions left.' ) );
 			$contentObjectAttribute->setHasValidationError();
 			return $failStatus;
 		}
