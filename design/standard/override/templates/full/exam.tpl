@@ -1,6 +1,8 @@
 {*can't be cached otherwise random order isn't random*}
 {set-block scope=root variable=cache_ttl}0{/set-block}
-{set-block scope=root variable=status}{cond(ezhttp_hasvariable(concat('status[',$node.object.id,']')),ezhttp(concat('status[',$node.object.id,']'), 'session' ))}{/set-block}
+{def $status=cond(ezhttp_hasvariable(concat('status[',$node.object.id,']'), 'session'),ezhttp(concat('status[',$node.object.id,']'), 'session' ),false())}
+{*if it has a status then we are getting here without clearing the session variables in result.php - which means someone quit halfway through - have to handle it*}
+
 {def $pagebreak=false()
 	$condition=false()
 	$structure=$node.object.data_map.exam_attributes.content.structure
@@ -28,10 +30,18 @@
 		{else}
 			{"This exam is no longer available."|i18n( 'design/exam' )}
 		{/if}
+	{elseif and(eq($node.object.data_map.is_retest.data_int,1),eq($status,false()))}
+	{*if we land on an element that is marked as a retest only, we better have a status *}
+		{if $survey}
+			{"This survey is not available yet."|i18n( 'design/exam' )}
+		{else}
+			{"This exam is not available yet."|i18n( 'design/exam' )}
+		{/if}
 	{else}
 		{*should check for status session variable and just go to results if it's set to done here*}
 		{*Have to see if it's a survey or exam first*}
-		{if eq( $status, "DONE" ) }
+		{*Since a session can now be re-used, this is no longer possible*}
+		{*if eq( $status, "DONE" ) } 
 			<div class="exam-message">
 				{if $survey}
 					{"You have already taken this survey today for the maximum allowed times."|i18n( 'design/exam' )}
@@ -45,7 +55,7 @@
 					<input class="button" type="submit" name="SubmitButton" value="{'See Results'|i18n( 'design/exam' )}" title="{'See Results'|i18n( 'design/exam' )}" />
 				</form>
 			</div>
-		{else}
+		{else*}
 			{*if exam has no page breaks or conditions then it can all be handled here*}
 			{foreach $structure as $element}
 				{if eq($element.type,"group")}
@@ -101,6 +111,7 @@
 					<input type="hidden" name="exam_id" value="{$node.object.id}">
 					<input type="hidden" name="exam_version" value="{$node.contentobject_version}">
 					<input type="hidden" name="exam_language" value="{$node.object.current_language}">
+					<input type="hidden" name="exam_status" value="{$node.object.current_language}">
 					{if $node.object.data_map.random}
 						{set $structure = $structure}
 					{/if}
@@ -121,15 +132,15 @@
 					{/foreach}
 					<input class="button" type="submit" name="SubmitButton" value="{'Submit'|i18n( 'design/admin/node/view/full' )}" title="{'Submit'|i18n( 'design/admin/node/view/full' )}" />
 				</form>
-			{else} {*complicated mode*}
-	{*We should have a session check here the first time through... but there will be no session the first time through, sigh*}  
+			{else} {*complicated mode*} 
 				<form name="advanced exam" method="post" action={'examen/exam/'|ezurl}>
 					<input type="hidden" name="exam_id" value="{$node.object.id}">
 					<input type="hidden" name="exam_version" value="{$node.contentobject_version}">
 					<input type="hidden" name="exam_language" value="{$node.object.current_language}">
+					<input type="hidden" name="exam_status" value="{$node.object.current_language}">
 					<input class="button" type="submit" name="SubmitButton" value="{'Start Exam'|i18n( 'design/exam' )}" title="{'Start Exam'|i18n( 'design/exam' )}" />
 				</form>
 			{/if}
-		{/if}
+		{*/if*} {*hash != done*}
 	{/if} {*within timestamps*}
 </div>

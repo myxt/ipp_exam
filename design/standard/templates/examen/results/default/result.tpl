@@ -1,3 +1,4 @@
+{def $status=cond(ezhttp_hasvariable(concat('status[',$node.object.id,']'), 'session'),ezhttp(concat('status[',$node.object.id,']'), 'session' ),false())}
 <div id="exam-result">
 	{if eq($survey,1)} {*if this is a survey then just show the results and get out*}
 		{foreach $elements as $element}
@@ -11,9 +12,11 @@
 		{else}
 			<div class="failed">
 				<div class="headline">{'You failed'|i18n('design/exam')|upcase}</div>
-				{if $followup|not} {'Do you want to try again?'|i18n('design/exam')}
+{*not a followup or if status = retest*}
+				{if eq($status,"RETEST")} {'Do you want to try again?'|i18n('design/exam')}
 					<form name="advanced exam" method="post" action={$node.url_alias|ezurl}>
-						<input type="hidden" name="exam_id" value="{$examID}">
+						<input type="hidden" name="exam_id" value="{$node.node_id}">					
+						<input type="hidden" name="exam_status" value="{$node.object.current_language}">
 						<input class="button" type="submit" name="SubmitButton" value="{'Restart Exam'|i18n( 'design/exam' )}" title="{'Restart Exam'|i18n( 'design/exam' )}" />
 					</form>
 				{else}
@@ -32,11 +35,11 @@
 		</div>
 		{/if}
 		{if $showCorrect}
-			{if or(eq($passed,1),eq($followup,1))}
+			{*if or(eq($passed,1),eq($followup,1))*}
 				{foreach $resultArray as $result}
 					{exam_result_gui element=$result[1] result=$result[0]}
 				{/foreach}
-			{/if}
+			{*/if*}
 		{/if}
 		{if $passed}
 			{if $certificate}

@@ -4,9 +4,10 @@
 	<input class="button" value="{'Remove'|i18n('design/exam')}" name="CustomActionButton[remove][{$element.id}]" type="submit">
 	<input type="hidden" value="0" name="random_{$element.id}" /> {*Have to prime it otherwise never unchecked*}
 	{'Random'|i18n('design/exam')}: <input type="checkbox" id="random" name="random_{$element.id}"{if $element.options['random']} checked="checked"{/if}  />
+	{'Weight'|i18n('design/exam')}: <input type="text" size="3" name="weight_{$element.id}" value="{if ne($element.options['weight'],0)}{$element.options['weight']}{/if}" title="{'Give more importance to this question by adding a number.'|i18n('design/exam')}" />
 	<div class="listbutton">
 		<input type="image" src="/design/admin2/images/button-move_down.gif" alt="Down" name="MoveDown_{$element.id}" title="{'Use these buttons to move elements up or down'|i18n('design/exam')}" />&nbsp;
-		<input type="image" src="/design/admin2/images/button-move_up.gif" alt="Up" name="MoveUp_{$element.id}" {'Use these buttons to move elements up or down'|i18n('design/exam')}" />
+		<input type="image" src="/design/admin2/images/button-move_up.gif" alt="Up" name="MoveUp_{$element.id}" title="{'Use these buttons to move elements up or down'|i18n('design/exam')}" />
 		<input size="2" maxlength="4" type="text" name="element_priority_{$element.id}" value="{$element.priority}" />
 	</div>
 	{default	element_base=exam editorRow=2}

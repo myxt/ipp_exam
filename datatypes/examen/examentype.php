@@ -105,7 +105,6 @@ class ExamenType extends eZDataType
 							$elementIdMap[$child->ID] = $newElement->ID;
 							$newElementArray[] = $newElement;
 							if ($child->attribute( 'type' ) == 'question' ) {
-//How do we know what the new option value or parent is going to be - craaaaap.
 								foreach( $child->getAnswers() as $answer ) {
 									$answerArray[] = examAnswer::add(	$contentObjectAttribute->attribute( 'contentobject_id' ),
 													$newElement->attribute( 'id' ),
@@ -289,6 +288,11 @@ if so, update the table. for the appropriate element.  We'll need the element id
 						$elementObject->updateOption( array( "random" => "1" ) );
 					} else {
 						$elementObject->updateOption( array( "random" => "0" ) );
+					}
+				}
+				if ( $http->hasPostVariable( "weight_".$element_id ) ) {
+					if ( ctype_digit( $http->variable( "weight_".$element_id ) ) ) {
+						$elementObject->updateOption( array( "weight" => $http->variable( "weight_".$element_id ) ) );
 					}
 				}
 				foreach($elementObject->getAnswers() as $answerObject) {

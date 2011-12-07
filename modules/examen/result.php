@@ -34,14 +34,6 @@ if (!ctype_digit($examID)) {  //no exam_id, we got nothing then
 
 
 if ( count($errors) == 0 ) {
-	
-/*We could cache by examid/hash - or lack of hash
-/*list($handler, $data) = eZTemplateCacheBlock::retrieve( array( 'examdata',$http->sessionID() , $examId ), null, 0 );
-if ( !$data instanceof eZClusterFileFailure )
-{
-	$Result['content']=$data;
-} else {
-*/
 	/*These are the object options that determine results output
 	//	These happen in exam...
 	//	$dataMap["mode"]->DataText
@@ -60,8 +52,10 @@ if ( !$data instanceof eZClusterFileFailure )
 	if ($dataMap["pass_threshold"]->DataInt) { //otherwise it's a survey and we don't care
 		$hash = $Params['hash'];
 		if (!$hash) {  //no exam_id, we got nothing then
-			$hash = $http->getSessionKey();
-			//$errors[] = "no_hash";
+			$hash = $http->sessionVariable( 'hash['.$examID.']' );
+			if (!$hash) {  //no exam_id, we got nothing then
+				$errors[] = "no_hash";
+			}
 		}
 	} else {
 		$survey=true;
@@ -70,7 +64,7 @@ if ( !$data instanceof eZClusterFileFailure )
 	// if it's a survey we're going to have to return an array of count( total => x, answer1 => x, answer2 => x );
 		$results = examResult::fetchSurvey( $examID );
 		//A survey could still have multiple questions.
-		//This is returning the results for all versions and all languages.  This isn't right.
+		//This is returning the results for all versions and all languages.  This isn't always necessarily correct.
 		$total=count($results);
 		$countArray = array();
 		foreach( $results as $result ) {
@@ -99,16 +93,26 @@ if ( !$data instanceof eZClusterFileFailure )
 		//Fetch by hash is getting all the results for a followup and for the previous.  So we have to loop through to only get one or the other
 		if ($results)
 			$savedvalue = $results[0]->attribute( 'followup' );
-
+//This is where the followup thing is done
 		foreach( $results as $result ) {
 			if ( $result->attribute( 'followup') != $savedvalue ) {
 				$followup = true;
 				continue; //so that we only display the followup if it is one.
 			}
-			//ResultArray = array( "what you answered", elementObject );
-			$resultArray[] = array( $result,  examElement::fetch( $result->questionID ));
-			if ( $result->attribute( 'correct' ) ) $correctCount++;
-			$resultIndex++;
+			//This is where the score is calculated
+			$questionObject =  examElement::fetch( $result->questionID );
+			//ResultArray = array( "id of chosen answer", questionObject );
+			$resultArray[] = array( $result,   $questionObject );
+			$optionArray = $questionObject->options;
+			if ( (int) $optionArray["weight"] != 0 ) {
+				$weight = $optionArray["weight"];
+				if ( $weight == 0 ) $weight = 1;
+			} else {
+				$weight = 1;
+			}
+
+			if ( $result->attribute( 'correct' ) ) $correctCount = $correctCount + $weight;
+			$resultIndex = $resultIndex + $weight;
 		}
 
 		if ($correctCount != 0) {//no division by zero here - dammit.
@@ -117,6 +121,26 @@ if ( !$data instanceof eZClusterFileFailure )
 				$passed = true;
 			} else {
 				$passed = false;
+			}
+		}
+		$retest = $http->sessionVariable( 'status['.$examID.']' );
+
+		exam::removeSession( $http, $examID );
+		//If we failed check if there is an object relation that is of the exam class - if so, use that as the retest node.
+		$retestObjectID = $examID;
+		if ( $passed == false AND $dataMap["retest"]->DataInt == true) { //otherwise we don't care
+
+			$relatedObjects = eZContentFunctionCollection::fetchRelatedObjects( $examID, false, array( 'xml_embed', 'xml_link', 'common' ), false );
+			foreach( $relatedObjects['result'] as $relatedObject ) {
+				if ( $relatedObject->attribute( 'class_identifier' ) == "exam" ) {
+					$retestObjectID = $relatedObject->attribute( 'id' );
+					break;
+				}
+			}
+;
+			if ( $retest != "FOLLOWUP" ) { //Only one retest now
+				$http->setSessionVariable( 'status['.$retestObjectID .']' ,"RETEST" );
+				$http->setSessionVariable( 'hash['.$retestObjectID .']' , $hash );
 			}
 		}
 
@@ -150,8 +174,8 @@ if ( !$data instanceof eZClusterFileFailure )
 	$tpl->setVariable("survey", $survey);
 	$tpl->setVariable("hash",$hash);
 	$tpl->setVariable("examID",$examID);
-	$nodeID = eZContentObjectTreeNode::findMainNode( $examID );
-	$node =  eZContentObjectTreeNode::fetchByContentObjectID( $examID );
+	$nodeID = eZContentObjectTreeNode::findMainNode( $retestObjectID );
+	$node =  eZContentObjectTreeNode::fetchByContentObjectID( $retestObjectID );
 	$tpl->setVariable("nodeID",$nodeID);
 	$tpl->setVariable("node",$node[0]);
 	$mode = $dataMap["mode"]->DataText ? $dataMap["mode"]->DataText : "default";

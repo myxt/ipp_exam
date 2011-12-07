@@ -31,9 +31,14 @@ if (count($errors) == 0) { // only need these the first time through?
 	} else {
 		$dataMap = $contentObject->DataMap();
 	}
+
+	if ( time() < $dataMap["start_date"]->DataInt OR ( time() > $dataMap["end_date"]->DataInt AND $dataMap["end_date"]->DataInt > 0 ) ) {
+		$errors[] = "date_out_of_bounds";
+	}
 }
 //The language and version may not be set?  They must be set to get anything in the examArray.  This should always come from the node view so that the language and version are correct for the siteaccess.
-if (count($errors) == 0) { 
+if (count($errors) == 0) {
+ 	//Need to do this after I have an examID
 	if (!$http->hasSessionVariable( 'index['.$examID.']' )) { // only need these the first time through or retest
 			if ( $http->hasPostVariable( "exam_version" ) ) {
 				$examVersion = $http->variable( "exam_version" );
@@ -63,69 +68,72 @@ if (count($errors) == 0) {
 			}
 		}
 	}
+
+	$status = $http->sessionVariable( 'status['.$examID.']' );
+	if ($http->hasPostVariable( "exam_status" )) { //This means someone came to the full view with an active session.
+		if ( $http->postVariable( "exam_status" ) != false ) {
+			exam::removeSession( $http, $examID );
+		}
+	}
+	if ( $http->hasSessionVariable( 'hash['.$examID.']' )) {
+		$hash =  $http->sessionVariable( 'hash['.$examID.']' );
+	} else { //First time through on this exam
+		$hash = md5( eZSession::getUserSessionHash().time().rand() );
+		
+		$http->setSessionVariable( 'status['.$examID.']', "FIRST" );
+		if ( !eZSession::userHasSessionCookie() ) { //Have to check every time just in case someone turns cookies off in the middle
+			$errors[] = "i_can_haz_no_cookie";
+		}
+	}
+	if ( $status == "RETEST" ) {
+		$http->setSessionVariable( 'status['.$examID.']', "RETEST" );
+	}
+
+	if ($dataMap["timeout"]->DataInt != 0 ) {
+		if( $http->hasSessionVariable( 'timestamp['.$examID.']'  ) ) {
+			//if you have a timestamp and an index and datamap timeout is set, see if the last bunch of questions timed-out
+			if ( $http->hasSessionVariable( 'count['.$examID.']' ) ) {
+				if ( time() >  $http->sessionVariable( 'count['.$examID.']' ) * $dataMap["timeout"]->DataInt  + $http->sessionVariable( 'timestamp['.$examID.']' ) ) {
+					$errors[] = "user_timed_out";
+				}
+			}
+		}
+	}
+
+	$http->setSessionVariable( 'timestamp['.$examID.']', time() );
 } //end if no errors
 
-//Need to do this after I have an examID
-if (!$http->hasSessionVariable( 'status['.$examID.']' )) { //Have to write something to the cookie
-	//$http->setSessionVariable( 'status['.$examID.']', time() );
-	$http->setSessionVariable( 'status['.$examID.']', "FIRST" );
-}
-/* If someone hits the back button we just drop through to the results page again.
- elseif ( $http->sessionVariable( 'status' ) == "DONE" ) {  //Maybe should show the results again?  Dunno.
-	$errors[] = "threshold_exceeded";
-}
-*/
-
-//Got to do this AFTER we set something otherwise there potentially isn't a session yet.
-//if ( !eZSession::userHasSessionCookie() ) { //Have to check every time just in case someone turns cookies off in the middle
-$hash = eZSession::getUserSessionHash();
-//$sessionKey = $http->getSessionKey();
-if ( !$hash ) {
-	$errors[] = "i_can_haz_no_cookie";
-}
-
-if ($http->hasSessionVariable( 'exam_array['.$examID.']' )) {
-	$examArray = $http->sessionVariable( 'exam_array['.$examID.']' );
-	//This should be empty at the beginning of a retest because we potentially have conditional elements in the array.  So we have to rerun the first time through code to build the exam array again.
-}
-if ( time() < $dataMap["start_date"]->DataInt OR ( time() > $dataMap["end_date"]->DataInt AND $dataMap["end_date"]->DataInt > 0 ) ) {
-	$errors[] = "date_out_of_bounds";
-}
-//This is always dynamic so it can't be cached - unless it is really simple.... hmmm....
-
-/**************************************
-*                                     *
-* RESET SESSION VARIABLES FOR TESTING *
-*                                     *
-***************************************
-
-$http->setSessionVariable( 'status['.$examID.']' , "FIRST" ); //Status - of someone is taking two tests at the same time.
-$http->setSessionVariable( 'index['.$examID.']' , 0 ); //Running count of where we are
-$http->setSessionVariable( 'exam_array['.$examID.']', array() ); //array of elements
-$http->setSessionVariable( 'condition_array['.$examID.']', array() ); //array of conditions to match on
-$http->setSessionVariable( 'result_array['.$examID.']', array() ); //id of text elements to add to the result page on condition
-$http->setSessionVariable( 'score['.$examID.']', 0 ); //id of text elements to add to the result page on condition
-*/
-
 if (count($errors) == 0) {
-	/*start exam*/
-	$index = $http->hasSessionVariable( 'index['.$examID.']' ) ? $http->sessionVariable( 'index['.$examID.']' ) : 0;
-	$questionCount=0;
-	if ($http->hasPostVariable( 'mode' )) {
-		$mode = $http->postVariable( 'mode' );
-	}
 	/********************************
 	*                               *
-	*    FIRST TIME THROUGH         *
+	*    START EXAM                 *
 	*                               *
 	********************************/
-/*First time through, figure out what the question array is and load it in the session*/
+	$index = $http->hasSessionVariable( 'index['.$examID.']' ) ? $http->sessionVariable( 'index['.$examID.']' ) : 0;
+	$questionCount=0;
+
 	$conditionRemoveArray = array();
 	$answerConditionArray = array();
 	$conditionArray = array();
 	$resultArray = array();
-	if (count($examArray) < 1) {
-		/* First time through have to initialize the element list
+
+	if ($http->hasSessionVariable( 'exam_array['.$examID.']' )) {
+		$examArray = $http->sessionVariable( 'exam_array['.$examID.']' );
+		if ($http->hasSessionVariable( 'condition_array['.$examID.']' )) {
+
+			$conditionArray = $http->sessionVariable( 'condition_array['.$examID.']' );
+		}
+		if ($http->hasSessionVariable( 'result_array['.$examID.']' )) {
+			$resultArray = $http->sessionVariable( 'result_array['.$examID.']' );
+		}
+	} else {
+		/********************************
+		*                               *
+		*    FIRST TIME THROUGH         *
+		*                               *
+		********************************/
+
+		/* First time through have to initialize the element list in exam_array
 			This will be array (	
 							array([element_id] => [user_answer])
 							array([element_id] => [user_answer])
@@ -264,15 +272,7 @@ if (count($errors) == 0) {
 
 		$http->setSessionVariable( 'exam_array['.$examID.']' , $examArray );
 		$http->setSessionVariable( 'condition_array['.$examID.']',$answerConditionArray );
-	} else { 
-		if ($http->hasSessionVariable( 'condition_array['.$examID.']' )) {
-
-			$conditionArray = $http->sessionVariable( 'condition_array['.$examID.']' );
-		}
-		if ($http->hasSessionVariable( 'result_array['.$examID.']' )) {
-			$resultArray = $http->sessionVariable( 'result_array['.$examID.']' );
-		}
-	}
+	} //end first time through
 
 	/********************************
 	*                               *
@@ -323,8 +323,6 @@ if (count($errors) == 0) {
 								$examArrayKey = array_search( $option_value, $examID_array );
 								if ( $examArray[$examArrayKey][1] = "" ) { //only do it if it hasn't been answered
 									$tmpValue = $examArray[$examArrayKey];
-//What should the index be here - I have no idea
-//Hmmm what if we are messing with a child of a group here?
 									$examArray[$examArrayKey] = $examArray[$index+1];
 									$examArray[$index+1] = $tmpValue;
 								}
@@ -361,8 +359,6 @@ if (count($errors) == 0) {
 								$examArrayKey = array_search( $option_value, $examID_array );
 								if ( $examArray[$examArrayKey][1] = "" ) { //only do it if it hasn't been answered
 									$tmpValue = $examArray[$examArrayKey];
-//What should the index be here - I have no idea it'll especially be confusing on multi-asnwer pages
-//Hmmm what if we are messing with a child of a group here?
 									$examArray[$examArrayKey] = $examArray[$index+1];
 									$examArray[$index+1] = $tmpValue;
 								}
@@ -385,6 +381,9 @@ if (count($errors) == 0) {
 	*    RESULTS                    *
 	*                               *
 	********************************/
+	if ($http->hasPostVariable( 'mode' )) {
+		$mode = $http->postVariable( 'mode' );
+	}
 //if it's simple mode then we should be dropping through right now by matching on the $questionCount
 
 	if ( ( $mode == 'simple' AND count($checkList) == $questionCount ) OR ( count($examArray) <  $index + count($checkIndex) AND $conditionAdd == false ) OR count($examArray) == 0 ) {
@@ -403,14 +402,23 @@ if (count($errors) == 0) {
 		$correctCount = 0;
 		$saveResults = $dataMap["save_results"]->DataInt;
 		//Session key is different from hash.
-		$hash = $http->getSessionKey();
-
+		//$hash = $http->getSessionKey();
+		$originalExamObjectID = $examID;
 		if ( $status == "RETEST" ) {
 			$followup = true;
+			$relatedObjects = eZContentFunctionCollection::fetchReverseRelatedObjects( $examID, false, array( 'common' ), false );
+			foreach( $relatedObjects['result'] as $relatedObject ) {
+				if ( $relatedObject->attribute( 'class_identifier' ) == "exam" ) {
+					$originalExamObjectID = $relatedObject->attribute( 'id' );
+					break;
+				}
+			}
 		}
+
 		if (!$dataMap["pass_threshold"]->DataInt) { //otherwise it's a survey so always save statistics
 			$survey = true;
 		}
+		exam::removeSession( $http, $examID );
 		if ( $status != "DONE" ) { //If this is set to DONE someone hit the back button and we should just go to the results page
 			
 			//Save question results
@@ -419,6 +427,7 @@ if (count($errors) == 0) {
 			//If it's a dated result we'll have to add the exam id just in case they did multiple exams under one session
 			/* Since the list of answerable questions is dynamic, we have to go by what is is examArray and assume it is correct.  Which means that if there is ever multiple answers or no answer at all, the totals/score will be off */
 			$questionIndex = 0;
+
 			foreach( $examArray as $examAnswer ) {
 				//We need these even if we don't save results
 				$elementObject = examElement::fetch( $examAnswer[0] );
@@ -460,7 +469,7 @@ if (count($errors) == 0) {
 				}
 			}
 			if ( $saveResults ) {
-				$exam = exam::fetch( $examID );
+				$exam = exam::fetch( $originalExamObjectID );
 					if ($exam) { //Otherwise no elements - should never happen.
 					$totalExam = $exam->increment( 'count' );
 					if (!$survey AND $passed) { //If it's a survey, then this won't mean anything
@@ -482,34 +491,13 @@ if (count($errors) == 0) {
 			}
 		} //if not DONE
 
-		//Reset retest status indicator
-		if ( $http->sessionVariable( 'status['.$examID.']' ) == "FIRST" ) {
-			if ( $dataMap["retest"]->DataInt == 1 AND $passed == false ) { //if we passed, we are done
-				$http->setSessionVariable( 'status['.$examID.']', "RETEST" );
-			} else {
-				$http->setSessionVariable( 'status['.$examID.']', "DONE" );
-			}
-		} else { //Closing out a retest OR it's already done
-			$http->setSessionVariable( 'status['.$examID.']', "DONE" );
+		if ( $followup ) { //Means we finished the restest
+			$http->setSessionVariable( 'status['.$examID .']' ,"FOLLOWUP" );
 		}
-//Reinitialize values for retest
-//$http->removeSessionVariable()
-$http->setSessionVariable( 'index['.$examID.']' , 0 ); //Running count of where we are
-$http->setSessionVariable( 'exam_array['.$examID.']', array() ); //array of elements
-$http->setSessionVariable( 'condition_array['.$examID.']', array() ); //array of conditions to match on
-$http->setSessionVariable( 'result_array['.$examID.']', array() ); //id of text elements to add to the result page on condition
-//$http->setSessionVariable( 'score['.$examID.']', 0 ); //id of text elements to add to the result page on condition
+
 		//Since the result page is what we go to from here AS WELL AS getting archived results we have to do a redirect to view
 		//that means NO tpl variables can be passed and we'll have to refetch everything anyway
 		$Module->redirectToView("result", array( $examID, $hash ) );
-//$Result['content'] = $tpl->fetch( 'design:examen/results/default/result.tpl' );
-	//	$Module->redirectToView("result", array( $examID, $hash ), array( 0 => "x"), array( "dum" => "unorderParams", "doh" => "userParamenters" ), "anchor" );
-/*
-    function redirectToView( $viewName = '', $parameters = array(),
-                             $unorderedParameters = null, $userParameters = false,
-                             $anchor = false )
-*/
-
 	} else { //end results
 		//fetch element(s) display element(s)
 		/********************************
@@ -541,7 +529,9 @@ $http->setSessionVariable( 'result_array['.$examID.']', array() ); //id of text 
 				} //end switch
 			$recurseCheck++;
 		}
+
 		$http->setSessionVariable( 'index['.$examID.']' , $index );
+		$http->setSessionVariable( 'count['.$examID.']' , ($recurseCheck - 1) );
 		$tpl->setVariable("exam_id", $examID );
 		$tpl->setVariable("elements", $elements );
 		$Result['content'] = $tpl->fetch( 'design:examen/view/element.tpl' );

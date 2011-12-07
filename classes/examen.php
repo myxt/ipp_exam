@@ -218,6 +218,21 @@ class exam extends eZPersistentObject
 		$db->query( $query );
 		$db->commit();
 	}
+	function removeSession( $http, $examID )
+	{
+		$http->removeSessionVariable( 'condition_array['.$examID.']' );
+		$http->removeSessionVariable( 'exam_array['.$examID.']' );
+		$http->removeSessionVariable( 'index['.$examID.']' );
+		$http->removeSessionVariable( 'name['.$examID.']' );
+		$http->removeSessionVariable( 'passed['.$examID.']' );
+		$http->removeSessionVariable( 'result_array['.$examID.']' );
+		$http->removeSessionVariable( 'score['.$examID.']' );
+		$http->removeSessionVariable( 'status['.$examID.']' );
+		$http->removeSessionVariable( 'mode['.$examID.']' );  //simple or complex
+		$http->removeSessionVariable( 'timestamp['.$examID.']' );
+		$http->removeSessionVariable( 'hash['.$examID.']' );
+		$http->removeSessionVariable( 'count['.$examID.']' );
+	}
 	function removeVersion($id,$version,$language_code )
 	{
 		$examElements = $this->getElements($id, $version, $language_code);

@@ -78,7 +78,7 @@ class examResult extends eZPersistentObject
 										'required' => false )
 					),
 					'keys' => array( 'id' ),
-					'function_attributes' => array( 'content' => 'content', 'template_name' => 'templateName', ),
+					'function_attributes' => array( 'content' => 'content', 'template_name' => 'templateName' ),
 					'increment_key' => 'id',
 					'class_name' => 'examResult',
 					'sort' => array( 'id' => 'asc' ),
@@ -86,7 +86,7 @@ class examResult extends eZPersistentObject
 		return $definition;
 	}
 	static function fetch( $id , $asObject = true )
-	{
+	{ //This isn't actually used anywhere is it.
 
 		$examResult = eZPersistentObject::fetchObject( examResult::definition(),
 														null,

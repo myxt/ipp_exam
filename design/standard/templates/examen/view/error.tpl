@@ -30,6 +30,9 @@
 		{case match="date_out_of_bounds"}
 			{"This object is not available."|i18n('design/exam')}
 		{/case}
+		{case match="user_timed_out"}
+			{"You took too long to answer the questions.  Try again."|i18n('design/exam')}
+		{/case}
 		{case}
 			{"Undefined error."|i18n('design/exam')}
 		{/case}
