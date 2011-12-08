@@ -1,4 +1,10 @@
 <?php
+/**
+ * @copyright Copyright (C) 2011 Leiden Tech/Myxt Web Solutions All rights reserved.
+ * @license http://www.gnu.org/licenses/gpl-2.0.txt GNU General Public License v2
+ * @version  1
+ * @package examen
+ */
 
 $FunctionList = array();
 $FunctionList['examen'] = array(	'name' => 'examen',

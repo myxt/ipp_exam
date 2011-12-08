@@ -1,12 +1,12 @@
 <?php
-//
-// ## BEGIN COPYRIGHT, LICENSE AND WARRANTY NOTICE ##
-// SOFTWARE NAME: examen
-// SOFTWARE RELEASE: 1.0.0
-// COPYRIGHT NOTICE: Copyright (C) 2011 Leiden Tech, Myxt
-//
-// ## END COPYRIGHT, LICENSE AND WARRANTY NOTICE ##
-//
+/**
+ * File containing the exam class.
+ *
+ * @copyright Copyright (C) 2011 Leiden Tech/Myxt Web Solutions All rights reserved.
+ * @license http://www.gnu.org/licenses/gpl-2.0.txt GNU General Public License v2
+ * @version  1
+ * @package examen
+ */
 
 class exam extends eZPersistentObject
 {

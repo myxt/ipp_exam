@@ -1,9 +1,12 @@
 <?php
-//
-//
-
-/*! \file examelement.php
-*/
+/**
+ * File containing the examElement class.
+ *
+ * @copyright Copyright (C) 2011 Leiden Tech/Myxt Web Solutions All rights reserved.
+ * @license http://www.gnu.org/licenses/gpl-2.0.txt GNU General Public License v2
+ * @version  1
+ * @package examen
+ */
 
 class examElement extends eZPersistentObject
 {
@@ -16,7 +19,6 @@ class examElement extends eZPersistentObject
 		$parent = $row['parent'];
 		$this->content = $this->getContent();
 		$this->children = $this->getChildren();
-		//$this->answers = $this->getAnswers();
 		$this->statistics = $this->getStats();
 		$this->options = $this->getOptions();
     }

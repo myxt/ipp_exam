@@ -1,4 +1,11 @@
 <?php
+/**
+ * @copyright Copyright (C) 2011 Leiden Tech/Myxt Web Solutions All rights reserved.
+ * @license http://www.gnu.org/licenses/gpl-2.0.txt GNU General Public License v2
+ * @version  1
+ * @package examen
+ */
+
 /* For the backend statistics module */
 /* if we have no parameter, do the overview.  If there is a parameter and it is an exam id - show the full view of the exam.exam_id */
 

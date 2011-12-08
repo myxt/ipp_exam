@@ -1,43 +1,18 @@
 <?php
-//
-//
-
-/*! \file examelement.php
-*/
+/**
+ * File containing the examResult class.
+ *
+ * @copyright Copyright (C) 2011 Leiden Tech/Myxt Web Solutions All rights reserved.
+ * @license http://www.gnu.org/licenses/gpl-2.0.txt GNU General Public License v2
+ * @version  1
+ * @package examen
+ */
 
 class examResult extends eZPersistentObject
 {
     function examResult( $row = array() )
     {
         $this->eZPersistentObject( $row );
-/*
-		$this->ClassIdentifier = false;
-		if ( isset( $row['contentclass_identifier'] ) )
-			$this->ClassIdentifier = $row['contentclass_identifier'];
-		$this->ClassName = false;
-		if ( isset( $row['contentclass_name'] ) )
-			$this->ClassName = $row['contentclass_name'];
-		if ( isset( $row['serialized_name_list'] ) )
-			$this->ClassName = eZContentClass::nameFromSerializedString( $row['serialized_name_list'] );
-
-		$this->CurrentLanguage = false;
-		if ( isset( $row['content_translation'] ) )
-		{
-			$this->CurrentLanguage = $row['content_translation'];
-		}
-		else if ( isset( $row['real_translation'] ) )
-		{
-			$this->CurrentLanguage = $row['real_translation'];
-		}
-		else if ( isset( $row['language_mask'] ) )
-		{
-			$topPriorityLanguage = eZContentLanguage::topPriorityLanguageByMask( $row['language_mask'] );
-			if ( $topPriorityLanguage )
-			{
-			$this->CurrentLanguage = $topPriorityLanguage->attribute( 'locale' );
-			}
-		}
-*/
     }
 
 	static function definition()
