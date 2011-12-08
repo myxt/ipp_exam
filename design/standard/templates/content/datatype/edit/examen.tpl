@@ -9,30 +9,39 @@
 											'language_code', $attribute.language_code )
 				)
 }
-{*
-$("#id").scrollTop($("#id").scrollTop() + 100);
-jQuery(function( $ )//called on document.ready
-{
-    var position = $(document).height() - $(window).height() - $(window).scrollTop();
-	alert( "y" + position + "y" );
-	window.scrollTo( 0, position );
-});
-function function1(){
-    var position = $(document).height() - $(window).height() - $(window).scrollTop();
-alert( "x" + position + "x" );
-    window.scrollTo( 0, position );
-}
-*}
 {literal}
 <script language="JavaScript">
-function goToByScroll(id){
-     	$('html,body').animate({scrollTop: $("#"+id).offset().top},'slow');
+jQuery(function( $ )//called on document.ready overriden by code in design/admin2/templates/content/edit.tpl
+{
+    var docScrollTop = 0, el = $('#exam-edit');
+
+    if ( document.body.scrollTop !== undefined )
+    	docScrollTop = document.body.scrollTop;// DOM compliant
+    else if ( document.documentElement.scrollTop  !== undefined )
+    	docScrollTop = document.documentElement.scrollTop;// IE6 standards mode;
+
+    // Do not set focus if user has scrolled
+    if ( docScrollTop < 10 )
+    {
+    	window.scrollTo(0, Math.max( el.offset().top - 180, 0 ));
+        el.focus();
+    }
+});
+function goTop(){
+    window.scrollTo( 0, 0 );
 }
-goToByScroll("exam-edit");
+function goBottom(){
+	window.scrollTo(0, document.body.scrollHeight );
+}
+function goExamEdit(){
+	el = $('#exam-edit');
+	window.scrollTo(0, Math.max( el.offset().top - 180, 0 ));
+	el.focus();
+}
 </script>
 {/literal}
-<input type="button" value="Scroll to Bottom" onClick="function1();">
-<input type="button" value="Scroll to top" onClick="$(window).scrollTop();">
+<input class="button" type="button" value="{'Scroll to Bottom'|i18n('design/exam')}" onClick="goBottom();">
+<input class="button" type="button" value="{'Scroll to Top'|i18n('design/exam')}" onClick="goTop();">
 
 <div id="exam-edit">
 	<div class="buttons">
@@ -60,3 +69,5 @@ goToByScroll("exam-edit");
 		</div>
 	{/if}
 </div>
+<input class="button" type="button" value="{'Scroll to Exam Top'|i18n('design/exam')}" onClick="goExamEdit();">
+<input class="button" type="button" value="{'Scroll to Top'|i18n('design/exam')}" onClick="goTop();">
