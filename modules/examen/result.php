@@ -134,6 +134,7 @@ if ( count($errors) == 0 ) {
 		exam::removeSession( $http, $examID );
 		//If we failed check if there is an object relation that is of the exam class - if so, use that as the retest node.
 		$retestObjectID = $examID;
+		$originalExamObjectID = $examID;
 		if ( $passed == false AND $dataMap["retest"]->DataInt == true) { //otherwise we don't care
 
 			$relatedObjects = eZContentFunctionCollection::fetchRelatedObjects( $examID, false, array( 'xml_embed', 'xml_link', 'common' ), false );
@@ -148,8 +149,18 @@ if ( count($errors) == 0 ) {
 				$http->setSessionVariable( 'status['.$retestObjectID .']' ,"RETEST" );
 				$http->setSessionVariable( 'hash['.$retestObjectID .']' , $hash );
 			}
+		} elseif( $passed = true AND $dataMap["retest"]->DataInt == true) { 
+			if ( $status == "RETEST" ) {
+				$followup = true;
+				$relatedObjects = eZContentFunctionCollection::fetchReverseRelatedObjects( $examID, false, array( 'common' ), false );
+				foreach( $relatedObjects['result'] as $relatedObject ) {
+					if ( $relatedObject->attribute( 'class_identifier' ) == "exam" ) {
+						$originalExamObjectID = $relatedObject->attribute( 'id' );
+						break;
+					}
+				}
+			}
 		}
-
 		$tpl->setVariable("followup", $followup);
 		
 		$tpl->setVariable("passed", $passed);
@@ -161,14 +172,13 @@ if ( count($errors) == 0 ) {
 
 		}
 		if ($dataMap["show_statistics"]) {
-			$exam = exam::fetch( $examID );
+			$exam = exam::fetch( $originalExamObjectID );
 			if ($exam) {
 				$tpl->setVariable("average", $exam->average());
 				$tpl->setVariable("showStatistics", true);
 				$tpl->setVariable("examCount", $exam->attribute( 'count' ));
 				$tpl->setVariable("passFirst", $exam->attribute( 'pass_first' ));
 				$tpl->setVariable("passSecond", $exam->attribute( 'pass_second' ));
-				$tpl->setVariable("highScore", $exam->attribute( 'high_score' ));
 				$tpl->setVariable("highScore", $exam->attribute( 'high_score' ));
 			}
 			$tpl->setVariable("retest",$dataMap["retest"]->DataInt);
