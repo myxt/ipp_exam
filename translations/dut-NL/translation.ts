@@ -1,19 +1,5 @@
 <!DOCTYPE TS><TS>
 <context>
-    <name>design/admin/node/view/full</name>
-    <message>
-        <source>Submit</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>design/admin/settings</name>
-    <message>
-        <source>Edit</source>
-        <translation>Bewerken</translation>
-    </message>
-</context>
-<context>
     <name>design/exam</name>
     <message>
         <source>Start Exam</source>
@@ -389,12 +375,29 @@
         <comment>score</comment>
         <translation>Uw score was [score]% correct</translation>
     </message>
-</context>
-<context>
-    <name>design/standard/content/datatype</name>
     <message>
-        <source>Disable editor</source>
-        <translation type="unfinished"></translation>
+        <source>Scroll to Bottom</source>
+        <translation>Scroll naar Beneden</translation>
+    </message>
+    <message>
+        <source>Scroll to Top</source>
+        <translation>Scroll naar Top</translation>
+    </message>
+    <message>
+        <source>Scroll to Exam Top</source>
+        <translation>Scroll naar Examen Top</translation>
+    </message>
+    <message>
+        <source>Weight</source>
+        <translation>Belang</translation>
+    </message>
+    <message>
+        <source>Give more importance to this question by adding a number.</source>
+        <translation>Geef meer belang aan deze vraag door het toevoegen van een nummer.</translation>
+    </message>
+    <message>
+        <source>You took too long to answer the questions.  Try again.</source>
+        <translation>Je nam te lang om de vragen te beantwoorden. Probeer het opnieuw.</translation>
     </message>
 </context>
 </TS>
