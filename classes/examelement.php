@@ -178,6 +178,7 @@ class examElement extends eZPersistentObject
 		foreach( $queryResult as $answer) {
 			$result['answer_count'][$answer['answer']] = $answer['count'];
 		}
+		$db->commit();
 		return $result;
 	}
 	function priorityUp()
