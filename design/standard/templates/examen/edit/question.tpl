@@ -14,12 +14,6 @@
 	<div class="oe-window">
 		<textarea class="box" id="{$element_base}_data_text_{$element.id}" name="{$element_base}_data_text_{$element.id}" cols="{$cols}" rows="{$editorRow}">{$element.input_xml}</textarea>
 	</div>
-	{*if $input_handler.can_disable}
-	<div class="block">
-
-			<input class="button{if $layout_settings['buttons']|contains('disable')} hide{/if}" type="submit" name="CustomActionButton[{$element.id}_disable_editor]" value="{'Disable editor'|i18n('design/standard/content/datatype')}" />
-	</div>
-	{/if*}
 	<script type="text/javascript">
 	<!--
 	eZOeAttributeSettings = eZOeGlobalSettings;

@@ -143,4 +143,5 @@
 			{/if}
 		{*/if*} {*hash != done*}
 	{/if} {*within timestamps*}
+	</div>
 </div>
