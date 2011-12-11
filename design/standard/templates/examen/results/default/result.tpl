@@ -1,6 +1,6 @@
 {def $status=cond(ezhttp_hasvariable(concat('status[',$node.object.id,']'), 'session'),ezhttp(concat('status[',$node.object.id,']'), 'session' ),false())}
 <div id="exam-result">
-	{if eq($survey,1)} {*if this is a survey then just show the results and get out*}
+	{if eq($survey,true())} {*if this is a survey then just show the results and get out*}
 		{foreach $elements as $element}
 			{exam_result_gui element=$element counts=$counts percents=$percents totals=$totals survey=true()}
 		{/foreach}
@@ -37,7 +37,7 @@
 		{if $showCorrect}
 			{*if or(eq($passed,1),eq($followup,1))*}
 				{foreach $resultArray as $result}
-					{exam_result_gui element=$result[1] result=$result[0]}
+					{exam_result_gui element=$result[1] result=$result[0] survey=false()}
 				{/foreach}
 			{*/if*}
 		{/if}

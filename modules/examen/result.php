@@ -19,6 +19,9 @@ $http = eZHTTPTool::instance();
 $tpl = eZTemplate::factory();
 $Result = array();
 $errors = array();
+$status="";
+$elements=array();
+$survey=false;
 
 if ( $http->hasPostVariable( "exam_id" ) ) {
 	$examID = $http->variable( "exam_id" );
@@ -54,7 +57,8 @@ if ( count($errors) == 0 ) {
 	//If it's a survey, we don't need a hash.  And we need ALL results not just the ones that match to the hash - so we have to figure out if this is a survey first.
 
 	$dataMap = $contentObject->DataMap();
-
+	$survey=false;
+	$hash="";
 	if ($dataMap["pass_threshold"]->DataInt) { //otherwise it's a survey and we don't care
 		$hash = $Params['hash'];
 		if (!$hash) {  //no exam_id, we got nothing then
@@ -65,23 +69,40 @@ if ( count($errors) == 0 ) {
 		}
 	} else {
 		$survey=true;
-	}
+	}		
+	$retestObjectID = $examID;
 	if ( $dataMap["pass_threshold"]->DataInt == 0 ) { //it's a survey and results will be different
 	// if it's a survey we're going to have to return an array of count( total => x, answer1 => x, answer2 => x );
 		$results = examResult::fetchSurvey( $examID );
 		//A survey could still have multiple questions.
 		//This is returning the results for all versions and all languages.  This isn't always necessarily correct.
+		//Let's make sure to only display results for question IDs that are valid.  It means if someone edits the object the results will be off but there isn't any way to do this.
+		$exam = exam::fetch( $examID );
+		$examVersion = $contentObject->CurrentVersion;
+		$examLanguage = $contentObject->CurrentLanguage;
+		$examQuestions = $exam->getQuestions( $examVersion, $examLanguage );
+		$questionArray=array();
+		foreach ( $examQuestions as $question ) {
+			$questionArray[] = $question->ID;
+		}
+
 		$total=count($results);
 		$countArray = array();
 		foreach( $results as $result ) {
-			if(!isset($countArray[$result->attribute('question_id')][$result->attribute('answer')])) {
-				$countArray[$result->attribute('question_id')][$result->attribute('answer')] = 1;
+			if ( in_array( $result->attribute('question_id'), $questionArray ) ) {
+				if(!isset($countArray[$result->attribute('question_id')][$result->attribute('answer')])) {
+					$countArray[$result->attribute('question_id')][$result->attribute('answer')] = 1;
+				} else {
+					$countArray[$result->attribute('question_id')][$result->attribute('answer')] = $countArray[$result->attribute('question_id')][$result->attribute('answer')] + 1;
+				}
 			} else {
-				$countArray[$result->attribute('question_id')][$result->attribute('answer')] = $countArray[$result->attribute('question_id')][$result->attribute('answer')] + 1;
+				$total = $total - 1;
 			}
 		}
+
 		$percArray = array();
 		$totalArray = array();
+
 		foreach($countArray as $question_id => $answerArray ) {
 			$elements[] =  examElement::fetch( $question_id );
 			$totalArray[$question_id] = array_sum( $countArray[$question_id] );
@@ -100,6 +121,12 @@ if ( count($errors) == 0 ) {
 		if ($results)
 			$savedvalue = $results[0]->attribute( 'followup' );
 //This is where the followup thing is done
+		$correctCount=0;
+		$resultIndex=0;
+		$followup=false;
+		$score=0;
+		$passed=false;
+
 		foreach( $results as $result ) {
 			if ( $result->attribute( 'followup') != $savedvalue ) {
 				$followup = true;
@@ -110,7 +137,7 @@ if ( count($errors) == 0 ) {
 			//ResultArray = array( "id of chosen answer", questionObject );
 			$resultArray[] = array( $result,   $questionObject );
 			$optionArray = $questionObject->options;
-			if ( (int) $optionArray["weight"] != 0 ) {
+			if ( array_key_exists("weight", $optionArray ) ) {
 				$weight = $optionArray["weight"];
 				if ( $weight == 0 ) $weight = 1;
 			} else {
@@ -121,7 +148,7 @@ if ( count($errors) == 0 ) {
 			$resultIndex = $resultIndex + $weight;
 		}
 
-		if ($correctCount != 0) {//no division by zero here - dammit.
+		if ($resultIndex != 0) {//no division by zero here - dammit.
 			$score = ceil( $correctCount / $resultIndex * 100 );
 			if ( $score >= $dataMap["pass_threshold"]->DataInt ) {
 				$passed = true;
@@ -133,7 +160,7 @@ if ( count($errors) == 0 ) {
 
 		exam::removeSession( $http, $examID );
 		//If we failed check if there is an object relation that is of the exam class - if so, use that as the retest node.
-		$retestObjectID = $examID;
+
 		$originalExamObjectID = $examID;
 		if ( $passed == false AND $dataMap["retest"]->DataInt == true) { //otherwise we don't care
 
@@ -200,7 +227,7 @@ if ( count($errors) == 0 ) {
 	$Result['path'] = array(	array(	'url' => false,
 								'text' => ezpI18n::tr( 'design/exam', 'Exam' ) ),
 						array(	'url' => false,
-								'text' =>  $examID ) );
+								'text' =>  $contentObject->attribute( 'name' ) ) );
 }
 
 if (!$Result['content']) { /*Got errors*/

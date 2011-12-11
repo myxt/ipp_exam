@@ -111,7 +111,7 @@
 					<input type="hidden" name="exam_id" value="{$node.object.id}">
 					<input type="hidden" name="exam_version" value="{$node.contentobject_version}">
 					<input type="hidden" name="exam_language" value="{$node.object.current_language}">
-					<input type="hidden" name="exam_status" value="{$node.object.current_language}">
+					<input type="hidden" name="exam_status" value="{$status}">
 					{if $node.object.data_map.random}
 						{set $structure = $structure}
 					{/if}
@@ -137,7 +137,7 @@
 					<input type="hidden" name="exam_id" value="{$node.object.id}">
 					<input type="hidden" name="exam_version" value="{$node.contentobject_version}">
 					<input type="hidden" name="exam_language" value="{$node.object.current_language}">
-					<input type="hidden" name="exam_status" value="{$node.object.current_language}">
+					<input type="hidden" name="exam_status" value="{$status}">
 					<input class="button" type="submit" name="SubmitButton" value="{'Start Exam'|i18n( 'design/exam' )}" title="{'Start Exam'|i18n( 'design/exam' )}" />
 				</form>
 			{/if}

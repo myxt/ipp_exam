@@ -11,7 +11,7 @@ $http = eZHTTPTool::instance();
 $tpl = eZTemplate::factory();
 $Result = array();
 $errors = array();
-$examArray = array();
+
 
 /**************************************
 *                                     *
@@ -91,6 +91,7 @@ if (count($errors) == 0) {
 			$errors[] = "i_can_haz_no_cookie";
 		}
 	}
+
 	if ( $status == "RETEST" ) {
 		$http->setSessionVariable( 'status['.$examID.']', "RETEST" );
 	}
@@ -99,8 +100,10 @@ if (count($errors) == 0) {
 		if( $http->hasSessionVariable( 'timestamp['.$examID.']'  ) ) {
 			//if you have a timestamp and an index and datamap timeout is set, see if the last bunch of questions timed-out
 			if ( $http->hasSessionVariable( 'count['.$examID.']' ) ) {
-				if ( time() >  $http->sessionVariable( 'count['.$examID.']' ) * $dataMap["timeout"]->DataInt  + $http->sessionVariable( 'timestamp['.$examID.']' ) ) {
-					$errors[] = "user_timed_out";
+				if ( $http->sessionVariable( 'count['.$examID.']' ) != 0 ) {
+					if ( time() >  $http->sessionVariable( 'count['.$examID.']' ) * $dataMap["timeout"]->DataInt  + $http->sessionVariable( 'timestamp['.$examID.']' ) ) {
+						$errors[] = "user_timed_out";
+					}
 				}
 			}
 		}
@@ -117,7 +120,8 @@ if (count($errors) == 0) {
 	********************************/
 	$index = $http->hasSessionVariable( 'index['.$examID.']' ) ? $http->sessionVariable( 'index['.$examID.']' ) : 0;
 	$questionCount=0;
-
+	$examArray = array();
+	$groupArray = array();
 	$conditionRemoveArray = array();
 	$answerConditionArray = array();
 	$conditionArray = array();
@@ -150,7 +154,7 @@ if (count($errors) == 0) {
 		$examElements = exam::getStructure($examID,$examVersion,$examLanguage );
 		//but we don't want to shuffle if there are pagebreaks, except if the pagebreak is the last element.
 		//Doesn't make much sense to shuffle text blocks either.  I can only really see textblocks as being useful as a condition or for 
-		//a non-random exam..
+		//a non-random exam.
 		$random=true;
 		$conditionObjectArray = examAnswer::getConditions($examID,$examVersion,$examLanguage);
 		/* Conditions
@@ -239,9 +243,9 @@ if (count($errors) == 0) {
 					$questionCount++;
 					break;
 				case "group": //Now we have to recursively do the whole thing again, doh
+					$children = $element->children;
 					if ( $element->option->random == 1 ) {
 						$childRandom = true;
-						$children = $element->children;
 						$childrenCount = count($children);
 						foreach($children as $childIndex => $child) {
 							if ($child->type == "pagebreak") {//If there is a pagebreak that is NOT the last member of the group... random has to be turned off.
@@ -287,7 +291,7 @@ if (count($errors) == 0) {
 	********************************/
 
 	//if has submit - save answer to array and check for conditions - have to do this BEFORE we hit the results
-
+	$checkList = array();
 	foreach($examArray as $checkIndex => $checkArray){ //loading the answers just in case a condition exists to remove something that was answered
 		if ( $http->hasPostVariable( "answer_".$checkArray[0]) ) {
 			$answerID = $http->variable( "answer_".$checkArray[0]);
@@ -387,11 +391,11 @@ if (count($errors) == 0) {
 	*    RESULTS                    *
 	*                               *
 	********************************/
+	$mode = "";
 	if ($http->hasPostVariable( 'mode' )) {
 		$mode = $http->postVariable( 'mode' );
 	}
 //if it's simple mode then we should be dropping through right now by matching on the $questionCount
-
 	if ( ( $mode == 'simple' AND count($checkList) == $questionCount ) OR ( count($examArray) <  $index + count($checkIndex) AND $conditionAdd == false ) OR count($examArray) == 0 ) {
 	//We're done - time for results
 	/* We should really only save the results to the database (if that option is set) and then redirect to a results page since
@@ -409,6 +413,7 @@ if (count($errors) == 0) {
 		$saveResults = $dataMap["save_results"]->DataInt;
 		//Session key is different from hash.
 		//$hash = $http->getSessionKey();
+
 		$originalExamObjectID = $examID;
 		if ( $status == "RETEST" ) {
 			$followup = true;
@@ -424,7 +429,7 @@ if (count($errors) == 0) {
 		if (!$dataMap["pass_threshold"]->DataInt) { //otherwise it's a survey so always save statistics
 			$survey = true;
 		}
-		exam::removeSession( $http, $examID );
+		//exam::removeSession( $http, $examID );
 		if ( $status != "DONE" ) { //If this is set to DONE someone hit the back button and we should just go to the results page
 			
 			//Save question results
@@ -433,7 +438,6 @@ if (count($errors) == 0) {
 			//If it's a dated result we'll have to add the exam id just in case they did multiple exams under one session
 			/* Since the list of answerable questions is dynamic, we have to go by what is is examArray and assume it is correct.  Which means that if there is ever multiple answers or no answer at all, the totals/score will be off */
 			$questionIndex = 0;
-
 			foreach( $examArray as $examAnswer ) {
 				//We need these even if we don't save results
 				$elementObject = examElement::fetch( $examAnswer[0] );
@@ -512,6 +516,7 @@ if (count($errors) == 0) {
 		*                               *
 		********************************/
 		$type = "";
+		$recurseCheck=0;
 		while($index < count($examArray) AND $type != "pagebreak" AND $recurseCheck < 10 ) {
 //Hmmm might want to put a recursive check here
 			$elementID = $examArray[$index][0];
@@ -537,7 +542,8 @@ if (count($errors) == 0) {
 		}
 
 		$http->setSessionVariable( 'index['.$examID.']' , $index );
-		$http->setSessionVariable( 'count['.$examID.']' , ($recurseCheck - 1) );
+		$http->setSessionVariable( 'count['.$examID.']' , ($recurseCheck) );
+		$tpl->setVariable("random", $random );
 		$tpl->setVariable("exam_id", $examID );
 		$tpl->setVariable("elements", $elements );
 		$Result['content'] = $tpl->fetch( 'design:examen/view/element.tpl' );
@@ -548,6 +554,7 @@ if (count($errors) == 0) {
 	}
 } 
 if (!$Result['content']) { /*Got errors*/
+	exam::removeSession( $http, $examID );
 	$tpl->setVariable("errors", $errors);
 	$Result['content'] = $tpl->fetch( 'design:examen/view/error.tpl' );
 	$Result['path'] = array(	array(	'url' => false,

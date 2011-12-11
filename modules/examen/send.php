@@ -34,12 +34,15 @@ if (!ctype_digit($examID)) {  //no exam_id, we got nothing then
 
 $dataMap = $contentObject->DataMap();
 $mode = $dataMap["mode"]->DataText ? $dataMap["mode"]->DataText : "default";
-
+$survey = false;
+$hash="";
 if ($dataMap["pass_threshold"]->DataInt) { //otherwise it's a survey and we don't care
 	$hash = $Params['hash'];
 	if (!$hash) {  //no exam_id, we got nothing then
-		$hash = $http->getSessionKey();
-		//$errors[] = "no_hash";
+		$hash = $http->sessionVariable( 'hash['.$examID.']' );
+		if (!$hash) {  //no exam_id, we got nothing then
+			$errors[] = "no_hash";
+		}
 	}
 } else {
 	$survey=true;
@@ -50,17 +53,33 @@ if (!$survey) {
 	if ($results)
 		$savedvalue = $results[0]->attribute( 'followup' );
 
-	foreach( $results as $resultIndex => $result ) {
+	$correctCount=0;
+	$resultIndex=0;
+	$followup=false;
+	$score=0;
+	$passed=false;
+	foreach( $results as $result ) {
 		if ( $result->attribute( 'followup') != $savedvalue ) {
 			$followup = true;
 			continue; //so that we only display the followup if it is one.
 		}
-		$resultArray[] = array( $result,  examElement::fetch( $result->questionID ));
-		if ( $result->attribute( 'correct' ) ) $correctCount++;
-		$resultIndex++;
+		//This is where the score is calculated
+		$questionObject =  examElement::fetch( $result->questionID );
+		//ResultArray = array( "id of chosen answer", questionObject );
+		$resultArray[] = array( $result,   $questionObject );
+		$optionArray = $questionObject->options;
+		if ( array_key_exists("weight", $optionArray ) ) {
+			$weight = $optionArray["weight"];
+			if ( $weight == 0 ) $weight = 1;
+		} else {
+			$weight = 1;
+		}
+
+		if ( $result->attribute( 'correct' ) ) $correctCount = $correctCount + $weight;
+		$resultIndex = $resultIndex + $weight;
 	}
 
-	if ($correctCount != 0) {//no division by zero here - dammit.
+	if ($resultIndex != 0) {//no division by zero here - dammit.
 		$score = ceil( $correctCount / $resultIndex * 100 );
 		if ( $score >= $dataMap["pass_threshold"]->DataInt ) {
 			$passed = true;
@@ -68,6 +87,7 @@ if (!$survey) {
 			$passed = false;
 		}
 	}
+
 	$tpl->setVariable( 'passed', $passed);
 	$tpl->setVariable( 'score', $score );
 }

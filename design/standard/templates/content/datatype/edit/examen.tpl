@@ -69,5 +69,7 @@ function goExamEdit(){
 		</div>
 	{/if}
 </div>
-<input class="button" type="button" value="{'Scroll to Exam Top'|i18n('design/exam')}" onClick="goExamEdit();">
-<input class="button" type="button" value="{'Scroll to Top'|i18n('design/exam')}" onClick="goTop();">
+{if ne($elements|count,0)}
+	<input class="button" type="button" value="{'Scroll to Exam Top'|i18n('design/exam')}" onClick="goExamEdit();">
+	<input class="button" type="button" value="{'Scroll to Top'|i18n('design/exam')}" onClick="goTop();">
+{/if}

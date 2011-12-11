@@ -96,8 +96,8 @@ class exam extends eZPersistentObject
 		if (is_object($this->contentObject))
 		{
 			$structure = $this->getStructure($this->contentObject->attribute( 'id' ),$this->contentObject->attribute( 'current_version' ),$this->contentObject->CurrentLanguage);
-			$contentObject = $this->getObject();
-			$dataMap = $contentObject->DataMap();
+			//$contentObject = $this->getObject();
+			$dataMap = $this->contentObject->DataMap();
 			$random = $dataMap['random']->DataInt;
 			if ( $random ) {
 				shuffle($structure);
@@ -167,15 +167,15 @@ class exam extends eZPersistentObject
 
 	public function questions()
 	{
-		//$contentObjectID = $this->contentObjectID;
-		return $this->getQuestions();
+		return $this->getQuestions($this->contentObject->attribute( 'id' ),$this->contentObject->attribute( 'current_version' ),$this->contentObject->CurrentLanguage);
 	}
-	function getQuestions( $languageCode = 'eng-GB' )
+	function getQuestions( $version = 1, $languageCode = 'eng-GB' )
 	{
 		$rows = eZPersistentObject::fetchObjectList( examElement::definition(),
 								null,
 								array( 'contentobject_id' => $this->contentObjectID,
 										'type' => "question",
+										'version' => $version,
 										'language_code' => $languageCode ),
 								array( 'priority' => 'asc' ),
 								null,
@@ -218,7 +218,7 @@ class exam extends eZPersistentObject
 		$db->query( $query );
 		$db->commit();
 	}
-	function removeSession( $http, $examID )
+	static function removeSession( $http, $examID )
 	{
 		$http->removeSessionVariable( 'condition_array['.$examID.']' );
 		$http->removeSessionVariable( 'exam_array['.$examID.']' );
