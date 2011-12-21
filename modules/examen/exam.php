@@ -243,6 +243,7 @@ if (count($errors) == 0) {
 					$questionCount++;
 					break;
 				case "group": //Now we have to recursively do the whole thing again, doh
+					$groupArray = array();
 					$children = $element->children;
 					if ( $element->option->random == 1 ) {
 						$childRandom = true;
