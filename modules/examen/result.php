@@ -168,7 +168,7 @@ if ( count($errors) == 0 ) {
 		$originalExamObjectID = $examID;
 		if ( $passed == false AND $dataMap["retest"]->DataInt == true) { //otherwise we don't care
 
-			$relatedObjects = eZContentFunctionCollection::fetchRelatedObjects( $examID, false, array( 'xml_embed', 'xml_link', 'common' ), false );
+			$relatedObjects = eZContentFunctionCollection::fetchRelatedObjects( $examID, false, array( 'xml_embed', 'xml_link', 'common' ), false, false );
 			foreach( $relatedObjects['result'] as $relatedObject ) {
 				if ( $relatedObject->attribute( 'class_identifier' ) == "exam" ) {
 					$retestObjectID = $relatedObject->attribute( 'id' );
