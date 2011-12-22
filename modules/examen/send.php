@@ -68,9 +68,14 @@ if (!$survey) {
 		//ResultArray = array( "id of chosen answer", questionObject );
 		$resultArray[] = array( $result,   $questionObject );
 		$optionArray = $questionObject->options;
-		if ( array_key_exists("weight", $optionArray ) ) {
-			$weight = $optionArray["weight"];
-			if ( $weight == 0 ) $weight = 1;
+
+		If( is_array($optionArray)) {
+			if ( array_key_exists("weight", $optionArray ) ) {
+				$weight = $optionArray["weight"];
+				if ( $weight == 0 ) $weight = 1;
+			} else {
+				$weight = 1;
+			}
 		} else {
 			$weight = 1;
 		}
