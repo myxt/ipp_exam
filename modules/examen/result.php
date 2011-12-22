@@ -175,7 +175,7 @@ if ( count($errors) == 0 ) {
 					break;
 				}
 			}
-;
+
 			if ( $retest != "FOLLOWUP" ) { //Only one retest now
 				$http->setSessionVariable( 'status['.$retestObjectID .']' ,"RETEST" );
 				$http->setSessionVariable( 'hash['.$retestObjectID .']' , $hash );
