@@ -180,7 +180,7 @@ if ( count($errors) == 0 ) {
 				$http->setSessionVariable( 'status['.$retestObjectID .']' ,"RETEST" );
 				$http->setSessionVariable( 'hash['.$retestObjectID .']' , $hash );
 			}
-		} elseif( $passed = true AND $dataMap["retest"]->DataInt == true) { 
+		} elseif( $passed == true AND $dataMap["retest"]->DataInt == true) { 
 			if ( $status == "RETEST" ) {
 				$followup = true;
 				$relatedObjects = eZContentFunctionCollection::fetchReverseRelatedObjects( $examID, false, array( 'common' ), false );
