@@ -37,7 +37,9 @@
 		{if $showCorrect}
 			{*if or(eq($passed,1),eq($followup,1))*}
 				{foreach $resultArray as $result}
-					{exam_result_gui element=$result[1] result=$result[0] survey=false()}
+					{if eq($result[1].type,"question")}
+						{exam_result_gui element=$result[1] result=$result[0] survey=false()}
+					{/if}
 				{/foreach}
 			{*/if*}
 		{/if}
