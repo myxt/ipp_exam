@@ -397,7 +397,7 @@ if (count($errors) == 0) {
 		$mode = $http->postVariable( 'mode' );
 	}
 //if it's simple mode then we should be dropping through right now by matching on the $questionCount
-	if ( ( $mode == 'simple' AND count($checkList) == $questionCount ) OR ( count($examArray) <  $index + count($checkIndex) AND $conditionAdd == false ) OR count($examArray) == 0 ) {
+	if ( ( $mode == 'simple' AND count($checkList) == $questionCount ) OR ( count($examArray) <= $index AND $conditionAdd == false ) OR count($examArray) == 0 ) {
 	//We're done - time for results
 	/* We should really only save the results to the database (if that option is set) and then redirect to a results page since
         the logic for viewing the results at a later date will have to be the same.  of course, if we aren't to save the results
