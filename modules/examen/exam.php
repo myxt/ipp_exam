@@ -314,7 +314,7 @@ if (count($errors) == 0) {
 					case 1: //if picked remove
 						if ( $answerID == $answer_id ){
 							$examArrayKey = array_search( $option_value, $examID_array );
-							if ( $examArray[$examArrayKey][1] = "" ) { //Only remove unanswered
+							if ( $examArray[$examArrayKey][1] == "" ) { //Only remove unanswered
 								unset($examArray[$examArrayKey]);
 								unset($examID_array[$examArrayKey]);
 							}
@@ -332,7 +332,7 @@ if (count($errors) == 0) {
 						if ( $answerID == $answer_id ){
 							if(in_array($keyCheck,$examID_array)){ //We can only follow if it's there.
 								$examArrayKey = array_search( $option_value, $examID_array );
-								if ( $examArray[$examArrayKey][1] = "" ) { //only do it if it hasn't been answered
+								if ( $examArray[$examArrayKey][1] == "" ) { //only do it if it hasn't been answered
 									$tmpValue = $examArray[$examArrayKey];
 									$examArray[$examArrayKey] = $examArray[$index+1];
 									$examArray[$index+1] = $tmpValue;
@@ -350,7 +350,7 @@ if (count($errors) == 0) {
 					case 5: //if not picked remove
 						if ( $answerID != $answer_id ){
 							$examArrayKey = array_search( $option_value, $examID_array );
-							if ( $examArray[$examArrayKey][1] = "" ) { //Only remove unanswered
+							if ( $examArray[$examArrayKey][1] == "" ) { //Only remove unanswered
 								unset($examArray[$examArrayKey]);
 								unset($examID_array[$examArrayKey]);
 							}
@@ -368,7 +368,7 @@ if (count($errors) == 0) {
 						if ( $answerID != $answer_id ){
 							if(in_array($keyCheck,$examID_array)){ //We can only follow if it's there.
 								$examArrayKey = array_search( $option_value, $examID_array );
-								if ( $examArray[$examArrayKey][1] = "" ) { //only do it if it hasn't been answered
+								if ( $examArray[$examArrayKey][1] == "" ) { //only do it if it hasn't been answered
 									$tmpValue = $examArray[$examArrayKey];
 									$examArray[$examArrayKey] = $examArray[$index+1];
 									$examArray[$index+1] = $tmpValue;
