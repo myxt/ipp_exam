@@ -116,48 +116,77 @@ if ( count($errors) == 0 ) {
 		$tpl->setVariable("counts", $countArray);
 		$tpl->setVariable("percents", $percArray);
 	} else {
-		$results = examResult::fetchByHash( $hash, $examID );
-		//Fetch by hash is getting all the results for a followup and for the previous.  So we have to loop through to only get one or the other
-		if ($results)
-			$savedvalue = $results[0]->attribute( 'followup' );
-//This is where the followup thing is done
-		$correctCount=0;
-		$resultIndex=0;
-		$followup=false;
-		$score=0;
-		$passed=false;
-
-		foreach( $results as $result ) {
-			if ( $result->attribute( 'followup') != $savedvalue ) {
-				$followup = true;
-				continue; //so that we only display the followup if it is one.
+		if ($dataMap["save_results"]->DataInt == 0) { //info is coming from sessin
+		//If save results not set we need to get these from the session variable.
+			$passed = $http->sessionVariable( 'passed['.$examID.']');
+			$score = $http->sessionVariable( 'score['.$examID.']');
+			$tpl->setVariable("fromSession", true);
+			$tpl->setVariable("resultArray", $http->sessionVariable( 'result_array['.$examID.']' ));
+			$dataMap["show_statistics"] = false;
+			if ($dataMap["show_correct"]->DataInt) {
+				$badArray = array();
+				$examArray = $http->sessionVariable( 'exam_array['.$examID.']');
+				foreach( $examArray as $examAnswer ) {
+					//We need these even if we don't save results
+					$elementObject = examElement::fetch( $examAnswer[0] );
+					if ( $elementObject->type == "question" ) {
+						foreach($elementObject->getAnswers() as $answerObject) {
+							if($answerObject->correct == true AND $examAnswer[1] != $answerObject->ID ) {
+								$badArray[$examAnswer[0]] = array( $examAnswer[1], $answerObject->ID );
+							}
+						}
+					}
+				}
 			}
-			//This is where the score is calculated
-			$questionObject =  examElement::fetch( $result->questionID );
-			//ResultArray = array( "id of chosen answer", questionObject );
-			$resultArray[] = array( $result,   $questionObject );
-			$optionArray = $questionObject->options;
-			If( is_array($optionArray)) {
-				if ( array_key_exists("weight", $optionArray ) ) {
-					$weight = $optionArray["weight"];
-					if ( $weight == 0 ) $weight = 1;
+			$tpl->setVariable("incorrect", $badArray);
+			if ( $status == "RETEST" ) { //IS THIS EVEN kNOWABLE SINCE THE SESSION IS CLEARED AT THE END OF RESULTS?
+				$followup = true;
+				$tpl->setVariable("followup", $followup);
+			}
+		}else{
+			$results = examResult::fetchByHash( $hash, $examID );
+			//Fetch by hash is getting all the results for a followup and for the previous.  So we have to loop through to only get one or the other
+			if ($results)
+				$savedvalue = $results[0]->attribute( 'followup' );
+	//This is where the followup thing is done
+			$correctCount=0;
+			$resultIndex=0;
+			$followup=false;
+			$score=0;
+			$passed=false;
+
+			foreach( $results as $result ) {
+				if ( $result->attribute( 'followup') != $savedvalue ) {
+					$followup = true;
+					continue; //so that we only display the followup if it is one.
+				}
+				//This is where the score is calculated
+				$questionObject =  examElement::fetch( $result->questionID );
+				//ResultArray = array( "id of chosen answer", questionObject );
+				$resultArray[] = array( $result,   $questionObject );
+				$optionArray = $questionObject->options;
+				If( is_array($optionArray)) {
+					if ( array_key_exists("weight", $optionArray ) ) {
+						$weight = $optionArray["weight"];
+						if ( $weight == 0 ) $weight = 1;
+					} else {
+						$weight = 1;
+					}
 				} else {
 					$weight = 1;
 				}
-			} else {
-				$weight = 1;
+
+				if ( $result->attribute( 'correct' ) ) $correctCount = $correctCount + $weight;
+				$resultIndex = $resultIndex + $weight;
 			}
 
-			if ( $result->attribute( 'correct' ) ) $correctCount = $correctCount + $weight;
-			$resultIndex = $resultIndex + $weight;
-		}
-
-		if ($resultIndex != 0) {//no division by zero here - dammit.
-			$score = ceil( $correctCount / $resultIndex * 100 );
-			if ( $score >= $dataMap["pass_threshold"]->DataInt ) {
-				$passed = true;
-			} else {
-				$passed = false;
+			if ($resultIndex != 0) {//no division by zero here - dammit.
+				$score = ceil( $correctCount / $resultIndex * 100 );
+				if ( $score >= $dataMap["pass_threshold"]->DataInt ) {
+					$passed = true;
+				} else {
+					$passed = false;
+				}
 			}
 		}
 		$retest = $http->sessionVariable( 'status['.$examID.']' );
@@ -226,7 +255,7 @@ if ( count($errors) == 0 ) {
 	$tpl->setVariable("nodeID",$nodeID);
 	$tpl->setVariable("node",$node[0]);
 	$mode = $dataMap["mode"]->DataText ? $dataMap["mode"]->DataText : "default";
-	$mode = "default";
+
 	$Result['content'] = $tpl->fetch( 'design:examen/results/'.$mode.'/result.tpl' );
 	$Result['path'] = array(	array(	'url' => false,
 								'text' => ezpI18n::tr( 'design/exam', 'Exam' ) ),

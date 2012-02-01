@@ -35,13 +35,39 @@
 		</div>
 		{/if}
 		{if $showCorrect}
-			{*if or(eq($passed,1),eq($followup,1))*}
-				{foreach $resultArray as $result}
-					{if eq($result[1].type,"question")}
-						{exam_result_gui element=$result[1] result=$result[0] survey=false()}
+				{if $fromSession}
+					{if $incorrect} {*if we have this statistics weren't saved and we had to get incomplete info from the badarray*}
+					{def $incorrectElement=array()}
+						{foreach $incorrect as $key => $badAnswer}
+							{set $incorrectElement = fetch( 'examen', 'element', hash( 'id', $key ))}
+							<div class="question">
+								<div class="text">
+									{$incorrectElement.content}
+								</div>
+								{foreach $incorrectElement.answers as $answer}
+									<div class="answer">
+										<div class="icon{if eq($answer.id,$badAnswer[0])} incorrect{elseif eq($answer.id,$badAnswer[1])} correct{/if}">&nbsp;</div>{$answer.content}
+									</div>
+								{/foreach}
+							</div>
+						{/foreach}
 					{/if}
-				{/foreach}
-			{*/if*}
+					{if $resultArray}
+						{def $resultElement=array()}
+						{foreach $resultArray as $result}
+							{set $resultElement = fetch( 'examen', 'element', hash( 'id', $result ))}
+							{if eq($resultElement.type,"text")}
+								{exam_view_gui element=$resultElement}
+							{/if}
+						{/foreach}
+					{/if}
+				{else}
+					{foreach $resultArray as $result}
+						{if eq($result[1].type,"question")}
+							{exam_result_gui element=$result[1] result=$result[0] survey=false()}
+						{/if}
+					{/foreach}
+				{/if}
 		{/if}
 		{if $passed}
 			{if $certificate}

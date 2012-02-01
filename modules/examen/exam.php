@@ -554,7 +554,7 @@ if (count($errors) == 0) {
 									'text' =>  $examID ) );
 	}
 } 
-if (!$Result['content']) { /*Got errors*/
+if (count($errors) != 0) { /*Got errors*/
 	exam::removeSession( $http, $examID );
 	$tpl->setVariable("errors", $errors);
 	$Result['content'] = $tpl->fetch( 'design:examen/view/error.tpl' );
