@@ -213,6 +213,14 @@ class ExamenType extends eZDataType
 					$contentObjectAttribute->setHasValidationError();
 					return $failStatus;
 				}
+
+				//If a survey, no question should have a correct answer set - but since we don't know if the pass threshhold is being changed on this draft - since this is only hit on the exam attributes there is no way of knowing if the value changed and if the above is also in place this would lead to an infinte loop.  This should only be a warning.
+				if ( $passThreshold == 0 AND $correct != 0 ) {
+					$contentObjectAttribute->setValidationLog( ezpI18n::tr( 'design/exam', 'If there is no pass threshhold, no question may have a correct answer set.  Question %1 does.', null, array($elementObject->ID) ) );
+					//$contentObjectAttribute->setHasValidationError();
+					//return $failStatus;
+				}
+					
 				//Every question must have at least two answers
 				if ( $answerCount < 1 ) { //Count starts at [0] [1]
 					$contentObjectAttribute->setValidationError( ezpI18n::tr( 'design/exam', 'Every question must have at least two answers.  Question %1 does not.', null, array($elementObject->ID) ) );
