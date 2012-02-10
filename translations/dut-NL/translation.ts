@@ -1,4 +1,6 @@
-<!DOCTYPE TS><TS>
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE TS>
+<TS version="2.0">
 <context>
     <name>design/exam</name>
     <message>
@@ -398,6 +400,50 @@
     <message>
         <source>You took too long to answer the questions.  Try again.</source>
         <translation>Je nam te lang om de vragen te beantwoorden. Probeer het opnieuw.</translation>
+    </message>
+    <message>
+        <source>Every question with a condition must have a condition value and vice-versa.  Question %1 Answer %2 does not.</source>
+        <translation>Elke vraag met een conditie moet een conditie waard heben en anders om.</translation>
+    </message>
+    <message>
+        <source>A condition element can only come from the same group.  Question %1 Answer %2 does not meet this criteria.</source>
+        <translation>Een conditionele element kan alleen van de zelfde groep komen. Vraag %1 Antwoord %2 klopt niet.</translation>
+    </message>
+    <message>
+        <source>If there is a pass threshhold, every question must have one correct answer.  Question %1 does not have one correct answer.</source>
+        <translation>Als daar een pass threshhold is, elke vraag moet een juist antwoord heben.  Vraag %1 voldoet niet aan deze eisen.</translation>
+    </message>
+    <message>
+        <source>If there is no pass threshhold, no question may have a correct answer set.  Question %1 does.</source>
+        <translation>Als daar geen pass threshhold is mag geen antwoord worden gekozen als de juiste antoord.  Vraag %1 voldoet niet aan deze eisen.</translation>
+    </message>
+    <message>
+        <source>Every question must have at least two answers.  Question %1 does not.</source>
+        <translation>Elke vraag moet minimal twee antwoorden heben.  Vraag %1 heeft dat niet.</translation>
+    </message>
+    <message>
+        <source>After taking into account conditions there are no questions left.</source>
+        <translation>Met de condities me gerekent zijn daar geen meer vragen.</translation>
+    </message>
+    <message>
+        <source>Exam</source>
+        <translation>Examen</translation>
+    </message>
+    <message>
+        <source>Error</source>
+        <translation>Fout</translation>
+    </message>
+    <message>
+        <source>Overview</source>
+        <translation>Overzicht</translation>
+    </message>
+    <message>
+        <source>Congratulations</source>
+        <translation>Gefeliciteerd</translation>
+    </message>
+    <message>
+        <source>you passed</source>
+        <translation>je bent geslaagd</translation>
     </message>
 </context>
 </TS>

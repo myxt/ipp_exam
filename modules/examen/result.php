@@ -73,42 +73,27 @@ if ( count($errors) == 0 ) {
 	$retestObjectID = $examID;
 	if ( $dataMap["pass_threshold"]->DataInt == 0 ) { //it's a survey and results will be different
 	// if it's a survey we're going to have to return an array of count( total => x, answer1 => x, answer2 => x );
-		$results = examResult::fetchSurvey( $examID );
+		//$results = examResult::fetchSurvey( $examID );
 		//A survey could still have multiple questions.
-		//This is returning the results for all versions and all languages.  This isn't always necessarily correct.
-		//Let's make sure to only display results for question IDs that are valid.  It means if someone edits the object the results will be off but there isn't any way to do this.
+		//This is returning the results only for the language and version since there Question and Answer Ids are different for each language and each version.  If someone edits the object the results will be cleared but there isn't any way to do fix this since there is no link between an answer's previous version.
 		$exam = exam::fetch( $examID );
 		$examVersion = $contentObject->CurrentVersion;
 		$examLanguage = $contentObject->CurrentLanguage;
 		$examQuestions = $exam->getQuestions( $examVersion, $examLanguage );
 		$questionArray=array();
-		foreach ( $examQuestions as $question ) {
-			$questionArray[] = $question->ID;
-		}
-
-		$total=count($results);
 		$countArray = array();
-		foreach( $results as $result ) {
-			if ( in_array( $result->attribute('question_id'), $questionArray ) ) {
-				if(!isset($countArray[$result->attribute('question_id')][$result->attribute('answer')])) {
-					$countArray[$result->attribute('question_id')][$result->attribute('answer')] = 1;
-				} else {
-					$countArray[$result->attribute('question_id')][$result->attribute('answer')] = $countArray[$result->attribute('question_id')][$result->attribute('answer')] + 1;
-				}
-			} else {
-				$total = $total - 1;
-			}
-		}
-
-		$percArray = array();
 		$totalArray = array();
+		$percArray = array();
+		foreach ( $examQuestions as $question ) {
+			$questionID = $question->ID;
+			$elements[] = $question;
+			$totalArray[$questionID]= examResult::fetchSurveyQuestionCount( $examID, $questionID );
+			foreach($question->getAnswers() as $answer) {
+				$answerID = $answer->ID;
+				$answerCount = examResult::fetchSurveyAnswerCount( $questionID, $answerID );
+				$countArray[$questionID][$answerID] = $answerCount;
+				$percArray[$answerID] = round( $answerCount / $totalArray[$questionID] * 100 );
 
-		foreach($countArray as $question_id => $answerArray ) {
-			$elements[] =  examElement::fetch( $question_id );
-			$totalArray[$question_id] = array_sum( $countArray[$question_id] );
-			foreach($answerArray as $index => $answer ) {
-				
-				$percArray[$index] = round( $answer / $total * 100 );
 			}
 		}
 		$tpl->setVariable("totals", $totalArray);

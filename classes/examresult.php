@@ -89,6 +89,22 @@ class examResult extends eZPersistentObject
 											);
 		return $examResult;
 	}
+	static function fetchSurveyQuestionCount( $exam_id, $question_id, $asObject = true )
+	{
+		$examResult = eZPersistentObject::fetchObjectList( examResult::definition(),
+														null,
+														array( 'contentobject_id' => $exam_id, 'question_id' => $question_id, 'answer' => array( "!=", "0" ) )
+											);
+		return count($examResult);
+	}
+	static function fetchSurveyAnswerCount( $exam_id, $answer_id, $asObject = true )
+	{
+		$examResult = eZPersistentObject::fetchObjectList( examResult::definition(),
+														null,
+														array( 'question_id' => $exam_id, 'answer' => $answer_id )
+											);
+		return count($examResult);
+	}
 	function &templateName()
 	{
 		$element = examElement::fetch( $this->questionID );
