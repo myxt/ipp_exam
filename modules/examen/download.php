@@ -58,7 +58,7 @@ if ($errors) { /*Got errors*/
 		$http->setSessionVariable( 'name['.$examID.']' , $name );
 	}
 	$firstline	=  ezpI18n::tr('design/exam',"Congratulations");
-	$secondline	= escapeshellcmd( $name );;
+	$secondline	= escapeshellcmd( $name );
 	$thirdline	=  ezpI18n::tr('design/exam',"you passed");
 	$fourthline	= $title;
 
