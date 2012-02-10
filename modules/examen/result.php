@@ -241,12 +241,14 @@ if ( count($errors) == 0 ) {
 				$tpl->setVariable("passSecond", $exam->attribute( 'pass_second' ));
 				$tpl->setVariable("highScore", $exam->attribute( 'high_score' ));
 			}
-			$tpl->setVariable("retest",$dataMap["retest"]->DataInt);
-			$tpl->setVariable("certificate",$dataMap["certificate"]->DataInt);
-			$tpl->setVariable("resultArray", $resultArray);
-			$tpl->setVariable("results", $results);
+
 		}
 	} //end show survey
+
+	$tpl->setVariable("resultArray", $resultArray);
+	$tpl->setVariable("results", $results);
+	$tpl->setVariable("retest",$dataMap["retest"]->DataInt);
+	$tpl->setVariable("certificate",$dataMap["certificate"]->DataInt);
 	$tpl->setVariable("survey", $survey);
 	$tpl->setVariable("hash",$hash);
 	$tpl->setVariable("examID",$examID);
