@@ -7,8 +7,8 @@
  */
 
 /* This can be reached in several ways:
- 
-we could be coming from just having taken the test and we have valid session variables - this will be the case if results are not saved to the database... or 
+
+we could be coming from just having taken the test and we have valid session variables - this will be the case if results are not saved to the database... or
 
 we can be coming months later to the exam/hash result that was displayed on the results page the first time we came through.
 
@@ -22,6 +22,7 @@ $errors = array();
 $status="";
 $elements=array();
 $survey=false;
+$followup=false;
 
 if ( $http->hasPostVariable( "exam_id" ) ) {
 	$examID = $http->variable( "exam_id" );
@@ -69,7 +70,7 @@ if ( count($errors) == 0 ) {
 		}
 	} else {
 		$survey=true;
-	}		
+	}
 	$retestObjectID = $examID;
 	if ( $dataMap["pass_threshold"]->DataInt == 0 ) { //it's a survey and results will be different
 	// if it's a survey we're going to have to return an array of count( total => x, answer1 => x, answer2 => x );
@@ -177,6 +178,7 @@ if ( count($errors) == 0 ) {
 		$retest = $http->sessionVariable( 'status['.$examID.']' );
 
 		exam::removeSession( $http, $examID );
+
 		//If we failed check if there is an object relation that is of the exam class - if so, use that as the retest node.
 
 		$originalExamObjectID = $examID;
@@ -194,7 +196,7 @@ if ( count($errors) == 0 ) {
 				$http->setSessionVariable( 'status['.$retestObjectID .']' ,"RETEST" );
 				$http->setSessionVariable( 'hash['.$retestObjectID .']' , $hash );
 			}
-		} elseif( $passed == true AND $dataMap["retest"]->DataInt == true) { 
+		} elseif( $passed != true AND $dataMap["retest"]->DataInt == true) {
 			if ( $status == "RETEST" ) {
 				$followup = true;
 				$relatedObjects = eZContentFunctionCollection::fetchReverseRelatedObjects( $examID, false, array( 'common' ), false );
@@ -207,7 +209,7 @@ if ( count($errors) == 0 ) {
 			}
 		}
 		$tpl->setVariable("followup", $followup);
-		
+
 		$tpl->setVariable("passed", $passed);
 		$tpl->setVariable("score", $score);
 

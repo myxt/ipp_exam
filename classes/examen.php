@@ -91,7 +91,7 @@ class exam extends eZPersistentObject
 								true );
 		return $examObjects;
 	}
-	public function structure() 
+	public function structure()
 	{ //This returns the current version structure.  Can't be used with edit etc.  This maintains the heirarchy.
 		if (is_object($this->contentObject))
 		{

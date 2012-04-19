@@ -2,6 +2,20 @@
 <!DOCTYPE TS>
 <TS version="2.0">
 <context>
+    <name>design/admin/node/view/full</name>
+    <message>
+        <source>Submit</source>
+        <translation>Opslaan</translation>
+    </message>
+</context>
+<context>
+    <name>design/admin/settings</name>
+    <message>
+        <source>Edit</source>
+        <translation>Bewerken</translation>
+    </message>
+</context>
+<context>
     <name>design/exam</name>
     <message>
         <source>Start Exam</source>
@@ -77,7 +91,7 @@
     </message>
     <message>
         <source>Use these buttons to move elements up or down</source>
-        <translation>Gebruik deze knoppen om de volgorde van de elementen te bepalen</translation>
+        <translation>Gebruik deze knoppen om de volgorde van de onderdelen te bepalen</translation>
     </message>
     <message>
         <source>pagebreak</source>
@@ -113,23 +127,23 @@
     </message>
     <message>
         <source>if not picked display in results</source>
-        <translation>Indien niet gekozen in de resultaten weergeven</translation>
+        <translation>indien niet gekozen in de resultaten weergeven</translation>
     </message>
     <message>
         <source>You passed</source>
-        <translation>U bent geslaagd</translation>
+        <translation>Je bent geslaagd</translation>
     </message>
     <message>
         <source>on your second try.</source>
-        <translation>bij uw tweede poging.</translation>
+        <translation>bij je tweede poging.</translation>
     </message>
     <message>
         <source>You failed</source>
-        <translation>U bent niet geslaagd</translation>
+        <translation>Je bent niet geslaagd</translation>
     </message>
     <message>
         <source>Do you want to try again?</source>
-        <translation>Wilt u het opnieuw proberen?</translation>
+        <translation>Wil je het opnieuw proberen?</translation>
     </message>
     <message>
         <source>Restart Exam</source>
@@ -137,15 +151,15 @@
     </message>
     <message>
         <source>That was your second attempt.  Study harder and try again some other day.</source>
-        <translation>Dit was uw tweede poging. bestudeer de stof nog eens en probeer het daarna weer.</translation>
+        <translation>Dit was je tweede poging. Bestudeer de stof nog eens en probeer het daarna opnieuw.</translation>
     </message>
     <message>
         <source>Your score was [score]% correct</source>
-        <translation type="obsolete">Uw score was [score]% correct</translation>
+        <translation type="obsolete">Je score was [score]% correct</translation>
     </message>
     <message>
         <source>You were one of [examCount] to take this exam. Of which [passFirst] passed.</source>
-        <translation type="obsolete">U bent een van de [examCount] personen die dit examen heeft gedaan. Daarvan zijn [passFirst] personen geslaagd</translation>
+        <translation type="obsolete">Je bent een van de [examCount] deelnemers die dit examen heeft gedaan. Daarvan zijn [passFirst] deelnemers geslaagd</translation>
     </message>
     <message>
         <source>on the first try and [passSecond] passed on the second try.</source>
@@ -157,11 +171,11 @@
     </message>
     <message>
         <source>Congratulations, you got the high score.</source>
-        <translation>Gefeliciteerd, u heeft de hoogste score behaald.</translation>
+        <translation>Gefeliciteerd, je hebt de hoogste score behaald.</translation>
     </message>
     <message>
         <source>Do you wish to have a certificate to commemorate your success?</source>
-        <translation>Wilt u een certificaat ter herinnering van uw slagen?</translation>
+        <translation>Wil je een certificaat als herinnering dat je voor dit examen bent geslaagd?</translation>
     </message>
     <message>
         <source>Download Certificate</source>
@@ -178,7 +192,7 @@
     </message>
     <message>
         <source>Cookies must be enabled to participate.</source>
-        <translation>Cookies moeten aanstaan om deel te nemen.</translation>
+        <translation>Je browser moet cookies accepteren om deel te kunnen nemen.</translation>
     </message>
     <message>
         <source>No exam id found.</source>
@@ -186,11 +200,11 @@
     </message>
     <message>
         <source>No exam language found.</source>
-        <translation>Geen examen taal gevonden.</translation>
+        <translation>Geen examentaal gevonden.</translation>
     </message>
     <message>
         <source>No exam version found.</source>
-        <translation>Geen examen versie gevonden.</translation>
+        <translation>Geen examenversie gevonden.</translation>
     </message>
     <message>
         <source>No hash found.</source>
@@ -202,31 +216,31 @@
     </message>
     <message>
         <source>Wrong object type.  Check your exam id.</source>
-        <translation>Verkeerd objecttype. Controleer uw examen id.</translation>
+        <translation>Verkeerd objecttype. Controleer de examen id.</translation>
     </message>
     <message>
         <source>You&apos;ve tried to many times for today.  Try again on another day.</source>
-        <translation>U hebt het vandaag te vaak geprobeerd. Probeer het op een andere dag opnieuw.</translation>
+        <translation>Je hebt het vandaag te vaak geprobeerd. Probeer het op een andere dag opnieuw.</translation>
     </message>
     <message>
         <source>Random</source>
-        <translation>Random</translation>
+        <translation>Willekeurige volgorde</translation>
     </message>
     <message>
         <source>New Question</source>
-        <translation>Nieuwe Vraag</translation>
+        <translation>Nieuwe vraag</translation>
     </message>
     <message>
         <source>New Text</source>
-        <translation>Nieuw Tekst</translation>
+        <translation>Nieuwe tekst</translation>
     </message>
     <message>
         <source>New Pagebreak</source>
-        <translation>Nieuw Pagina-einde</translation>
+        <translation>Nieuw pagina-einde</translation>
     </message>
     <message>
         <source>Update Priorities</source>
-        <translation>Prioriteiten actualiseren</translation>
+        <translation>Prioriteiten aanpassen</translation>
     </message>
     <message>
         <source>Remove</source>
@@ -246,11 +260,11 @@
     </message>
     <message>
         <source>You have already taken this survey today for the maximum allowed times.</source>
-        <translation>U hebt dit onderzoek vandaag voor de maximaal toegestane tijden gedaan.</translation>
+        <translation>Je hebt aan deze enquête vandaag het maximaal aantal toegestane keren deelgenomen.</translation>
     </message>
     <message>
         <source>You have already taken this exam today for the maximum allowed times.</source>
-        <translation>U hebt dit examen vandaag voor de maximaal toegestane tijden genomen.</translation>
+        <translation>Je hebt aan dit examen vandaag het maximaal aantal toegestane keren deelgenomen.</translation>
     </message>
     <message>
         <source>See Results</source>
@@ -258,7 +272,7 @@
     </message>
     <message>
         <source>New Group</source>
-        <translation>Nieuwe Group</translation>
+        <translation>Nieuwe group</translation>
     </message>
     <message>
         <source>I</source>
@@ -274,7 +288,7 @@
     </message>
     <message>
         <source>I took the exam at</source>
-        <translation>Ik nam het examen op</translation>
+        <translation>Ik heb het examen gedaan op</translation>
     </message>
     <message>
         <source>and</source>
@@ -286,11 +300,11 @@
     </message>
     <message>
         <source>You were one of [examCount] to take this exam.  Of which [passFirst] passed</source>
-        <translation type="obsolete">Je was een van de [examCount] om dit examen te nemen.  Waarvan [passFirst] zijn geslaagd.</translation>
+        <translation type="obsolete">Je was een van de [examCount] deelnemers aan dit examen.  Waarvan [passFirst] deelnemers zijn geslaagd.</translation>
     </message>
     <message>
         <source>on the first try and [passSecond] passed on the second try</source>
-        <translation type="obsolete">bij de eerste poging en [passSecond] zijn geslaagd aan de tweede poging</translation>
+        <translation type="obsolete">bij de eerste poging en [passSecond] zijn geslaagd bij de tweede poging</translation>
     </message>
     <message>
         <source>The average score is [average]%.</source>
@@ -314,7 +328,7 @@
     </message>
     <message>
         <source>Send your results to your friends</source>
-        <translation>Stuur uw resultaten naar uw vrienden </translation>
+        <translation>Stuur jouw resultaten naar jouw vrienden </translation>
     </message>
     <message>
         <source>Publish a link to your results on Facebook</source>
@@ -330,7 +344,7 @@
     </message>
     <message>
         <source>This survey is not available yet.</source>
-        <translation>Dit enquête is nog niet beschikbaar.</translation>
+        <translation>Deze enquête is nog niet beschikbaar.</translation>
     </message>
     <message>
         <source>This exam is not available yet.</source>
@@ -338,7 +352,7 @@
     </message>
     <message>
         <source>This survey is no longer available.</source>
-        <translation>Dit enquête is niet meer beschikbaar.</translation>
+        <translation>Deze enquête is niet meer beschikbaar.</translation>
     </message>
     <message>
         <source>This exam is no longer available.</source>
@@ -347,12 +361,12 @@
     <message>
         <source>You were one of [examCount] to take this exam.  Of which [passFirst] passed</source>
         <comment>score</comment>
-        <translation>Je was een van de [examCount] om dit examen te nemen.  Waarvan [passFirst] zijn geslaagd.</translation>
+        <translation>Je was een van de [examCount] deelnemers die dit examen hebben gemaakt.  Waarvan [passFirst] zijn geslaagd.</translation>
     </message>
     <message>
         <source>on the first try and [passSecond] passed on the second try</source>
         <comment>score</comment>
-        <translation>bij de eerste poging en [passSecond] zijn geslaagd aan de tweede poging</translation>
+        <translation>bij de eerste poging en [passSecond] zijn geslaagd bij de tweede poging</translation>
     </message>
     <message>
         <source>The average score is [average]%.</source>
@@ -366,64 +380,64 @@
     </message>
     <message>
         <source>This object is not available.</source>
-        <translation>Deze object is niet beschikbaar.</translation>
+        <translation>Dit object is niet beschikbaar.</translation>
     </message>
     <message>
         <source>Undefined error.</source>
-        <translation>Undefined error.</translation>
+        <translation>Onbekende fout.</translation>
     </message>
     <message>
         <source>Your score was [score]% correct</source>
         <comment>score</comment>
-        <translation>Uw score was [score]% correct</translation>
+        <translation>je score was voor [score]% correct</translation>
     </message>
     <message>
         <source>Scroll to Bottom</source>
-        <translation>Scroll naar Beneden</translation>
+        <translation>Scroll naar beneden</translation>
     </message>
     <message>
         <source>Scroll to Top</source>
-        <translation>Scroll naar Top</translation>
+        <translation>Scroll naar boven</translation>
     </message>
     <message>
         <source>Scroll to Exam Top</source>
-        <translation>Scroll naar Examen Top</translation>
+        <translation>Scroll naar begin van het examen</translation>
     </message>
     <message>
         <source>Weight</source>
-        <translation>Belang</translation>
+        <translation>Gewicht</translation>
     </message>
     <message>
         <source>Give more importance to this question by adding a number.</source>
-        <translation>Geef meer belang aan deze vraag door het toevoegen van een nummer.</translation>
+        <translation>Geef deze vraag meer gewicht door een getal in te voegen.</translation>
     </message>
     <message>
-        <source>You took too long to answer the questions.  Try again.</source>
-        <translation>Je nam te lang om de vragen te beantwoorden. Probeer het opnieuw.</translation>
+        <source>You took too long to answer the questions. Try again.</source>
+        <translation>Je had meer tijd nodig om de vragen te beantwoorden dan toegestaan. Probeer het opnieuw.</translation>
     </message>
     <message>
         <source>Every question with a condition must have a condition value and vice-versa.  Question %1 Answer %2 does not.</source>
-        <translation>Elke vraag met een conditie moet een conditie waard heben en anders om.</translation>
+        <translation>Voor elke vraag met een conditie moet een conditie zijn geselecteerd en anders om.</translation>
     </message>
     <message>
         <source>A condition element can only come from the same group.  Question %1 Answer %2 does not meet this criteria.</source>
-        <translation>Een conditionele element kan alleen van de zelfde groep komen. Vraag %1 Antwoord %2 klopt niet.</translation>
+        <translation>Een conditie kan alleen uit dezelfde groep komen. Voor vraag %1 antwoord %2 is dit niet het geval.</translation>
     </message>
     <message>
         <source>If there is a pass threshhold, every question must have one correct answer.  Question %1 does not have one correct answer.</source>
-        <translation>Als daar een pass threshhold is, elke vraag moet een juist antwoord heben.  Vraag %1 voldoet niet aan deze eisen.</translation>
+        <translation>Als er een minimale score om te slagen is aangegeven dient voor elke vraag een juist antwoord te worden geselecteerd.  Vraag %1 voldoet niet aan deze eis.</translation>
     </message>
     <message>
         <source>If there is no pass threshhold, no question may have a correct answer set.  Question %1 does.</source>
-        <translation>Als daar geen pass threshhold is mag geen antwoord worden gekozen als de juiste antoord.  Vraag %1 voldoet niet aan deze eisen.</translation>
+        <translation>Als er geen minimale score om te slagen is aangeven kan er geen juist antwoord worden gekozen.  Vraag %1 voldoet niet aan deze eis.</translation>
     </message>
     <message>
         <source>Every question must have at least two answers.  Question %1 does not.</source>
-        <translation>Elke vraag moet minimal twee antwoorden heben.  Vraag %1 heeft dat niet.</translation>
+        <translation>Elke vraag moet minimaal twee antwoorden hebben. Vraag %1 heeft dat niet.</translation>
     </message>
     <message>
         <source>After taking into account conditions there are no questions left.</source>
-        <translation>Met de condities me gerekent zijn daar geen meer vragen.</translation>
+        <translation>Er zijn geen vragen meer.</translation>
     </message>
     <message>
         <source>Exam</source>
@@ -444,6 +458,14 @@
     <message>
         <source>you passed</source>
         <translation>je bent geslaagd</translation>
+    </message>
+</context>
+<context>
+    <name>kernel/classes/datatypes</name>
+    <message>
+        <source>Exam</source>
+        <comment>Datatype name</comment>
+        <translation>Examen</translation>
     </message>
 </context>
 </TS>

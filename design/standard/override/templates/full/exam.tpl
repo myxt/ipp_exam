@@ -41,7 +41,7 @@
 		{*should check for status session variable and just go to results if it's set to done here*}
 		{*Have to see if it's a survey or exam first*}
 		{*Since a session can now be re-used, this is no longer possible*}
-		{*if eq( $status, "DONE" ) } 
+		{*if eq( $status, "DONE" ) }
 			<div class="exam-message">
 				{if $survey}
 					{"You have already taken this survey today for the maximum allowed times."|i18n( 'design/exam' )}
@@ -132,7 +132,7 @@
 					{/foreach}
 					<input class="button" type="submit" name="SubmitButton" value="{'Submit'|i18n( 'design/admin/node/view/full' )}" title="{'Submit'|i18n( 'design/admin/node/view/full' )}" />
 				</form>
-			{else} {*complicated mode*} 
+			{else} {*complicated mode*}
 				<form name="advanced exam" method="post" action={'examen/exam/'|ezurl}>
 					<input type="hidden" name="exam_id" value="{$node.object.id}">
 					<input type="hidden" name="exam_version" value="{$node.contentobject_version}">

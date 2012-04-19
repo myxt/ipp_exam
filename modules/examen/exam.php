@@ -11,7 +11,7 @@ $http = eZHTTPTool::instance();
 $tpl = eZTemplate::factory();
 $Result = array();
 $errors = array();
-
+$status = "";
 
 /**************************************
 *                                     *
@@ -42,9 +42,18 @@ if (count($errors) == 0) { // only need these the first time through?
 		$errors[] = "date_out_of_bounds";
 	}
 }
+
 //The language and version may not be set?  They must be set to get anything in the examArray.  This should always come from the node view so that the language and version are correct for the siteaccess.
 if (count($errors) == 0) {
  	//Need to do this after I have an examID
+	$status = $http->sessionVariable( 'status['.$examID.']' );
+
+	if ($http->hasPostVariable( "exam_status" ) ) { //This means someone came to the full view with an active session.
+		if ( $http->postVariable( "exam_status" ) == false OR $http->postVariable( "exam_status" ) == "" ) {
+			exam::removeSession( $http, $examID );
+		}
+	}
+
 	if (!$http->hasSessionVariable( 'index['.$examID.']' )) { // only need these the first time through or retest
 			if ( $http->hasPostVariable( "exam_version" ) ) {
 				$examVersion = $http->variable( "exam_version" );
@@ -75,18 +84,12 @@ if (count($errors) == 0) {
 		}
 	}
 
-	$status = $http->sessionVariable( 'status['.$examID.']' );
-	if ($http->hasPostVariable( "exam_status" )) { //This means someone came to the full view with an active session.
-		if ( $http->postVariable( "exam_status" ) != false ) {
-			exam::removeSession( $http, $examID );
-		}
-	}
 	if ( $http->hasSessionVariable( 'hash['.$examID.']' )) {
 		$hash =  $http->sessionVariable( 'hash['.$examID.']' );
 	} else { //First time through on this exam
 		$hash = md5( eZSession::getUserSessionHash().time().rand() );
-		
-		$http->setSessionVariable( 'status['.$examID.']', "FIRST" );
+			$http->setSessionVariable( 'hash['.$examID.']', $hash );
+			$http->setSessionVariable( 'status['.$examID.']', "FIRST" );
 		if ( !eZSession::userHasSessionCookie() ) { //Have to check every time just in case someone turns cookies off in the middle
 			$errors[] = "i_can_haz_no_cookie";
 		}
@@ -144,7 +147,7 @@ if (count($errors) == 0) {
 		********************************/
 
 		/* First time through have to initialize the element list in exam_array
-			This will be array (	
+			This will be array (
 							array([element_id] => [user_answer])
 							array([element_id] => [user_answer])
 							array([element_id] => [user_answer])
@@ -153,7 +156,7 @@ if (count($errors) == 0) {
 		//We have to get only the top level structure here first so that we can shuffle on the group level if the random option is set
 		$examElements = exam::getStructure($examID,$examVersion,$examLanguage );
 		//but we don't want to shuffle if there are pagebreaks, except if the pagebreak is the last element.
-		//Doesn't make much sense to shuffle text blocks either.  I can only really see textblocks as being useful as a condition or for 
+		//Doesn't make much sense to shuffle text blocks either.  I can only really see textblocks as being useful as a condition or for
 		//a non-random exam.
 		$random=true;
 		$conditionObjectArray = examAnswer::getConditions($examID,$examVersion,$examLanguage);
@@ -161,16 +164,16 @@ if (count($errors) == 0) {
 			if [not] picked	Remove			text, group, question 1 5
 			if [not] picked	Add				text, group, question 2 6
 			if [not] picked	Follow With		text, group, question 3 7
-			if [not] picked	Display in Resuts	text				  4 8 
+			if [not] picked	Display in Resuts	text				  4 8
 
 			Conditions that override Random UNLESS the <conditional element> is in the same group and the group is NOT random and the priorty of the question is less than the <conditional element>.  Since a group cannot be a member of a group it will always override random
 				if [not] picked	Remove
-				if [not] picked	Follow With
-			1 5 3 7
+			1 5
 			Conditions that imply that the element must be removed from the initial list
 				if [not] picked	Add
 				if [not] picked	Display in Resuts
-			2 6 4 8
+				if [not] picked	Follow With
+			2 6 4 8 3 7
 		*/
 
 		foreach($conditionObjectArray as $condition) {
@@ -179,27 +182,32 @@ if (count($errors) == 0) {
 				case 5:
 					$random=false;
 					break;
+/* Follow with is changed to Add and follow with
 				case 3:
 				case 7:
 					//Have to put these in the check array so that we can check on them
 					$answerConditionArray[$condition->option_value] = array( 'answer_id' => $condition->ID, 'option_id' =>  $condition->option_id, 'option_value' => $condition->option_value );
 					$random=false;
 					break;
+*/
 				case 2:
 				case 4:
 				case 6:
 				case 8:
+				case 3:
+				case 7:
 					$conditionRemoveArray[] = $condition->option_value;
 					break;
 			}
-			/*Gotta match on the question id to be able to do the NOT*/
-			$answerConditionArray[$condition->questionID] = array( 'answer_id' => $condition->ID, 'option_id' =>  $condition->option_id, 'option_value' => $condition->option_value );
+			/*Gotta match on the question id to be able to do the NOT - also has to be an array - otherwise only the last condition is evaluated */
+			$conditionArray[$condition->questionID][] = array( 'answer_id' => $condition->ID, 'option_id' =>  $condition->option_id, 'option_value' => $condition->option_value );
 		}
+
 		$elementCount = count($examElements);
 
 		/*Check if anything overrides random*/
 		if ( $dataMap["random"]->DataInt == 1 AND $random == true ) {
-			
+
 			foreach($examElements as $ElementIndex => $element) {
 				if ($element->attribute( 'type' ) == "pagebreak") {//If there is any top-level pagebreak that is NOT the last element... random has to be turned off.
 						if ( $ElementIndex != $elementCount ) {
@@ -236,10 +244,10 @@ if (count($errors) == 0) {
 					//}
 					break;
 				case "text":
-					$examArray[]=array($element->ID , "" );	
+					$examArray[]=array($element->ID , "" );
 					break;
 				case "question":
-					$examArray[]=array($element->ID , "" );	
+					$examArray[]=array($element->ID , "" );
 					$questionCount++;
 					break;
 				case "group": //Now we have to recursively do the whole thing again, doh
@@ -272,7 +280,7 @@ if (count($errors) == 0) {
 									$groupArray[] = array($child->ID , "" );
 									$questionCount++;
 								break;
-							case "group": 
+							case "group":
 								break;
 						}
 					}
@@ -282,7 +290,7 @@ if (count($errors) == 0) {
 		} //end foreach
 
 		$http->setSessionVariable( 'exam_array['.$examID.']' , $examArray );
-		$http->setSessionVariable( 'condition_array['.$examID.']',$answerConditionArray );
+		$http->setSessionVariable( 'condition_array['.$examID.']',$conditionArray );
 	} //end first time through
 
 	/********************************
@@ -306,83 +314,71 @@ if (count($errors) == 0) {
 	foreach($checkList as $keyCheck){ //foreach condition
 		if ( array_key_exists($keyCheck, $conditionArray ) ) { //A condition with this element id exists
 			if ( $http->hasPostVariable( "answer_".$keyCheck ) ) { //We have an element answer for that key
-				$answerID = $http->variable( "answer_".$keyCheck);
-				$answer_id = $conditionArray[$keyCheck]['answer_id'];
-				$option_id = $conditionArray[$keyCheck]['option_id'];
-				$option_value = $conditionArray[$keyCheck]['option_value'];
-				switch ( $option_id ) {
-					case 1: //if picked remove
-						if ( $answerID == $answer_id ){
-							$examArrayKey = array_search( $option_value, $examID_array );
-							if ( $examArray[$examArrayKey][1] == "" ) { //Only remove unanswered
-								unset($examArray[$examArrayKey]);
-								unset($examID_array[$examArrayKey]);
-							}
-						}
-					
-						break;
-					case 2: //if picked add
+				foreach($conditionArray[$keyCheck] as $conditionCheck ) {
+					$answerID = $http->variable( "answer_".$keyCheck);
+					$answer_id = $conditionCheck['answer_id'];
+					$option_id = $conditionCheck['option_id'];
+					$option_value = $conditionCheck['option_value'];
 
-						if ( $answerID == $answer_id ){
-							$examArray[] = array( $option_value, "" );
-							$conditionAdd = true;
-						}
-						break;
-					case 3: //if picked follow with
-						if ( $answerID == $answer_id ){
-							if(in_array($keyCheck,$examID_array)){ //We can only follow if it's there.
+					switch ( $option_id ) {
+						case 1: //if picked remove
+							if ( $answerID == $answer_id ){
 								$examArrayKey = array_search( $option_value, $examID_array );
-								if ( $examArray[$examArrayKey][1] == "" ) { //only do it if it hasn't been answered
-									$tmpValue = $examArray[$examArrayKey];
-									$examArray[$examArrayKey] = $examArray[$index+1];
-									$examArray[$index+1] = $tmpValue;
+								if ( $examArray[$examArrayKey][1] == "" ) { //Only remove unanswered
+									unset($examArray[$examArrayKey]);
+									unset($examID_array[$examArrayKey]);
 								}
 							}
-						}
-						break;
-					case 4: //if picked display text in results
-						if ( $answerID == $answer_id ){
-							$resultArray[$keyCheck] = $option_value;
-
-							$http->setSessionVariable( 'result_array['.$examID.']' , $resultArray );
-						}
-						break;
-					case 5: //if not picked remove
-						if ( $answerID != $answer_id ){
-							$examArrayKey = array_search( $option_value, $examID_array );
-							if ( $examArray[$examArrayKey][1] == "" ) { //Only remove unanswered
-								unset($examArray[$examArrayKey]);
-								unset($examID_array[$examArrayKey]);
-							}
-						}
-						break;
-					case 6: // if not picked add
-						if ( $answerID != $answer_id ){
-							if(!in_array($keyCheck,$examID_array)){ //doesn't already exist;
+							break;
+						case 2: //if picked add
+							if ( $answerID == $answer_id ){
 								$examArray[] = array( $option_value, "" );
 								$conditionAdd = true;
 							}
-						}
-						break;
-					case 7: //if not picked follow with
-						if ( $answerID != $answer_id ){
-							if(in_array($keyCheck,$examID_array)){ //We can only follow if it's there.
+							break;
+						case 3: //if picked follow with
+							if ( $answerID == $answer_id ){
+								array_splice($examArray, $index, 0, array( array( $option_value, "" ) ) );
+								$conditionAdd = true;
+							}
+							break;
+						case 4: //if picked display text in results
+							if ( $answerID == $answer_id ){
+								$resultArray[$keyCheck] = $option_value;
+								$http->setSessionVariable( 'result_array['.$examID.']' , $resultArray );
+							}
+							break;
+						case 5: //if not picked remove
+							if ( $answerID != $answer_id ){
 								$examArrayKey = array_search( $option_value, $examID_array );
-								if ( $examArray[$examArrayKey][1] == "" ) { //only do it if it hasn't been answered
-									$tmpValue = $examArray[$examArrayKey];
-									$examArray[$examArrayKey] = $examArray[$index+1];
-									$examArray[$index+1] = $tmpValue;
+								if ( $examArray[$examArrayKey][1] == "" ) { //Only remove unanswered
+									unset($examArray[$examArrayKey]);
+									unset($examID_array[$examArrayKey]);
 								}
 							}
-						}
-						break;
-					case 8: //if not picked diplay text in results
-						if ( $answerID != $answer_id ){
-							$resultArray[$keyCheck] = $option_value;
-							$http->setSessionVariable( 'result_array['.$examID.']' , $resultArray );
-						}
-						break;
-				} //end swich
+							break;
+						case 6: // if not picked add
+							if ( $answerID != $answer_id ){
+								if(!in_array($keyCheck,$examID_array)){ //doesn't already exist;
+									$examArray[] = array( $option_value, "" );
+									$conditionAdd = true;
+								}
+							}
+							break;
+						case 7: //if not picked follow with
+							if ( $answerID != $answer_id ){
+								array_splice($examArray, $index, 0, array( array( $option_value, "" ) ) );
+								$conditionAdd = true;
+							}
+							break;
+						case 8: //if not picked diplay text in results
+							if ( $answerID != $answer_id ){
+								$resultArray[$keyCheck] = $option_value;
+								$http->setSessionVariable( 'result_array['.$examID.']' , $resultArray );
+							}
+							break;
+					} //end switch
+				}
 			}
 		}
 	} //end foreach
@@ -397,7 +393,7 @@ if (count($errors) == 0) {
 		$mode = $http->postVariable( 'mode' );
 	}
 //if it's simple mode then we should be dropping through right now by matching on the $questionCount
-	if ( ( $mode == 'simple' AND count($checkList) == $questionCount ) OR ( count($examArray) <= $index AND $conditionAdd == false ) OR count($examArray) == 0 ) {
+	if ( ( $mode == 'simple' AND count($checkList) == $questionCount ) OR ( count($examArray) <= $index AND $conditionAdd == false ) OR count($examArray) <= 0  OR ( $questionCount <= 0 AND $conditionAdd == false )) {
 	//We're done - time for results
 	/* We should really only save the results to the database (if that option is set) and then redirect to a results page since
         the logic for viewing the results at a later date will have to be the same.  of course, if we aren't to save the results
@@ -432,7 +428,7 @@ if (count($errors) == 0) {
 		}
 		//exam::removeSession( $http, $examID );
 		if ( $status != "DONE" ) { //If this is set to DONE someone hit the back button and we should just go to the results page
-			
+
 			//Save question results
 			//$session = $http->getSessionKey() ? $http->getSessionKey() : md5sum(date(now));
 			//$hash = md5($session.$secretKey.$examID);
@@ -464,7 +460,7 @@ if (count($errors) == 0) {
 					$newResult->setAttribute( 'followup', $followup );
 					$newResult->setAttribute( 'conditional', $resultArray[$examAnswer[0]] );
 					$newResult->store();
-				}//end save results		
+				}//end save results
 			}//end foreach
 			$score = 0; //For survey
 
@@ -489,7 +485,7 @@ if (count($errors) == 0) {
 						}else{
 							$firstPass = $exam->increment( 'pass_first' );
 						}
-					}	
+					}
 					$highScore = $exam->highScore( $score );
 					$oldTally = $exam->attribute( 'score_tally' );
 					$exam->setAttribute( 'score_tally', $oldTally + $score );
@@ -533,7 +529,7 @@ if (count($errors) == 0) {
 					case "text":
 					case "question":
 					case "group":
-//Can't have a pagebreak in a group otherwise it'll strand the rest of the group? 
+//Can't have a pagebreak in a group otherwise it'll strand the rest of the group?
 						//$type = $element->type;
 						$elements[] = $element;
 						$index++;
@@ -541,7 +537,6 @@ if (count($errors) == 0) {
 				} //end switch
 			$recurseCheck++;
 		}
-
 		$http->setSessionVariable( 'index['.$examID.']' , $index );
 		$http->setSessionVariable( 'count['.$examID.']' , ($recurseCheck) );
 		$tpl->setVariable("random", $random );
@@ -553,7 +548,7 @@ if (count($errors) == 0) {
 							array(	'url' => false,
 									'text' =>  $examID ) );
 	}
-} 
+}
 if (count($errors) != 0) { /*Got errors*/
 	exam::removeSession( $http, $examID );
 	$tpl->setVariable("errors", $errors);
