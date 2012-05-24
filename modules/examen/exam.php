@@ -49,7 +49,7 @@ if (count($errors) == 0) {
 	$status = $http->sessionVariable( 'status['.$examID.']' );
 
 	if ($http->hasPostVariable( "exam_status" ) ) { //This means someone came to the full view with an active session.
-		if ( $http->postVariable( "exam_status" ) == false OR $http->postVariable( "exam_status" ) == "" ) {
+		if ( $http->postVariable( "exam_status" ) == false OR $http->postVariable( "exam_status" ) != "" ) {
 			exam::removeSession( $http, $examID );
 		}
 	}
@@ -155,6 +155,7 @@ if (count($errors) == 0) {
 		*/
 		//We have to get only the top level structure here first so that we can shuffle on the group level if the random option is set
 		$examElements = exam::getStructure($examID,$examVersion,$examLanguage );
+
 		//but we don't want to shuffle if there are pagebreaks, except if the pagebreak is the last element.
 		//Doesn't make much sense to shuffle text blocks either.  I can only really see textblocks as being useful as a condition or for
 		//a non-random exam.
@@ -240,14 +241,14 @@ if (count($errors) == 0) {
 			switch($element->type) {
 				case "pagebreak":
 					//if (!$random) { //if it's random we can toss because we can't use it anyway
-						$examArray[]=array($element->ID , "" );
+						$examArray[]=array($element->ID , "");
 					//}
 					break;
 				case "text":
-					$examArray[]=array($element->ID , "" );
+					$examArray[]=array($element->ID , "");
 					break;
 				case "question":
-					$examArray[]=array($element->ID , "" );
+					$examArray[]=array($element->ID , "");
 					$questionCount++;
 					break;
 				case "group": //Now we have to recursively do the whole thing again, doh
@@ -271,13 +272,13 @@ if (count($errors) == 0) {
 						switch($child->type) {
 							case "pagebreak":
 								if (!$random) { //if it's random we can toss because we can't use it anyway
-									$groupArray[] = array($child->ID , "" );
+									$groupArray[] = array($child->ID , "");
 								}
 								break;
 							case "text":
-									$groupArray[] = array($child->ID , "" );
+									$groupArray[] = array($child->ID , "");
 							case "question":
-									$groupArray[] = array($child->ID , "" );
+									$groupArray[] = array($child->ID , "");
 									$questionCount++;
 								break;
 							case "group":
@@ -288,7 +289,6 @@ if (count($errors) == 0) {
 				break;
 			} //end switch
 		} //end foreach
-
 		$http->setSessionVariable( 'exam_array['.$examID.']' , $examArray );
 		$http->setSessionVariable( 'condition_array['.$examID.']',$conditionArray );
 	} //end first time through
@@ -298,7 +298,6 @@ if (count($errors) == 0) {
 	*    HANDLE ANSWERS             *
 	*                               *
 	********************************/
-
 	//if has submit - save answer to array and check for conditions - have to do this BEFORE we hit the results
 	$checkList = array();
 	foreach($examArray as $checkIndex => $checkArray){ //loading the answers just in case a condition exists to remove something that was answered
@@ -332,13 +331,13 @@ if (count($errors) == 0) {
 							break;
 						case 2: //if picked add
 							if ( $answerID == $answer_id ){
-								$examArray[] = array( $option_value, "" );
+								$examArray[] = array( $option_value, "");
 								$conditionAdd = true;
 							}
 							break;
 						case 3: //if picked follow with
 							if ( $answerID == $answer_id ){
-								array_splice($examArray, $index, 0, array( array( $option_value, "" ) ) );
+								array_splice($examArray, $index, 0, array( array( $option_value, "") ) );
 								$conditionAdd = true;
 							}
 							break;
@@ -357,17 +356,17 @@ if (count($errors) == 0) {
 								}
 							}
 							break;
-						case 6: // if not picked add
+						case 6: // if not picked add, $element->type
 							if ( $answerID != $answer_id ){
 								if(!in_array($keyCheck,$examID_array)){ //doesn't already exist;
-									$examArray[] = array( $option_value, "" );
+									$examArray[] = array( $option_value, "");
 									$conditionAdd = true;
 								}
 							}
 							break;
 						case 7: //if not picked follow with
 							if ( $answerID != $answer_id ){
-								array_splice($examArray, $index, 0, array( array( $option_value, "" ) ) );
+								array_splice($examArray, $index, 0, array( array( $option_value, "") ) );
 								$conditionAdd = true;
 							}
 							break;
@@ -393,7 +392,17 @@ if (count($errors) == 0) {
 		$mode = $http->postVariable( 'mode' );
 	}
 //if it's simple mode then we should be dropping through right now by matching on the $questionCount
-	if ( ( $mode == 'simple' AND count($checkList) == $questionCount ) OR ( count($examArray) <= $index AND $conditionAdd == false ) OR count($examArray) <= 0  OR ( $questionCount <= 0 AND $conditionAdd == false )) {
+//$questionCount only exists the first time through.  Doh.
+/*
+eZFire::debug($mode, "MODE" );
+eZFire::debug(count($checkList),"COUNT CHECKLIST");
+eZFire::debug($questionCount,"QUESTION COUNT");
+eZFire::debug(count($examArray),"COUNT EXAM ARRAY");
+eZFire::debug($index ,"INDEX");
+eZFire::debug($conditionAdd ? "true" : "false","CONDITION ADD");
+*/
+	$examCount=count($examArray);
+	if ( ( $mode == 'simple' AND count($checkList) == $questionCount ) OR ( $examCount <= $index AND $conditionAdd == false ) OR $examCount <= 0  OR ( $examCount - $index <= 0 AND $conditionAdd == false )) {
 	//We're done - time for results
 	/* We should really only save the results to the database (if that option is set) and then redirect to a results page since
         the logic for viewing the results at a later date will have to be the same.  of course, if we aren't to save the results
@@ -514,7 +523,8 @@ if (count($errors) == 0) {
 		********************************/
 		$type = "";
 		$recurseCheck=0;
-		while($index < count($examArray) AND $type != "pagebreak" AND $recurseCheck < 10 ) {
+		$examCount=count($examArray);
+		while($index < $examCount AND $type != "pagebreak" AND $recurseCheck < 10 ) {
 //Hmmm might want to put a recursive check here
 			$elementID = $examArray[$index][0];
 			if($recurseCheck != 0 AND in_array($elementID,$conditionArray) ) {
@@ -523,8 +533,20 @@ if (count($errors) == 0) {
 			$element = examElement::fetch( $elementID );
 				switch($element->type) {
 					case "pagebreak":
-						$index++;
 						$type="pagebreak";
+						$index++;
+						//Have to check if there are multiple pagebreaks in a row, this can happen with conditional responses.
+						if ($conditionAdd){
+							for($i=$index;$i<=$examCount;$i++){
+								$pagecheckID=$examArray[$i][0];
+								$pagecheck=examElement::fetch( $pagecheckID );
+								if ($pagecheck->type == "pagebreak" ) {
+									$index++;
+								}else{
+									break;
+								}
+							}
+						}
 						break;
 					case "text":
 					case "question":
@@ -537,6 +559,12 @@ if (count($errors) == 0) {
 				} //end switch
 			$recurseCheck++;
 		}
+
+if($examCount == $index AND $dataMap["show_results"]->DataInt == 0) {
+	$tpl->setVariable("show_result", false );
+}else{
+	$tpl->setVariable("show_result", true );
+}
 		$http->setSessionVariable( 'index['.$examID.']' , $index );
 		$http->setSessionVariable( 'count['.$examID.']' , ($recurseCheck) );
 		$tpl->setVariable("random", $random );

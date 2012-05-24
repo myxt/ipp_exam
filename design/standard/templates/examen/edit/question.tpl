@@ -1,5 +1,5 @@
 {def $cols=88}
-<div class="question">	
+<div class="question">
 	<label>{'question'|i18n('design/exam')|upcase} {$element.id}</label>
 	<input class="button" value="{'Remove'|i18n('design/exam')}" name="CustomActionButton[remove][{$element.id}]" type="submit">
 	<input type="hidden" value="0" name="random_{$element.id}" /> {*Have to prime it otherwise never unchecked*}
@@ -28,7 +28,7 @@
 			<input class="button" value="{'Remove'|i18n('design/exam')}" name="CustomActionButton[removeAnswer][{$answer.id}]" type="submit">
 			<input type="hidden" value="0" name="answer_correct_{$answer.id}" /> {*Have to prime it otherwise never unchecked*}
 			{'Correct'|i18n('design/exam')}: <input type="checkbox" name="answer_correct_{$answer.id}" {if $answer.correct}checked="checked"{/if} />
-			{'Condition'|i18n('design/exam')}: 
+			{'Condition'|i18n('design/exam')}:
 			<select id="answer_condition" name="answer_condition_{$answer.id}">
 				{*If these values are changed bad things will happen*}
 				<option value="0"></option>
@@ -46,7 +46,7 @@
 				<option value="">&nbsp;</option>
 				{foreach $elements as $link}
 					{if or(eq($link.type,"question"),eq($link.type,"group"),eq($link.type,"text"))}
-						{if ne($link.id,$element.id)} 
+						{if ne($link.id,$element.id)}
 							<option value="{$link.id}" {if eq($answer.option_value,$link.id)} selected{/if}>{$link.type} {$link.id}</option>
 						{/if}
 					{/if}

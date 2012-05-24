@@ -145,7 +145,7 @@ class ExamenType extends eZDataType
 	function validateObjectAttributeHTTPInput( $http, $base, $contentObjectAttribute )
 	{
 //This is hit BEFORE stuff is saved... which means you can't check using stuff that's in the database.  So... basically have to dump the database values into arrays and check against http values.  Also, only the last message is passed - there is no way to get multiple errors, so, have to either rewrite the edit template or bail out on every failure instead of getting them all at once.
-//Also, want to only do this on publish... not store, otherwise it'll end up being impossible to edit.  It would be nice to get an error message on store, but, once again that would mean rewriting the edit template. 
+//Also, want to only do this on publish... not store, otherwise it'll end up being impossible to edit.  It would be nice to get an error message on store, but, once again that would mean rewriting the edit template.
 		if ( $http->hasPostVariable( "PublishButton" ) )
 		{
 			$failStatus = eZInputValidator::STATE_INVALID;
@@ -220,7 +220,7 @@ class ExamenType extends eZDataType
 					//$contentObjectAttribute->setHasValidationError();
 					//return $failStatus;
 				}
-					
+
 				//Every question must have at least two answers
 				if ( $answerCount < 1 ) { //Count starts at [0] [1]
 					$contentObjectAttribute->setValidationError( ezpI18n::tr( 'design/exam', 'Every question must have at least two answers.  Question %1 does not.', null, array($elementObject->ID) ) );
@@ -266,6 +266,7 @@ if so, update the table. for the appropriate element.  We'll need the element id
 		foreach($examElements as $priorityObject) {
 			$priorityArray[$priorityObject->ID] = array( $priorityObject->attribute( 'priority'), $priorityObject );
 		}
+		$contentObject = $contentObjectAttribute->attribute( 'object' ); //Needed to set up relations
 		foreach($examElements as $elementObject) {
 			$element_id = $elementObject->ID;
 
@@ -278,8 +279,14 @@ if so, update the table. for the appropriate element.  We'll need the element id
 
 			if ($elementObject->attribute( 'type' ) == "group" ) {
 				if ( $http->hasPostVariable( "exam_group_data_text_".$element_id ) ) {
-					$xmlData = $this->eZXMLTextConvert( $http->postVariable( "exam_group_data_text_".$element_id ) );
+					$parser = new eZOEInputParser();
+					$parserOutput = $parser->process( $http->postVariable( "exam_group_data_text_".$element_id ) );
+					$xmlData = $this->domString( $parserOutput );
 					$elementObject->setAttribute('content',$xmlData );
+					$contentObject->appendInputRelationList( $parser->getEmbeddedObjectIDArray(),
+													eZContentObject::RELATION_EMBED );
+					$contentObject->appendInputRelationList( $parser->getLinkedObjectIDArray(),
+													eZContentObject::RELATION_LINK );
 				}
 				if ( $http->hasPostVariable( "random_".$element_id ) ) {
 					if ( $http->variable( "random_".$element_id ) == "on" ) {
@@ -290,8 +297,14 @@ if so, update the table. for the appropriate element.  We'll need the element id
 				}
 			}
 			if ( $http->hasPostVariable( "exam_data_text_".$element_id ) ) {
-				$xmlData = $this->eZXMLTextConvert( $http->postVariable( "exam_data_text_".$element_id ) );
+				$parser = new eZOEInputParser();
+				$parserOutput = $parser->process( $http->postVariable( "exam_data_text_".$element_id ) );
+				$xmlData = $this->domString( $parserOutput );
 				$elementObject->setAttribute('content',$xmlData );
+				$contentObject->appendInputRelationList( $parser->getEmbeddedObjectIDArray(),
+												eZContentObject::RELATION_EMBED );
+				$contentObject->appendInputRelationList( $parser->getLinkedObjectIDArray(),
+												eZContentObject::RELATION_LINK );
 			}
 			if ($elementObject->attribute( 'type' ) == "question" ) {
 				$answer_priority_array[$element_id] = 0;
@@ -325,7 +338,7 @@ if so, update the table. for the appropriate element.  We'll need the element id
 					}
 					if ( $http->hasPostVariable( "answer_condition_".$answer_id ) ) {
 						$answerObject->setAttribute('option_id',$http->postVariable( "answer_condition_".$answer_id ));
-					}					
+					}
 					if ( $http->hasPostVariable( "answer_value_".$answer_id ) ) {
 						$answerObject->setAttribute('option_value',$http->postVariable( "answer_value_".$answer_id ));
 					}
@@ -337,6 +350,7 @@ if so, update the table. for the appropriate element.  We'll need the element id
 			}
 			$elementObject->store();
 		}
+		$contentObject->commitInputRelations($contentObjectAttribute->attribute( 'version' ));
 		/* Custom actions */
 		if ($http->hasPostVariable( "CustomActionButton" ) ){
 			/*Have to find the greatest priority to add this to the end*/
@@ -619,10 +633,10 @@ if so, update the table. for the appropriate element.  We'll need the element id
         return true;
     }
     function deleteStoredObjectAttribute( $objectAttribute, $version = null )
-    { 
+    {
         //Gets called on remove object AND remove draft
 	  //how do we tell the difference?
-        
+
         $exam = exam::fetch( $objectAttribute->attribute( 'contentobject_id' ) );
         if ( is_object( $exam ) )
         {
@@ -630,7 +644,7 @@ if so, update the table. for the appropriate element.  We'll need the element id
 			if ($version) {
 				$exam->removeVersion($objectAttribute->attribute( 'contentobject_id' ), $version, $objectAttribute->attribute( 'language_code' ));
 			} else {
-				//This removes the entire exam	
+				//This removes the entire exam
 				$exam->removeExam();
 			}
         }
@@ -641,36 +655,14 @@ if so, update the table. for the appropriate element.  We'll need the element id
 	}
 
 	function eZXMLTextConvert( $inputXML = "" )
-	{
-		$xmlData = "<section xmlns:image='http://ez.no/namespaces/ezpublish3/image/' xmlns:xhtml='http://ez.no/namespaces/ezpublish3/xhtml/' xmlns:custom='http://ez.no/namespaces/ezpublish3/custom/' >";
-		$xmlData .= $inputXML;
-		$xmlData .= "</section>";
+	{//This is only being used to set up the new xml elements.
+		$parser = new eZOEInputParser();
+		$parserOutput = $parser->process( $inputXML );
+		$xmlData = $this->domString( $parserOutput );
 		return $xmlData;
-/*
-		$xmlObject = new eZXMLText( $inputXML, null );
-		$inputHandler = $xmlObject->attribute( 'input' );
-		$data =& $inputHandler->convertInput( $xmlData );
-		$domString =& eZXMLTextType::domString( $data[0] );
-
-		$domString = preg_replace( "#<paragraph> </paragraph>#", "<paragraph>&nbsp;</paragraph>", $domString );
-		$domString = str_replace ( "<paragraph />" , "", $domString );
-		$domString = str_replace ( "<line />" , "", $domString );
-		$domString = str_replace ( "<paragraph></paragraph>" , "", $domString );
-		$domString = preg_replace( "#<paragraph>&nbsp;</paragraph>#", "<paragraph />", $domString );
-		$domString = preg_replace( "#<paragraph></paragraph>#", "", $domString );
-
-		$domString = preg_replace( "#[\n]+#", "", $domString );
-		$domString = preg_replace( "#&lt;/line&gt;#", "\n", $domString );
-		$domString = preg_replace( "#&lt;paragraph&gt;#", "\n\n", $domString );
-
-		$xml = new eZXML();
-		$tmpDom = $xml->domTree( $domString, array( 'CharsetConversion' => false ) );
-		$domString = eZXMLTextType::domString( $tmpDom );
-
-		return $domString;
-*/
 	}
 }
+
 
 eZDataType::register( ExamenType::DATA_TYPE_STRING, "ExamenType" );
 

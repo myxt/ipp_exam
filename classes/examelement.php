@@ -79,7 +79,7 @@ class examElement extends eZPersistentObject
 		$examElement = eZPersistentObject::fetchObject( examElement::definition(),
 														null,
 														array( 'id' => $id ),
-														$asObject ); 
+														$asObject );
 		if ($istplfetch) return array( 'result' => $examElement );
 		else return $examElement;
 	}
@@ -94,7 +94,11 @@ class examElement extends eZPersistentObject
 	function getXMLContent()
 	{
 		$xmlObject = new eZXMLText( $this->content, null );
-		return $xmlObject;
+		$output = $xmlObject->attribute('output')->attribute("output_text");
+		if ($output)
+			return $output;
+		else
+			return $this->content;
 	}
 	function children()
 	{
@@ -203,8 +207,7 @@ class examElement extends eZPersistentObject
 		$newElement->setAttribute( 'type', $type );
 		$newElement->setAttribute( 'parent', $parent );
 		$newElement->setAttribute( 'xmloptions', $xmlOptions );
-/*This isn't enough*/
-$cleanContent = preg_replace("/&nbsp;/i", "", $content );
+		$cleanContent = preg_replace("/&nbsp;/i", "", $content );
 		$newElement->setAttribute( 'content', $cleanContent );
 		$newElement->setAttribute( 'version', $version );
 		$newElement->setAttribute( 'language_code', $language_code );
@@ -272,7 +275,7 @@ $cleanContent = preg_replace("/&nbsp;/i", "", $content );
 	}
 	public function updateOption( $updateArray )
 	{
-	/* This updates the option xml. 
+	/* This updates the option xml.
 	 * <?xml version="1.0" encoding="utf-8"?>
 	 * <options><option label="random" value="1"/></options>
 	 */
@@ -284,7 +287,7 @@ $cleanContent = preg_replace("/&nbsp;/i", "", $content );
 		if ( $existingOptions )
 		{
 			foreach ( $existingOptions as $key => $value )
-			{	
+			{
 				if ( $key != "" ) { //should never happen outside of test circumstances
 					$root = $dom->appendChild($root);
 					$node = $dom->createElement("option");
@@ -310,7 +313,7 @@ $cleanContent = preg_replace("/&nbsp;/i", "", $content );
 				$newnode->setAttribute( "label", $key  );
 				$newnode->setAttribute( "value", $value );
 			}
-		} 
+		}
 		$xmlString = $dom->saveXML();
 
 		$this->setAttribute( 'xmloptions', $xmlString );
@@ -323,21 +326,25 @@ $cleanContent = preg_replace("/&nbsp;/i", "", $content );
 	}
 	function inputXML()
 	{
-		$xmlObject = $this->getXMLContent();
-		$dom = new DOMDocument( '1.0', 'utf-8' );
-		if (!is_object($xmlObject)) return false;
-
-		$data = $xmlObject->XMLData;
-/*This isn't enough should maybe verify*/
-		$cleanData = preg_replace("/&nbsp;/i", "", $data );
-		$success = $dom->loadXML( $cleanData );
-		$editOutput = new eZSimplifiedXMLEditOutput();
-		$dom->formatOutput = true;
-		if ( eZDebugSetting::isConditionTrue( 'kernel-datatype-ezxmltext', eZDebug::LEVEL_DEBUG ) )
-			eZDebug::writeDebug( $dom->saveXML(), eZDebugSetting::changeLabel( 'kernel-datatype-ezxmltext', __METHOD__ . ' xml string stored in database' ) );
-		if (!is_object($editOutput )) return false;
-		$output = $editOutput->performOutput( $dom );
-        return $output;
+		$xmlObject = new eZXMLText( $this->content, null );
+		$input = $xmlObject->attribute('input')->attribute('input_xml');
+		//This is the good code - will be used exclusively after everything has been resaved.
+		if ($input) {
+			return $input;
+		} else {
+			$dom = new DOMDocument( '1.0', 'utf-8' );
+			if (!is_object($xmlObject)) return false;
+			$data = $xmlObject->XMLData;
+			$cleanData = preg_replace("/&nbsp;/i", "", $data );
+			$success = $dom->loadXML( $cleanData );
+			$editOutput = new eZSimplifiedXMLEditOutput();
+			$dom->formatOutput = true;
+			if ( eZDebugSetting::isConditionTrue( 'kernel-datatype-ezxmltext', eZDebug::LEVEL_DEBUG ) )
+				eZDebug::writeDebug( $dom->saveXML(), eZDebugSetting::changeLabel( 'kernel-datatype-ezxmltext', __METHOD__ . ' xml string stored in database' ) );
+			if (!is_object($editOutput )) return false;
+			$output = $editOutput->performOutput( $dom );
+			return $output;
+		}
 	}
 }
 

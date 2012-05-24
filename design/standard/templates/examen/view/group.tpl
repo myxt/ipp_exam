@@ -1,6 +1,6 @@
 <div id="exam-view">
 	<div id="element group {$element.id}">
-		{$element.content}
+		{$element.getXMLContent}
 	<div class="children">
 		{foreach $element.children as $child}
 			{if eq($element.type,"question")} {*need elements for condition choices*}

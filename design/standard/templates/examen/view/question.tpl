@@ -1,7 +1,7 @@
 <div id="exam-view">
 	<div id="element question">
 		<div class="text question">
-			{$element.content}
+			{$element.getXMLContent}
 		</div>
 		{if ne($random,"false")}
 			{def $answers=$element.randomAnswers}

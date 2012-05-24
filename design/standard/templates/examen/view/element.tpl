@@ -4,6 +4,9 @@
 		{foreach $elements as $element}
 				{exam_view_gui element=$element random=$random}
 		{/foreach}
-		<input class="button" type="submit" name="SubmitButton" value="{'Submit'|i18n( 'design/admin/node/view/full' )}" title="{'Submit'|i18n( 'design/admin/node/view/full' )}" />
+
+		{if eq($show_result,1)}
+			<input class="button" type="submit" name="SubmitButton" value="{'Continue'|i18n( 'design/admin/node/view/full' )}" title="{'Continue'|i18n( 'design/admin/node/view/full' )}" />
+		{/if}
 	</form>
 </div>

@@ -7,6 +7,10 @@
         <source>Submit</source>
         <translation>Opslaan</translation>
     </message>
+    <message>
+        <source>Continue</source>
+        <translation>ga verder</translation>
+    </message>
 </context>
 <context>
     <name>design/admin/settings</name>
@@ -413,7 +417,7 @@
     </message>
     <message>
         <source>You took too long to answer the questions. Try again.</source>
-        <translation>Je had meer tijd nodig om de vragen te beantwoorden dan toegestaan. Probeer het opnieuw.</translation>
+        <translation type="obsolete">Je had meer tijd nodig om de vragen te beantwoorden dan toegestaan. Probeer het opnieuw.</translation>
     </message>
     <message>
         <source>Every question with a condition must have a condition value and vice-versa.  Question %1 Answer %2 does not.</source>
@@ -458,6 +462,10 @@
     <message>
         <source>you passed</source>
         <translation>je bent geslaagd</translation>
+    </message>
+    <message>
+        <source>You took too long to answer the questions.  Try again.</source>
+        <translation>Je hebt er te lang over gedaan om de vragen te beantwoorden. Probeer opnieuw.</translation>
     </message>
 </context>
 <context>

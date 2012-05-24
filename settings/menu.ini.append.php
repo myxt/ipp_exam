@@ -1,4 +1,7 @@
-<?php  /* #?ini charset="utf-8"?
+<?php /*
+
+[MenuContentSettings]
+LeftIdentifierList[]=exam
 
 [NavigationPart]
 Part[examnavigationpart]=Exam
@@ -25,3 +28,4 @@ Shown[navigation]=true
 Shown[browse]=true
 
 */ ?>
+

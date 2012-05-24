@@ -19,7 +19,7 @@
 			</td>
 		</tr>
 		{/foreach}
-			
+
 		</table>
 		{'Total'|i18n('design/exam')} {$totals[$element.id]}
 	</div>
@@ -27,7 +27,7 @@
 	{if eq($result.correct,0)} {*Only want the incorrect ones*}
 		<div class="question">
 			<div class="text">
-				{$element.content}
+				{$element.getXMLContent}
 			</div>
 			{foreach $element.answers as $answer}
 				<div class="answer">
