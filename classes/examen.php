@@ -169,11 +169,11 @@ class exam extends eZPersistentObject
 	{
 		return $this->getQuestions($this->contentObject->attribute( 'id' ),$this->contentObject->attribute( 'current_version' ),$this->contentObject->CurrentLanguage);
 	}
-	function getQuestions( $version = 1, $languageCode = 'eng-GB' )
+	function getQuestions( $id = 0, $version = 1, $languageCode = 'eng-GB' )
 	{
 		$rows = eZPersistentObject::fetchObjectList( examElement::definition(),
 								null,
-								array( 'contentobject_id' => $this->contentObjectID,
+								array( 'contentobject_id' => $id,
 										'type' => "question",
 										'version' => $version,
 										'language_code' => $languageCode ),

@@ -14,6 +14,7 @@
 			</thead>
 			{foreach $exams as $exam}
 				{set $contentObject=fetch( 'content', 'object', hash( 'object_id', $exam.contentobject_id ))}
+				{if eq($contentObject.name,"")}{continue}{/if}
 				<tr>
 					<td><a href={concat("/examen/statistics/",$exam.contentobject_id)|ezurl}>{$exam.id}</a></td>
 					<td><a href={concat("/content/edit/",$exam.contentobject_id)|ezurl}><img src={"edit.gif"|ezimage} alt="{'Edit'|i18n('design/admin/settings')}" /></a> {$contentObject.name}</td>
