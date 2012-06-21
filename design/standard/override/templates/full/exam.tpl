@@ -13,10 +13,10 @@
     <div class="class-exam">
 
     <div class="attribute-title">
-    {attribute_view_gui attribute=$node.object.data_map.title}
+        <h1>{attribute_view_gui attribute=$node.object.data_map.title}</h1>
     </div>
     <div class="attribute-intro">
-    {attribute_view_gui attribute=$node.object.data_map.intro}
+        {attribute_view_gui attribute=$node.object.data_map.intro}
     </div>
 	{if lt(currentdate(),$node.object.data_map.start_date.data_int)}
 		{if $survey}
@@ -52,7 +52,7 @@
 					<input type="hidden" name="exam_id" value="{$node.object.id}">
 					<input type="hidden" name="exam_version" value="{$node.contentobject_version}">
 					<input type="hidden" name="exam_language" value="{$node.object.current_language}">
-					<input class="button" type="submit" name="SubmitButton" value="{'See Results'|i18n( 'design/exam' )}" title="{'See Results'|i18n( 'design/exam' )}" />
+					<input class="btn btn-large" type="submit" name="SubmitButton" value="{'See Results'|i18n( 'design/exam' )}" title="{'See Results'|i18n( 'design/exam' )}" />
 				</form>
 			</div>
 		{else*}
@@ -118,7 +118,7 @@
 					{foreach $structure as $element}
 						{if eq($element.type,"group")}
 							<div class="group text">
-								{$element.content}
+								{$element.getXMLContent}
 							</div>
 							{foreach $element.randomChildren as $child}
 								{if or(eq($child.type,"question"),eq($child.type,"text"))}
@@ -130,7 +130,7 @@
 							{exam_view_gui element=$element simple=true()}
 						{/if}
 					{/foreach}
-					<input class="button" type="submit" name="SubmitButton" value="{'Submit'|i18n( 'design/admin/node/view/full' )}" title="{'Submit'|i18n( 'design/admin/node/view/full' )}" />
+					<input class="btn" type="submit" name="SubmitButton" value="{'Submit'|i18n( 'design/admin/node/view/full' )}" title="{'Submit'|i18n( 'design/admin/node/view/full' )}" />
 				</form>
 			{else} {*complicated mode*}
 				<form name="advanced exam" method="post" action={'examen/exam/'|ezurl}>
@@ -138,7 +138,7 @@
 					<input type="hidden" name="exam_version" value="{$node.contentobject_version}">
 					<input type="hidden" name="exam_language" value="{$node.object.current_language}">
 					<input type="hidden" name="exam_status" value="{$status}">
-					<input class="button" type="submit" name="SubmitButton" value="{'Start Exam'|i18n( 'design/exam' )}" title="{'Start Exam'|i18n( 'design/exam' )}" />
+					<input class="btn" type="submit" name="SubmitButton" value="{'Start Exam'|i18n( 'design/exam' )}" title="{'Start Exam'|i18n( 'design/exam' )}" />
 				</form>
 			{/if}
 		{*/if*} {*hash != done*}

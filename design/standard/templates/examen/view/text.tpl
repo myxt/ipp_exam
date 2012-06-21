@@ -1,4 +1,4 @@
-<div id="exam-view">
+<div class="exam-view">
 	<div id="element text">
 		{$element.getXMLContent}
 	</div>

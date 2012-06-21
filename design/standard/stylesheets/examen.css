@@ -1,60 +1,30 @@
 /* VIEW  when you are taking the exam*/
 
-#exam-view
+.exam-exam, .exam-result, .class-exam
 {
-	border: 1px solid #CACACA;
-	background-color: #F8F8F8;
-	padding: 0.7em;
-	margin: 0em;
-}
-#exam-view div.buttons
-{
-	padding: 0.7em;
-	margin: 0em;
-}
-#exam-view div.question
-{
-	border: 1px solid #CACACA;
-	background-color: #FFF;
-	padding: 0.7em;
-	margin: 0em;
-}
-#exam-view div.question div.answer
-{
-	width:95%;
-	border: 1px solid #CACACA;
-	background-color: #F8F8F8;
-	padding: 0.7em;
-	margin: 0em;
-}
-#exam-view div.question div.answer textarea
-{
-	height:1.5em;
-	margin: 0em;
-}
-#exam-view div.text
-{
-	border: 1px solid #CACACA;
-	background-color: #FFF;
-	padding: 0.7em;
-	margin: 0em;
+    font-size: 13px;
 }
 
-#exam-view div.pagebreak
+.exam-view div.question
+{
+	font-weight: bold;
+}
+
+.exam-view div.pagebreak
 {
 	border: 1px solid #CACACA;
 	background-color: #FFF;
 	padding: 0.7em;
 	margin: 0em;
 }
-#exam-view div.group
+.exam-view div.group
 {
 	border: 3px solid #CACACA;
 	background-color: #FFF;
 	padding: 0.7em;
 	margin: 0em;
 }
-#exam-view div.group div.children
+.exam-view div.group div.children
 {
 	width:95%;
 }
@@ -63,50 +33,49 @@ div.listbutton {
 	float: right;
 }
 
+.question
+{
+    margin-bottom: 18px;
+}
+
+.question > .text
+{
+    font-weight: bold;
+}
+
+.question > .text > p:last-child
+{
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.answer
+{
+    margin: 5px 0;
+}
+
 /* RESULT */
 
-
-#exam-result
-{
-	border: 1px solid #CACACA;
-	background-color: #F8F8F8;
-	padding: 0.7em;
-	margin: 0em;
-}
-#exam-result div.passed,
-#exam-result div.failed 
+.exam-result .headline h2
 {
 
 }
-#exam-result div.passed div.headline
+.exam-result .alert-error h2
 {
-	
-	font-size: 26px;
+    color: #B94A48 !important;
 }
-#exam-result div.failed div.headline
+
+.exam-result div.text
 {
-	
-	font-size: 26px;
-	color: red;
+
 }
-#exam-result div.question
-{
-	border: 1px solid #CACACA;
-	padding: 0.7em;
-	margin: 0em;
-}
-#exam-result div.text
-{
-	border: 1px solid #CACACA;
-	background-color: #FFF;
-}
-#exam-result div.answer 
+.exam-result div.answer
 {
     position: relative;
-    padding: 0 0 0 20px;
+    padding: 0 0 0 24px;
 }
 
-#exam-result div.answer div.icon
+.exam-result div.answer div.icon
 {
     display: block;
     position: absolute;
@@ -120,18 +89,18 @@ div.listbutton {
     overflow: hidden;
 }
 
-#exam-result div.answer div.icon.correct
+.exam-result div.answer div.icon.correct
 {
 	background:url(../images/correct.png) no-repeat;
 	background-size: 18px 16px;
 }
-#exam-result div.answer div.icon.incorrect
+.exam-result div.answer div.icon.incorrect
 {
 	background:url(../images/incorrect.png) no-repeat;
 	background-size: 18px 18px;
 }
 /* Survey */
-#exam-result div.survey-bar
+.exam-result div.survey-bar
 {
 	background:url(../images/surveybar.gif) repeat;
 }
@@ -159,4 +128,14 @@ div.class-exam div.exam-message {
 }
 #sharebox form#mail-results label {
         display:block; float:left; width:50px; padding-top:.5em;
+}
+
+.alert form
+{
+    margin: 0;
+}
+
+input[type=image]
+{
+    width: auto;
 }

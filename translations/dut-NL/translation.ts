@@ -5,11 +5,11 @@
     <name>design/admin/node/view/full</name>
     <message>
         <source>Submit</source>
-        <translation>Opslaan</translation>
+        <translation>Versturen</translation>
     </message>
     <message>
         <source>Continue</source>
-        <translation>ga verder</translation>
+        <translation>Doorgaan</translation>
     </message>
 </context>
 <context>
@@ -175,11 +175,11 @@
     </message>
     <message>
         <source>Congratulations, you got the high score.</source>
-        <translation>Gefeliciteerd, je hebt de hoogste score behaald.</translation>
+        <translation>Gefeliciteerd, je hebt de hoogste score behaald!</translation>
     </message>
     <message>
         <source>Do you wish to have a certificate to commemorate your success?</source>
-        <translation>Wil je een certificaat als herinnering dat je voor dit examen bent geslaagd?</translation>
+        <translation>Wil je een certificaat als herinnering dat je voor dit examen bent geslaagd? Vul dan hieronder je naam in en klik op 'certificaat downloaden'.</translation>
     </message>
     <message>
         <source>Download Certificate</source>
@@ -304,7 +304,7 @@
     </message>
     <message>
         <source>You were one of [examCount] to take this exam.  Of which [passFirst] passed</source>
-        <translation type="obsolete">Je was een van de [examCount] deelnemers aan dit examen.  Waarvan [passFirst] deelnemers zijn geslaagd.</translation>
+        <translation type="obsolete">Je was een van de [examCount] deelnemers aan dit examen.  Daarvan zijn [passFirst] deelnemers geslaagd.</translation>
     </message>
     <message>
         <source>on the first try and [passSecond] passed on the second try</source>
@@ -324,7 +324,7 @@
     </message>
     <message>
         <source>Do you want to try?</source>
-        <translation>Wil je proberen?</translation>
+        <translation>Wil je het proberen?</translation>
     </message>
     <message>
         <source>Total</source>
@@ -332,23 +332,23 @@
     </message>
     <message>
         <source>Send your results to your friends</source>
-        <translation>Stuur jouw resultaten naar jouw vrienden </translation>
+        <translation>Stuur je score door naar je vrienden</translation>
     </message>
     <message>
         <source>Publish a link to your results on Facebook</source>
-        <translation>Publiceer een link naar jouw resultaten op Facebook</translation>
+        <translation>Deel je score op Facebook</translation>
     </message>
     <message>
         <source>Publish a link to your results on Twitter</source>
-        <translation>Publiceer een link naar jouw resultaten op Twitter</translation>
+        <translation>Deel je score op Twitter</translation>
     </message>
     <message>
         <source>Publish a link to your results on Hyves</source>
-        <translation>Publiceer een link naar jouw resultaten op Hyves</translation>
+        <translation>Deel je score op Hyves</translation>
     </message>
     <message>
         <source>This survey is not available yet.</source>
-        <translation>Deze enquête is nog niet beschikbaar.</translation>
+        <translation>Deze vragenlijst is nog niet beschikbaar.</translation>
     </message>
     <message>
         <source>This exam is not available yet.</source>
@@ -365,7 +365,7 @@
     <message>
         <source>You were one of [examCount] to take this exam.  Of which [passFirst] passed</source>
         <comment>score</comment>
-        <translation>Je was een van de [examCount] deelnemers die dit examen hebben gemaakt.  Waarvan [passFirst] zijn geslaagd.</translation>
+        <translation>Je bent een van de [examCount] deelnemers aan dit examen. Daarvan zijn [passFirst] deelnemers geslaagd.</translation>
     </message>
     <message>
         <source>on the first try and [passSecond] passed on the second try</source>
@@ -393,7 +393,7 @@
     <message>
         <source>Your score was [score]% correct</source>
         <comment>score</comment>
-        <translation>je score was voor [score]% correct</translation>
+        <translation>je score is [score]%</translation>
     </message>
     <message>
         <source>Scroll to Bottom</source>
@@ -410,6 +410,10 @@
     <message>
         <source>Weight</source>
         <translation>Gewicht</translation>
+    </message>
+    <message>
+        <source>These were the correct answers</source>
+        <translation>Dit waren de juiste antwoorden</translation>
     </message>
     <message>
         <source>Give more importance to this question by adding a number.</source>
