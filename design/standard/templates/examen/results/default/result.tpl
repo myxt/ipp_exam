@@ -18,7 +18,7 @@
                                     <form name="advanced exam" method="post" action={$node.url_alias|ezurl}>
                                         <input type="hidden" name="exam_id" value="{$node.node_id}">
                                         <input type="hidden" name="exam_status" value="{$node.object.current_language}">
-                                        <input class="btn btn-danger" type="submit" name="SubmitButton" value="{'Restart Exam'|i18n( 'design/exam' )}" title="{'Restart Exam'|i18n( 'design/exam' )}" />
+                                        <button class="btn btn-danger" type="submit" name="SubmitButton" value="{'Restart Exam'|i18n( 'design/exam' )}" /><i class="icon-chevron-left icon-white"></i> {'Restart Exam'|i18n( 'design/exam' )}</button>
                                     </form>
 				{else}
 					{'That was your second attempt.  Study harder and try again some other day.'|i18n('design/exam')}

@@ -138,7 +138,7 @@
 					<input type="hidden" name="exam_version" value="{$node.contentobject_version}">
 					<input type="hidden" name="exam_language" value="{$node.object.current_language}">
 					<input type="hidden" name="exam_status" value="{$status}">
-					<input class="btn" type="submit" name="SubmitButton" value="{'Start Exam'|i18n( 'design/exam' )}" title="{'Start Exam'|i18n( 'design/exam' )}" />
+					<button class="btn" type="submit" name="SubmitButton" value="{'Start Exam'|i18n( 'design/exam' )}" data-toggle="button" />{'Start Exam'|i18n( 'design/exam' )} <i class="icon-chevron-right"></i></button>
 				</form>
 			{/if}
 		{*/if*} {*hash != done*}

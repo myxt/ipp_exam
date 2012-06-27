@@ -1,10 +1,5 @@
 /* VIEW  when you are taking the exam*/
 
-.exam-exam, .exam-result, .class-exam
-{
-    font-size: 13px;
-}
-
 .exam-view div.question
 {
 	font-weight: bold;

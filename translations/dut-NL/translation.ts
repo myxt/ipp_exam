@@ -135,7 +135,7 @@
     </message>
     <message>
         <source>You passed</source>
-        <translation>Je bent geslaagd</translation>
+        <translation>Gefeliciteerd, je bent geslaagd</translation>
     </message>
     <message>
         <source>on your second try.</source>
@@ -143,7 +143,7 @@
     </message>
     <message>
         <source>You failed</source>
-        <translation>Je bent niet geslaagd</translation>
+        <translation>Helaas, je bent niet geslaagd</translation>
     </message>
     <message>
         <source>Do you want to try again?</source>
@@ -151,7 +151,7 @@
     </message>
     <message>
         <source>Restart Exam</source>
-        <translation>Examen opnieuw beginnen</translation>
+        <translation>Herkansing proberen</translation>
     </message>
     <message>
         <source>That was your second attempt.  Study harder and try again some other day.</source>
@@ -159,11 +159,11 @@
     </message>
     <message>
         <source>Your score was [score]% correct</source>
-        <translation type="obsolete">Je score was [score]% correct</translation>
+        <translation type="obsolete">Je had [score]% van de vragen goed</translation>
     </message>
     <message>
         <source>You were one of [examCount] to take this exam. Of which [passFirst] passed.</source>
-        <translation type="obsolete">Je bent een van de [examCount] deelnemers die dit examen heeft gedaan. Daarvan zijn [passFirst] deelnemers geslaagd</translation>
+        <translation type="obsolete">Je bent een van de [examCount] deelnemers aan dit examen tot nu toe. Daarvan zijn [passFirst] deelnemers geslaagd</translation>
     </message>
     <message>
         <source>on the first try and [passSecond] passed on the second try.</source>
@@ -171,7 +171,7 @@
     </message>
     <message>
         <source>The highest score recorded was [highScore].</source>
-        <translation type="obsolete">De hoogste score was [highScore].</translation>
+        <translation type="obsolete">De hoogste score tot nu toe is [highScore].</translation>
     </message>
     <message>
         <source>Congratulations, you got the high score.</source>
