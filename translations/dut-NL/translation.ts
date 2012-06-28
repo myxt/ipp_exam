@@ -147,11 +147,11 @@
     </message>
     <message>
         <source>Do you want to try again?</source>
-        <translation>Wil je het opnieuw proberen?</translation>
+        <translation>Laat het er niet bij zetten en probeer het opnieuw. Succes!</translation>
     </message>
     <message>
         <source>Restart Exam</source>
-        <translation>Herkansing proberen</translation>
+        <translation>Herkansing Stemexamen</translation>
     </message>
     <message>
         <source>That was your second attempt.  Study harder and try again some other day.</source>
@@ -179,7 +179,7 @@
     </message>
     <message>
         <source>Do you wish to have a certificate to commemorate your success?</source>
-        <translation>Wil je een certificaat als herinnering dat je voor dit examen bent geslaagd? Vul dan hieronder je naam in en klik op 'certificaat downloaden'.</translation>
+        <translation>Vul hieronder je naam in, download het certificaat en laat aan iedereen zien dat je bent geslaagd voor het Stemexamen! Jij bent je stemrecht waard!</translation>
     </message>
     <message>
         <source>Download Certificate</source>
@@ -413,7 +413,7 @@
     </message>
     <message>
         <source>These were the correct answers</source>
-        <translation>Dit zijn de juiste antwoorden van het examen</translation>
+        <translation>Dit zijn de juiste antwoorden van de vragen die je fout hebt beantwoord</translation>
     </message>
     <message>
         <source>Give more importance to this question by adding a number.</source>
@@ -465,7 +465,7 @@
     </message>
     <message>
         <source>you passed</source>
-        <translation>je bent geslaagd</translation>
+        <translation>je bent geslaagd!</translation>
     </message>
     <message>
         <source>You took too long to answer the questions.  Try again.</source>
