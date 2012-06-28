@@ -135,7 +135,7 @@
     </message>
     <message>
         <source>You passed</source>
-        <translation>Gefeliciteerd, je bent geslaagd</translation>
+        <translation>Gefeliciteerd, je bent geslaagd!</translation>
     </message>
     <message>
         <source>on your second try.</source>
@@ -393,7 +393,7 @@
     <message>
         <source>Your score was [score]% correct</source>
         <comment>score</comment>
-        <translation>je score is [score]%</translation>
+        <translation>Je score is [score]%</translation>
     </message>
     <message>
         <source>Scroll to Bottom</source>
@@ -413,7 +413,7 @@
     </message>
     <message>
         <source>These were the correct answers</source>
-        <translation>Dit waren de juiste antwoorden</translation>
+        <translation>Dit zijn de juiste antwoorden van het examen</translation>
     </message>
     <message>
         <source>Give more importance to this question by adding a number.</source>
