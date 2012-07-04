@@ -31,91 +31,98 @@ if (!ctype_digit($examID)) {  //no exam_id, we got nothing then
 		$errors[] = "object_not_exam";
 	}
 }
-
-$dataMap = $contentObject->DataMap();
-$mode = $dataMap["mode"]->DataText ? $dataMap["mode"]->DataText : "default";
-$survey = false;
-$hash="";
-if ($dataMap["pass_threshold"]->DataInt) { //otherwise it's a survey and we don't care
-	$hash = $Params['hash'];
-	if (!$hash) {  //no exam_id, we got nothing then
-		$hash = $http->sessionVariable( 'hash['.$examID.']' );
+if ( count($errors) == 0 ) {
+	$dataMap = $contentObject->DataMap();
+	$mode = $dataMap["mode"]->DataText ? $dataMap["mode"]->DataText : "default";
+	$survey = false;
+	$hash="";
+	if ($dataMap["pass_threshold"]->DataInt) { //otherwise it's a survey and we don't care
+		$hash = $Params['hash'];
 		if (!$hash) {  //no exam_id, we got nothing then
-			$errors[] = "no_hash";
+			$hash = $http->sessionVariable( 'hash['.$examID.']' );
+			if (!$hash) {  //no exam_id, we got nothing then
+				$errors[] = "no_hash";
+			}
 		}
+	} else {
+		$survey=true;
+		$tpl->setVariable( 'survey', $survey );
 	}
-} else {
-	$survey=true;
-	$tpl->setVariable( 'survey', $survey );
-}
-if (!$survey) {
-	$results = examResult::fetchByHash( $hash, $examID );
-	if ($results)
-		$savedvalue = $results[0]->attribute( 'followup' );
+	if (!$survey) {
+		$results = examResult::fetchByHash( $hash, $examID );
+		if ($results)
+			$savedvalue = $results[0]->attribute( 'followup' );
 
-	$correctCount=0;
-	$resultIndex=0;
-	$followup=false;
-	$score=0;
-	$passed=false;
-	foreach( $results as $result ) {
-		if ( $result->attribute( 'followup') != $savedvalue ) {
-			$followup = true;
-			continue; //so that we only display the followup if it is one.
-		}
-		//This is where the score is calculated
-		$questionObject =  examElement::fetch( $result->questionID );
-		//ResultArray = array( "id of chosen answer", questionObject );
-		$resultArray[] = array( $result,   $questionObject );
-		$optionArray = $questionObject->options;
+		$correctCount=0;
+		$resultIndex=0;
+		$followup=false;
+		$score=0;
+		$passed=false;
+		foreach( $results as $result ) {
+			if ( $result->attribute( 'followup') != $savedvalue ) {
+				$followup = true;
+				continue; //so that we only display the followup if it is one.
+			}
+			//This is where the score is calculated
+			$questionObject =  examElement::fetch( $result->questionID );
+			//ResultArray = array( "id of chosen answer", questionObject );
+			$resultArray[] = array( $result,   $questionObject );
+			$optionArray = $questionObject->options;
 
-		If( is_array($optionArray)) {
-			if ( array_key_exists("weight", $optionArray ) ) {
-				$weight = $optionArray["weight"];
-				if ( $weight == 0 ) $weight = 1;
+			If( is_array($optionArray)) {
+				if ( array_key_exists("weight", $optionArray ) ) {
+					$weight = $optionArray["weight"];
+					if ( $weight == 0 ) $weight = 1;
+				} else {
+					$weight = 1;
+				}
 			} else {
 				$weight = 1;
 			}
-		} else {
-			$weight = 1;
+
+			if ( $result->attribute( 'correct' ) ) $correctCount = $correctCount + $weight;
+			$resultIndex = $resultIndex + $weight;
 		}
 
-		if ( $result->attribute( 'correct' ) ) $correctCount = $correctCount + $weight;
-		$resultIndex = $resultIndex + $weight;
+		if ($resultIndex != 0) {//no division by zero here - dammit.
+			$score = ceil( $correctCount / $resultIndex * 100 );
+			if ( $score >= $dataMap["pass_threshold"]->DataInt ) {
+				$passed = true;
+			} else {
+				$passed = false;
+			}
+		}
+
+		$tpl->setVariable( 'passed', $passed);
+		$tpl->setVariable( 'score', $score );
+	}
+	/* To generate bitly urls - leaving it here just in case but if we're doing something like this it'll take more setup than what I should be doing in this extension
+
+	//these should be ini settings
+	$bitlyLogin = $settingsINI->variable( 'bitlySettings', 'BitlyLogin' );
+	$bitlyAPIKey = $settingsINI->variable( 'bitlySettings', 'BitlyKey' );
+
+	$APIcall = file_get_contents("http://api.bit.ly/shorten?version=2.0.1&longUrl=".$FullURL."&login=".$bitlyLogin."&apiKey=".$bitlyAPIKey);
+	$bitlyInfo = json_decode( utf8_encode( $APIcall ),true );
+	if ( $bitlyInfo['errorCode']==0 )
+	{
+		$bitlyLink = $bitlyInfo['results'][urldecode($FullURL)]['shortUrl'];
 	}
 
-	if ($resultIndex != 0) {//no division by zero here - dammit.
-		$score = ceil( $correctCount / $resultIndex * 100 );
-		if ( $score >= $dataMap["pass_threshold"]->DataInt ) {
-			$passed = true;
-		} else {
-			$passed = false;
+	*/
+	$originalExamObjectID = $examID;
+	$relatedObjects = eZContentFunctionCollection::fetchReverseRelatedObjects( $examID, false, array( 'common' ), false );
+	foreach( $relatedObjects['result'] as $relatedObject ) {
+		if ( $relatedObject->attribute( 'class_identifier' ) == "exam" ) {
+			$originalExamObjectID = $relatedObject->attribute( 'id' );
+			break;
 		}
 	}
-
-	$tpl->setVariable( 'passed', $passed);
-	$tpl->setVariable( 'score', $score );
 }
-/* To generate bitly urls - leaving it here just in case but if we're doing something like this it'll take more setup than what I should be doing in this extension
-
-//these should be ini settings
-$bitlyLogin = $settingsINI->variable( 'bitlySettings', 'BitlyLogin' );
-$bitlyAPIKey = $settingsINI->variable( 'bitlySettings', 'BitlyKey' );
-
-$APIcall = file_get_contents("http://api.bit.ly/shorten?version=2.0.1&longUrl=".$FullURL."&login=".$bitlyLogin."&apiKey=".$bitlyAPIKey);
-$bitlyInfo = json_decode( utf8_encode( $APIcall ),true );
-if ( $bitlyInfo['errorCode']==0 ) 
-{
-	$bitlyLink = $bitlyInfo['results'][urldecode($FullURL)]['shortUrl'];
-}
-
-*/
-
-
 if ( count($errors) == 0 ) {
 	/*This is not the way to do it.  We don't want the MainNode we want the url_alias of the siteaccess you are in.*/
-	$nodeID = eZContentObjectTreeNode::findMainNode( $examID );
-	$node =  eZContentObjectTreeNode::fetchByContentObjectID( $examID, true );
+	$nodeID = eZContentObjectTreeNode::findMainNode( $originalExamObjectID );
+	$node =  eZContentObjectTreeNode::fetchByContentObjectID( $originalExamObjectID, true );
 
 	$ini = eZINI::instance();
 	$link = $ini->variable( 'SiteSettings', 'SiteURL' )."/". $node[0]->attribute( 'path_identification_string' );
@@ -125,9 +132,10 @@ if ( count($errors) == 0 ) {
 	if( $http->hasPostVariable( "TwitterButton" )  )
 	{
 		$twitter = $tpl->fetch( 'design:examen/results/'.$mode.'/twitter.tpl' );
-		$twitter = urlencode( $twitter);
+		$twitter = strip_tags( $twitter );
+		$twitter = urlencode( $twitter );
 		$twitter = str_replace("%7C","=",$twitter);
-		$twitter = "http://twitter.com/home?".$twitter;
+		$twitter = "http://twitter.com/share?text=".$twitter;
 		return $Module->redirectTo( $twitter );
 	}
 
@@ -135,6 +143,7 @@ if ( count($errors) == 0 ) {
 	if( $http->hasPostVariable( "HyvesButton" )  )
 	{
 		$hyves = $tpl->fetch( 'design:examen/results/'.$mode.'/hyves.tpl' );
+		$hyves = strip_tags( $hyves );
 		$hyves = urlencode( trim($hyves) );
 		$hyves = str_replace("%7C","=",$hyves);
 		$hyves = str_replace("%5E","&",$hyves);
@@ -148,9 +157,9 @@ if ( count($errors) == 0 ) {
 	/*This is depreciated for the like button.  Facebook wants to track you even if you aren't logged in and they couldn't do it with the share button I guess.  Looks like someone has to set up a facebook application to be able to fill in a comment - way more complicated than I should be getting into here.
 	http://hitech-tips.blogspot.com/2010/05/facebook-like-button-xfbml-tutorial.html
 
-		$tpl = eZTemplate::factory();
 		$tpl->setVariable( 'link', $link );
 		$facebook = $tpl->fetch( 'design:examen/results/'.$mode.'/facebook.tpl' );
+		$facebook = strip_tags( $facebook );
 		$facebook = urlencode( trim($facebook) );
 		$facebook = str_replace("%7C","=",$facebook);
 		$facebook = str_replace("%5E","&",$facebook);

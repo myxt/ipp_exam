@@ -208,6 +208,18 @@ if ( count($errors) == 0 ) {
 				}
 			}
 		}
+		//We're getting the status from a session variable the first time through, but the second time through it won't be around..
+		if ($savedvalue ) {
+			$followup = true;
+			$relatedObjects = eZContentFunctionCollection::fetchReverseRelatedObjects( $examID, false, array( 'common' ), false );
+			foreach( $relatedObjects['result'] as $relatedObject ) {
+				if ( $relatedObject->attribute( 'class_identifier' ) == "exam" ) {
+					$originalExamObjectID = $relatedObject->attribute( 'id' );
+					break;
+				}
+			}
+		}
+
 		$tpl->setVariable("followup", $followup);
 
 		$tpl->setVariable("passed", $passed);

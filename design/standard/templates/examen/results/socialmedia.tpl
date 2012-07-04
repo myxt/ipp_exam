@@ -7,4 +7,4 @@
 			<input type="image" src={"ic-web20-hyves.png"|ezimage} value="hyves" name="HyvesButton" title="{'Publish a link to your results on Hyves'|i18n('design/exam')}" />
 		</fieldset>
 	</form>
-</div>		
+</div>

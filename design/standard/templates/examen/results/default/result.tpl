@@ -15,7 +15,7 @@
 {*not a followup or if status = retest*}
 				{if eq($status,"RETEST")} {'Do you want to try again?'|i18n('design/exam')}
 					<form name="advanced exam" method="post" action={$node.url_alias|ezurl}>
-						<input type="hidden" name="exam_id" value="{$node.node_id}">					
+						<input type="hidden" name="exam_id" value="{$node.node_id}">
 						<input type="hidden" name="exam_status" value="{$node.object.current_language}">
 						<input class="button" type="submit" name="SubmitButton" value="{'Restart Exam'|i18n( 'design/exam' )}" title="{'Restart Exam'|i18n( 'design/exam' )}" />
 					</form>
