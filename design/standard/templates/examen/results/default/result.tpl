@@ -82,7 +82,7 @@
 				</p>
 			{/if}
 
-				{include uri="design:examen/results/socialmedia.tpl" examID=$examID hash=$hash}
+		{include uri="design:examen/results/socialmedia.tpl" examID=$examID hash=$hash}
 		{/if} {* end if passed *}
 	{/if} {*end if survey*}
 </div>

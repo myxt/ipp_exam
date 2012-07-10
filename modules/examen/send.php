@@ -6,6 +6,29 @@
  * @package examen
  */
 
+function replace( $string = "", $title = "", $score = "", $passed = "", $link = "" ) {
+	$searchArray =  array(
+					'[[name]]',
+					'[[naam]]',
+					'[[score]]',
+					'[[punten]]',
+					'[[passed]]',
+					'[[geslaagd]]',
+					'[[link]]'
+				);
+	$replaceArray =  array(
+					$title,
+					$title,
+					$score,
+					$score,
+					$passed,
+					$passed,
+					$link
+				);
+
+	return str_replace( $searchArray, $replaceArray, $string );
+}
+
 $Module = $Params['Module'];
 $settingsINI = eZINI::instance( 'examen.ini' );
 $http = eZHTTPTool::instance();
@@ -87,15 +110,16 @@ if ( count($errors) == 0 ) {
 		if ($resultIndex != 0) {//no division by zero here - dammit.
 			$score = ceil( $correctCount / $resultIndex * 100 );
 			if ( $score >= $dataMap["pass_threshold"]->DataInt ) {
-				$passed = true;
+				$passed = ezpI18n::tr( 'design/exam',"passed" );
 			} else {
-				$passed = false;
+				$passed = ezpI18n::tr( 'design/exam',"failed" );
 			}
 		}
 
-		$tpl->setVariable( 'passed', $passed);
-		$tpl->setVariable( 'score', $score );
+		//$tpl->setVariable( 'passed', $passed);
+		//$tpl->setVariable( 'score', $score );
 	}
+
 	/* To generate bitly urls - leaving it here just in case but if we're doing something like this it'll take more setup than what I should be doing in this extension
 
 	//these should be ini settings
@@ -123,6 +147,7 @@ if ( count($errors) == 0 ) {
 	/*This is not the way to do it.  We don't want the MainNode we want the url_alias of the siteaccess you are in.*/
 	$nodeID = eZContentObjectTreeNode::findMainNode( $originalExamObjectID );
 	$node =  eZContentObjectTreeNode::fetchByContentObjectID( $originalExamObjectID, true );
+	$nodeDataMap = $node[0]->DataMap();
 
 	$ini = eZINI::instance();
 	$link = $ini->variable( 'SiteSettings', 'SiteURL' )."/". $node[0]->attribute( 'path_identification_string' );
@@ -131,7 +156,11 @@ if ( count($errors) == 0 ) {
 	//Post to Twitter
 	if( $http->hasPostVariable( "TwitterButton" )  )
 	{
-		$twitter = $tpl->fetch( 'design:examen/results/'.$mode.'/twitter.tpl' );
+		//$twitter = $tpl->fetch( 'design:examen/results/'.$mode.'/twitter.tpl' );
+		$name=$node[0]->attribute( 'name' );;
+		$twitter = $nodeDataMap['twitter_text']->content();
+
+		$twitter = replace( $twitter, $name, $score, $passed, $link );
 		$twitter = strip_tags( $twitter );
 		$twitter = urlencode( $twitter );
 		$twitter = str_replace("%7C","=",$twitter);
@@ -142,7 +171,14 @@ if ( count($errors) == 0 ) {
 	//Post to Hyves
 	if( $http->hasPostVariable( "HyvesButton" )  )
 	{
-		$hyves = $tpl->fetch( 'design:examen/results/'.$mode.'/hyves.tpl' );
+/*title|{'I'|i18n('design/exam')} {if $passed}{'passed'|i18n('design/exam')}{else}{'failed'|i18n('design/exam')}{/if}^body|{'I took the exam at'|i18n('design/exam')} {$link} {'and'|i18n('design/exam')} {if $passed}{'passed'|i18n('design/exam')}{else}{'failed'|i18n('design/exam')}{/if} {'with a score of'|i18n('design/exam')} {$score}.<br><br>[url|{$link}]Do you want to try it too?[/url]^category|12^type|9
+*/
+		//$hyves = $tpl->fetch( 'design:examen/results/'.$mode.'/hyves.tpl' );
+		$name=$node[0]->attribute('name');
+		$title = $nodeDataMap['hyves_title']->content();
+		$body = $nodeDataMap['hyves_text']->content();
+		$link = "[url|".$link."]".ezpI18n::tr( 'design/exam',"link")."[/url]";
+		$hyves = "title|".replace( $title, $name, $score, $passed, $link )."^body|".replace( $body, $name, $score, $passed, $link )."^category|12^type|9";
 		$hyves = strip_tags( $hyves );
 		$hyves = urlencode( trim($hyves) );
 		$hyves = str_replace("%7C","=",$hyves);
@@ -164,8 +200,14 @@ if ( count($errors) == 0 ) {
 		$facebook = str_replace("%7C","=",$facebook);
 		$facebook = str_replace("%5E","&",$facebook);
 	*/
-	/*link has to be something that facebook can actually get to */
-		$facebook = "http://www.facebook.com/sharer.php?u=".$link;
+	/*link has to be something that facebook can actually get to, then it will have to get the title, body and image from meta tags - the problem is, that this has to come from the exam page and not the results page, so we can't actually load any results... only a comment of sorts.  For testing, this has to be coming from a page that facebook can get to - and they cache the link, so if you test it twice it WILL NOT pick up changes.  This is what needs to be loaded:
+	<meta name="title" content="Smith hails 'unique' Wable legacy">
+	<meta name="description" content="John Smith claims beautiful football ..." />
+	<link rel="image_src" href="http://www.onjd.com/design05/images/PH2/WableAFC205.jpg" />
+	it doesn't appear to have to be in the <head>
+	*/
+
+		$facebook = "http://www.facebook.com/sharer.php?u=".$link; //."&t=".replace($text, $title, $score, $passed, $link ); t is ignored now
 		return $Module->redirectTo( $facebook );
 	}
 	$errors[] = "broken_send_submit";
