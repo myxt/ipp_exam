@@ -471,6 +471,10 @@
         <source>You took too long to answer the questions.  Try again.</source>
         <translation>Je hebt er te lang over gedaan om de vragen te beantwoorden. Probeer opnieuw.</translation>
     </message>
+    <message>
+        <source>link</source>
+        <translation>link</translation>
+    </message>
 </context>
 <context>
     <name>kernel/classes/datatypes</name>

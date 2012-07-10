@@ -119,7 +119,8 @@ if ( count($errors) == 0 ) {
 		//$tpl->setVariable( 'passed', $passed);
 		//$tpl->setVariable( 'score', $score );
 	}
-
+//echo $passed." PASSED\n";
+//echo $score." SCORE\n";
 	/* To generate bitly urls - leaving it here just in case but if we're doing something like this it'll take more setup than what I should be doing in this extension
 
 	//these should be ini settings
@@ -164,7 +165,8 @@ if ( count($errors) == 0 ) {
 		$twitter = strip_tags( $twitter );
 		$twitter = urlencode( $twitter );
 		$twitter = str_replace("%7C","=",$twitter);
-		$twitter = "http://twitter.com/share?text=".$twitter;
+		$twitter = "http://twitter.com/share?url=&text=".$twitter;
+echo $twitter;
 		return $Module->redirectTo( $twitter );
 	}
 
@@ -177,7 +179,7 @@ if ( count($errors) == 0 ) {
 		$name=$node[0]->attribute('name');
 		$title = $nodeDataMap['hyves_title']->content();
 		$body = $nodeDataMap['hyves_text']->content();
-		$link = "[url|".$link."]".ezpI18n::tr( 'design/exam',"link")."[/url]";
+		$link = "[url|".$link."]".$link."[/url]";
 		$hyves = "title|".replace( $title, $name, $score, $passed, $link )."^body|".replace( $body, $name, $score, $passed, $link )."^category|12^type|9";
 		$hyves = strip_tags( $hyves );
 		$hyves = urlencode( trim($hyves) );
