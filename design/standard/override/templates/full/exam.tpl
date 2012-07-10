@@ -8,7 +8,19 @@
 	$structure=$node.object.data_map.exam_attributes.content.structure
 	$survey=eq($node.object.data_map.pass_threshold.data_int,0)
 }
-
+{if $node.data_map.facebook_text.has_content}
+	{if $node.data_map.facebook_title.has_content}
+		<meta name="title" content="{$node.data_map.facebook_title.content|strip_tags}">
+	{else}
+		<meta name="title" content="{$node.name}">
+	{/if}
+		<meta name="description" content="{$node.data_map.facebook_text.content|strip_tags}" />
+	{if $node.data_map.facebook_image.content.is_valid}
+		<link rel="image_src" href={$node.data_map.facebook_image.content.['large'].url|ezurl} />
+	{else}
+		<link rel="image_src" href={"facebook_image_default.png"|ezimage} />
+	{/if}
+{/if}
 <div class="content-view-full">
     <div class="class-exam">
 
