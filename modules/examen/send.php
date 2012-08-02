@@ -151,7 +151,7 @@ if ( count($errors) == 0 ) {
 	$nodeDataMap = $node[0]->DataMap();
 
 	$ini = eZINI::instance();
-	$link = $ini->variable( 'SiteSettings', 'SiteURL' )."/". $node[0]->attribute( 'path_identification_string' );
+	$link = $ini->variable( 'SiteSettings', 'SiteURL' )."/". $node[0]->attribute( 'url_alias' );
 	$tpl->setVariable( 'link', $link );
 
 	//Post to Twitter
