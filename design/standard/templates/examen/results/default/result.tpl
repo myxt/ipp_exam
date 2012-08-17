@@ -36,7 +36,7 @@
 			{if and($retest,ne($passSecond,0))} {'on the first try and [passSecond] passed on the second try'|i18n('design/exam','score',hash('[passSecond]',$passSecond))}{/if} {'The average score is [average]%.'|i18n('design/exam','score',hash('[average]',$average))} {'The highest score recorded is [highScore]%.'|i18n('design/exam','score',hash('[highScore]',$highScore))}  {if ge($score,$highScore)}{'Congratulations, you got the high score.'|i18n('design/exam')}{/if}
 		</p>
 		{/if}
-		{if $showCorrect}
+		{if and($showCorrect,ne($score,100))}
                 <h3>{'These were the correct answers'|i18n('design/exam')}</h3>
 				{if $fromSession}
 					{if $incorrect} {*if we have this statistics weren't saved and we had to get incomplete info from the badarray*}

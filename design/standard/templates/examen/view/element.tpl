@@ -6,7 +6,7 @@
         {/foreach}
 
         {if eq($show_result,1)}
-            <button class="btn" type="submit" name="SubmitButton" value="{'Continue'|i18n( 'design/admin/node/view/full' )}" data-toggle="button">{'Continue'|i18n( 'design/admin/node/view/full' )} <i class="icon-chevron-right"></i></button>
+            <button class="btn" type="submit" name="SubmitButton" value="{'Continue'|i18n( 'design/admin/node/view/full' )}" data-toggle="button" onClick="this.disabled=true;this.form.submit();">{'Continue'|i18n( 'design/admin/node/view/full' )} <i class="icon-chevron-right"></i></button>
         {/if}
     </form>
 </div>

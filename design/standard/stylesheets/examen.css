@@ -1,5 +1,18 @@
 /* VIEW  when you are taking the exam*/
 
+body 
+{
+	font-size: 12px;
+}
+
+#content_wrapper {
+    display:block;
+    float:left;
+    width: 600px;
+    margin-right: 90px;
+    padding: 45px 20px 30px 20px;
+}
+
 .exam-view div.question
 {
 	font-weight: bold;
@@ -134,3 +147,4 @@ input[type=image]
 {
     width: auto;
 }
+

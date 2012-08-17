@@ -1,1 +1,1 @@
-{'I'|i18n('design/exam')} {if $passed}{'passed'|i18n('design/exam')}{else}{'failed'|i18n('design/exam')}{/if} {'the exam at'|i18n('design/exam')} {$link} {'with a score of'|i18n('design/exam')} {$score}. {'Do you want to try?'|i18n('design/exam')}
+status|{'I'|i18n('design/exam')} {if $passed}{'passed'|i18n('design/exam')}{else}{'failed'|i18n('design/exam')}{/if} {'the exam at'|i18n('design/exam')} {$link} {'with a score of'|i18n('design/exam')} {$score}. {'Do you want to try?'|i18n('design/exam')}
