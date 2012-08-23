@@ -77,7 +77,7 @@ if ($errors) { /*Got errors*/
 	$source_image = realpath( dirname( __FILE__ ) . "/../../design/standard/images/certificate.png" );
 	$command =	'/usr/bin/convert '.$source_image.' -pointsize 62 -fill black ' .
 				//'-draw "text 80, 120 \''.$firstline.'\'" ' .
-				'-draw "text 300, 850 \''.$secondline.'\'" ' .
+				'-draw "text 300, 800 \''.$secondline.'\'" ' .
 				//'-draw "text 80, 284 \''.$thirdline.'\'" ' .
 				//'-draw "text 60, 366 \''.$fourthline.'\'" ' .
 				'PDF:-';

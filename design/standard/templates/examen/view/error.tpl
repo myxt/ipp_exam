@@ -31,7 +31,7 @@
 			{"This object is not available."|i18n('design/exam')}
 		{/case}
 		{case match="user_timed_out"}
-			De maximale tijd om dit examen te doen is vestreken. <a href={'/'|ezurl() }>Probeer opnieuw.</a>
+			{"You took too long to answer the questions."|i18n('design/exam')} <a href='/'|ezurl()>{"Try again."|i18n('design/exam')}</a>
 		{/case}
 		{case}
 			{"Undefined error."|i18n('design/exam')}

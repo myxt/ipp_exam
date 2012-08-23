@@ -468,8 +468,16 @@
         <translation>je bent geslaagd!</translation>
     </message>
     <message>
-        <source>You took too long to answer the questions.  Try again.</source>
-        <translation>Je hebt er te lang over gedaan om de vragen te beantwoorden. Probeer opnieuw.</translation>
+        <source>You took too long to answer the questions.</source>
+        <translation>De maximale tijd om dit examen te doen is vestreken.</translation>
+    </message>
+    <message>
+        <source>You took too long to answer the questions.</source>
+        <translation>De maximale tijd om dit examen te doen is vestreken.</translation>
+    </message>
+    <message>
+        <source>Try again.</source>
+        <translation>Probeer opnieuw.</translation>
     </message>
 </context>
 <context>
