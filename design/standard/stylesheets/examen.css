@@ -1,6 +1,19 @@
 /* VIEW  when you are taking the exam*/
 
-#exam-view
+body 
+{
+	font-size: 12px;
+}
+
+#content_wrapper {
+    display:block;
+    float:left;
+    width: 600px;
+    margin-right: 90px;
+    padding: 45px 20px 30px 20px;
+}
+
+.exam-view div.question
 {
 	border: 1px solid #CACACA;
 	background-color: #F8F8F8;
@@ -159,4 +172,14 @@ div.class-exam div.exam-message {
 }
 #sharebox form#mail-results label {
         display:block; float:left; width:50px; padding-top:.5em;
+}
+
+.alert form
+{
+    margin: 0;
+}
+
+input[type=image]
+{
+    width: auto;
 }

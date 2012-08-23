@@ -365,12 +365,12 @@
     <message>
         <source>You were one of [examCount] to take this exam.  Of which [passFirst] passed</source>
         <comment>score</comment>
-        <translation>Je was een van de [examCount] deelnemers die dit examen hebben gemaakt.  Waarvan [passFirst] zijn geslaagd.</translation>
+        <translation>Je bent een van de [examCount] deelnemers aan dit examen. Daarvan zijn [passFirst] deelnemers geslaagd</translation>
     </message>
     <message>
         <source>on the first try and [passSecond] passed on the second try</source>
         <comment>score</comment>
-        <translation>bij de eerste poging en [passSecond] zijn geslaagd bij de tweede poging</translation>
+        <translation>bij de eerste poging en [passSecond] bij de tweede poging.</translation>
     </message>
     <message>
         <source>The average score is [average]%.</source>
@@ -464,8 +464,12 @@
         <translation>je bent geslaagd</translation>
     </message>
     <message>
-        <source>You took too long to answer the questions.  Try again.</source>
-        <translation>Je hebt er te lang over gedaan om de vragen te beantwoorden. Probeer opnieuw.</translation>
+        <source>You took too long to answer the questions.</source>
+        <translation>De maximale tijd om dit examen te doen is vestreken.</translation>
+    </message>
+    <message>
+        <source>Try again.</source>
+        <translation>Probeer opnieuw.</translation>
     </message>
 </context>
 <context>
