@@ -16,5 +16,7 @@ $ViewList['exam'] = array('functions' => array( 'read' ), 'script' => 'exam.php'
 $ViewList['statistics'] = array('functions' => array( 'read' ), 'script' => 'statistics.php','params' => array( 'exam_id' ), 'default_navigation_part' => 'examnavigationpart' );
 $ViewList['send'] = array('functions' => array( 'read' ), 'script' => 'send.php', 'params' => array( 'exam_id', 'hash' ) );
 
+$FunctionList = array();
+$FunctionList['read'] = array();
 
 ?>

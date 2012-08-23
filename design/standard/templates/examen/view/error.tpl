@@ -22,16 +22,16 @@
 			{"No such object."|i18n('design/exam')}
 		{/case}
 		{case match="object_not_exam"}
-			{"Wrong object type.  Check your exam id."|i18n('design/exam')}
+			{"Wrong object type. Check your exam id."|i18n('design/exam')}
 		{/case}
 		{case match="threshold_exceeded"}
-			{"You've tried to many times for today.  Try again on another day."|i18n('design/exam')}
+			{"You've tried to many times for today. Try again on another day."|i18n('design/exam')}
 		{/case}
 		{case match="date_out_of_bounds"}
 			{"This object is not available."|i18n('design/exam')}
 		{/case}
 		{case match="user_timed_out"}
-			{"You took too long to answer the questions.  Try again."|i18n('design/exam')}
+			De maximale tijd om dit examen te doen is vestreken. <a href={'/'|ezurl() }>Probeer opnieuw.</a>
 		{/case}
 		{case}
 			{"Undefined error."|i18n('design/exam')}

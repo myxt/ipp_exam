@@ -135,7 +135,7 @@
     </message>
     <message>
         <source>You passed</source>
-        <translation>Je bent geslaagd</translation>
+        <translation>Gefeliciteerd, je bent geslaagd!</translation>
     </message>
     <message>
         <source>on your second try.</source>
@@ -143,15 +143,15 @@
     </message>
     <message>
         <source>You failed</source>
-        <translation>Je bent niet geslaagd</translation>
+        <translation>Helaas, je bent niet geslaagd</translation>
     </message>
     <message>
         <source>Do you want to try again?</source>
-        <translation>Wil je het opnieuw proberen?</translation>
+        <translation>Laat het er niet bij zetten en probeer het opnieuw. Succes!</translation>
     </message>
     <message>
         <source>Restart Exam</source>
-        <translation>Examen opnieuw beginnen</translation>
+        <translation>Herkansing Stemexamen</translation>
     </message>
     <message>
         <source>That was your second attempt.  Study harder and try again some other day.</source>
@@ -159,11 +159,11 @@
     </message>
     <message>
         <source>Your score was [score]% correct</source>
-        <translation type="obsolete">Je score was [score]% correct</translation>
+        <translation type="obsolete">Je had [score]% van de vragen goed</translation>
     </message>
     <message>
         <source>You were one of [examCount] to take this exam. Of which [passFirst] passed.</source>
-        <translation type="obsolete">Je bent een van de [examCount] deelnemers die dit examen heeft gedaan. Daarvan zijn [passFirst] deelnemers geslaagd</translation>
+        <translation type="obsolete">Je bent een van de [examCount] deelnemers aan dit examen tot nu toe. Daarvan zijn [passFirst] deelnemers geslaagd</translation>
     </message>
     <message>
         <source>on the first try and [passSecond] passed on the second try.</source>
@@ -171,7 +171,7 @@
     </message>
     <message>
         <source>The highest score recorded was [highScore].</source>
-        <translation type="obsolete">De hoogste score was [highScore].</translation>
+        <translation type="obsolete">De hoogste score tot nu toe is [highScore].</translation>
     </message>
     <message>
         <source>Congratulations, you got the high score.</source>
@@ -179,7 +179,7 @@
     </message>
     <message>
         <source>Do you wish to have a certificate to commemorate your success?</source>
-        <translation>Wil je een certificaat als herinnering dat je voor dit examen bent geslaagd? Vul dan hieronder je naam in en klik op 'certificaat downloaden'.</translation>
+        <translation>Vul hieronder je naam in, download het certificaat en laat aan iedereen zien dat je bent geslaagd voor het Stemexamen! Jij bent je stemrecht waard!</translation>
     </message>
     <message>
         <source>Download Certificate</source>
@@ -365,12 +365,12 @@
     <message>
         <source>You were one of [examCount] to take this exam.  Of which [passFirst] passed</source>
         <comment>score</comment>
-        <translation>Je bent een van de [examCount] deelnemers aan dit examen. Daarvan zijn [passFirst] deelnemers geslaagd.</translation>
+        <translation>Je bent een van de [examCount] deelnemers aan dit examen. Daarvan zijn [passFirst] deelnemers geslaagd</translation>
     </message>
     <message>
         <source>on the first try and [passSecond] passed on the second try</source>
         <comment>score</comment>
-        <translation>bij de eerste poging en [passSecond] zijn geslaagd bij de tweede poging</translation>
+        <translation>bij de eerste poging en [passSecond] bij de tweede poging.</translation>
     </message>
     <message>
         <source>The average score is [average]%.</source>
@@ -393,7 +393,7 @@
     <message>
         <source>Your score was [score]% correct</source>
         <comment>score</comment>
-        <translation>je score is [score]%</translation>
+        <translation>Je score is [score]%</translation>
     </message>
     <message>
         <source>Scroll to Bottom</source>
@@ -413,7 +413,7 @@
     </message>
     <message>
         <source>These were the correct answers</source>
-        <translation>Dit waren de juiste antwoorden</translation>
+        <translation>Dit zijn de juiste antwoorden van de vragen die je fout hebt beantwoord</translation>
     </message>
     <message>
         <source>Give more importance to this question by adding a number.</source>
@@ -465,7 +465,7 @@
     </message>
     <message>
         <source>you passed</source>
-        <translation>je bent geslaagd</translation>
+        <translation>je bent geslaagd!</translation>
     </message>
     <message>
         <source>You took too long to answer the questions.  Try again.</source>

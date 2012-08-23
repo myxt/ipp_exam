@@ -1,8 +1,16 @@
 /* VIEW  when you are taking the exam*/
 
-.exam-exam, .exam-result, .class-exam
+body 
 {
-    font-size: 13px;
+	font-size: 12px;
+}
+
+#content_wrapper {
+    display:block;
+    float:left;
+    width: 600px;
+    margin-right: 90px;
+    padding: 45px 20px 30px 20px;
 }
 
 .exam-view div.question
@@ -139,3 +147,4 @@ input[type=image]
 {
     width: auto;
 }
+
