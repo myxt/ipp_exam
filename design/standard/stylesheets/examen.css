@@ -1,6 +1,19 @@
 /* VIEW  when you are taking the exam*/
 
-body 
+body
+{
+	font-size: 12px;
+}
+
+#content_wrapper {
+    display:block;
+    float:left;
+    width: 600px;
+    margin-right: 90px;
+    padding: 45px 20px 30px 20px;
+}
+
+.exam-view div.question
 {
 	font-size: 12px;
 }
@@ -147,4 +160,7 @@ input[type=image]
 {
     width: auto;
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> master

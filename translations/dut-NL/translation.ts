@@ -472,6 +472,10 @@
         <translation>De maximale tijd om dit examen te doen is vestreken.</translation>
     </message>
     <message>
+        <source>You took too long to answer the questions.</source>
+        <translation>De maximale tijd om dit examen te doen is vestreken.</translation>
+    </message>
+    <message>
         <source>Try again.</source>
         <translation>Probeer opnieuw.</translation>
     </message>

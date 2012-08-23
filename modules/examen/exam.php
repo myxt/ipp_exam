@@ -456,20 +456,20 @@ eZFire::debug($conditionAdd ? "true" : "false","CONDITION ADD");
 							$correctCount++;
 						}
 					}
-				}
 //We're going to have to save the resultArray session variable here too, otherwise there is no way to display it in the results
 //We need the correct count even if we aren't saving results
-				if ( $saveResults == 1 OR $survey == true ) {
-					$newResult = new examResult();
-					$newResult->setAttribute( 'contentobject_id', $examID );
-					$newResult->setAttribute( 'hash', $hash );
-					$newResult->setAttribute( 'question_id', $examAnswer[0] );
-					$newResult->setAttribute( 'answer', $examAnswer[1] );
-					$newResult->setAttribute( 'correct', $correct );
-					$newResult->setAttribute( 'followup', $followup );
-					$newResult->setAttribute( 'conditional', $resultArray[$examAnswer[0]] );
-					$newResult->store();
-				}//end save results
+					if ( $saveResults == 1 OR $survey == true ) {
+						$newResult = new examResult();
+						$newResult->setAttribute( 'contentobject_id', $examID );
+						$newResult->setAttribute( 'hash', $hash );
+						$newResult->setAttribute( 'question_id', $examAnswer[0] );
+						$newResult->setAttribute( 'answer', $examAnswer[1] );
+						$newResult->setAttribute( 'correct', $correct );
+						$newResult->setAttribute( 'followup', $followup );
+						$newResult->setAttribute( 'conditional', $resultArray[$examAnswer[0]] );
+						$newResult->store();
+					}//end save results
+					}//end if question
 			}//end foreach
 			$score = 0; //For survey
 
