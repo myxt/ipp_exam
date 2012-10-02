@@ -6,6 +6,7 @@
 		{/foreach}
 	{else}
 		{if $passed}
+
 			<div class="passed">
 				<div class="headline">{'You passed'|i18n('design/exam')|upcase}</div>{if $followup} {'on your second try.'|i18n('design/exam')}{/if}
 			</div>
@@ -20,7 +21,8 @@
 						<input class="button" type="submit" name="SubmitButton" value="{'Restart Exam'|i18n( 'design/exam' )}" title="{'Restart Exam'|i18n( 'design/exam' )}" />
 					</form>
 				{else}
-					{'That was your second attempt.  Study harder and try again some other day.'|i18n('design/exam')}
+					{'That was your second attempt. Study harder and try again some other day.'|i18n('design/exam')}
+					<p>Ben je niet tevreden met je uitslag? Doe dan nu de gratis minicursus politiek! Ontwikkeld door ProDemos en aangeboden door de LOI. <a href="http://www.loi.nl/nwss">Klik hier</a> voor meer informatie en om de cursus te downloaden.</p>
 				{/if}
 			</div>
 		{/if}
@@ -28,6 +30,14 @@
 
 		{'Your score was [score]% correct'|i18n('design/exam','score',hash('[score]',cond($score,$score,0)))}.<br/>
 
+<<<<<<< HEAD
+=======
+                {if $score}
+                <p>{'Your score was [score]% correct'|i18n('design/exam','score',hash('[score]',cond($score,$score,0)))}.</p>
+                <p>Ben je nog niet tevreden met je uitslag? Doe dan nu de gratis minicursus politiek! Ontwikkeld door ProDemos en aangeboden door de LOI. <a href="http://www.loi.nl/nwss">Klik hier</a> voor meer informatie en om de cursus te downloaden.</p>
+                {/if}
+                
+>>>>>>> 2042825... Serverside changes.
 		{if $showStatistics}
 		<div class="statistics-text">
 			{'You were one of [examCount] to take this exam.  Of which [passFirst] passed'|i18n('design/exam','score',hash('[examCount]',$examCount,'[passFirst]',$passFirst))}

@@ -484,7 +484,7 @@ eZFire::debug($conditionAdd ? "true" : "false","CONDITION ADD");
 					}
 				}
 			}
-			if ( $saveResults ) {
+			// if ( $saveResults ) { //I think we always want to save these
 				$exam = exam::fetch( $originalExamObjectID );
 					if ($exam) { //Otherwise no elements - should never happen.
 					$totalExam = $exam->increment( 'count' );
@@ -500,11 +500,11 @@ eZFire::debug($conditionAdd ? "true" : "false","CONDITION ADD");
 					$exam->setAttribute( 'score_tally', $oldTally + $score );
 					$exam->store();
 				}
-			} else {//if save results
+			// } else {//if save results
 //WE NEED $score and $passed IN A SESSION VARIABLE IF WE DONT SAVE RESULTS
 				$http->setSessionVariable( 'passed['.$examID.']', $passed );
 				$http->setSessionVariable( 'score['.$examID.']', $score );
-			}
+			//}
 		} //if not DONE
 
 		if ( $followup ) { //Means we finished the restest
