@@ -7,7 +7,9 @@
 	{else}
 		{if $passed}
 			<div class="alert alert-success">
-				<h2>{'You passed'|i18n('design/exam')}</h2>{if $followup} {'on your second try.'|i18n('design/exam')}{/if}
+				<h2>{'You passed'|i18n('design/exam')}</h2>
+				<p>Ben je nog niet tevreden met je uitslag? Doe dan nu de gratis minicursus politiek! Ontwikkeld door ProDemos en aangeboden door de LOI. <a href="http://www.loi.nl/nwss">Klik hier</a> voor meer informatie en om de cursus te downloaden.</p>
+				{if $followup} {'on your second try.'|i18n('design/exam')}{/if}
 			</div>
 		{else}
 			<div class="alert alert-error">
@@ -21,13 +23,15 @@
                                         <button class="btn btn-danger" type="submit" name="SubmitButton" value="{'Restart Exam'|i18n( 'design/exam' )}" /><i class="icon-chevron-left icon-white"></i> {'Restart Exam'|i18n( 'design/exam' )}</button>
                                     </form>
 				{else}
-					{'That was your second attempt.  Study harder and try again some other day.'|i18n('design/exam')}
+					{'That was your second attempt. Study harder and try again some other day.'|i18n('design/exam')}
+					<p>Ben je niet tevreden met je uitslag? Doe dan nu de gratis minicursus politiek! Ontwikkeld door ProDemos en aangeboden door de LOI. <a href="http://www.loi.nl/nwss">Klik hier</a> voor meer informatie en om de cursus te downloaden.</p>
 				{/if}
 			</div>
 		{/if}
 
                 {if $score}
                 <p>{'Your score was [score]% correct'|i18n('design/exam','score',hash('[score]',cond($score,$score,0)))}.</p>
+                <p>Ben je nog niet tevreden met je uitslag? Doe dan nu de gratis minicursus politiek! Ontwikkeld door ProDemos en aangeboden door de LOI. <a href="http://www.loi.nl/nwss">Klik hier</a> voor meer informatie en om de cursus te downloaden.</p>
                 {/if}
                 
 		{if $showStatistics}
